@@ -395,16 +395,16 @@ split => //.
 by rewrite complementary_set_in /UniversalSet /In.
 Qed.
 
-(* (2.15) *)
+(* (2.15) これどうして証明できたのかよくわからない *)
 Theorem complementary_set_subset: forall A B, A \subset B <-> B^c \subset A^c.
 Proof.
 move=> A B.
 split.
-- rewrite 2!complementary_set /Subset /In => HA_to_B x.
-  rewrite /not => HB HA.
+- rewrite 2!complementary_set /Subset => HA_to_B x.
+  rewrite {1}/In /not => HB HA.
   apply HB.
   by apply HA_to_B.
-- rewrite 2!complementary_set /Subset /In => HB_to_A x HA.
+- rewrite 2!complementary_set /Subset {1 3}/In => HB_to_A x HA.
   move: (HB_to_A x).
   rewrite /not.
   move=> H.
@@ -412,6 +412,49 @@ split.
   rewrite /not.
   move=> HB.
   apply H => //.
+Qed.
+
+
+(* (2.16) *)
+Theorem de_morgan_cup: forall A B, (A \cup B)^c = A^c \cap B^c.
+Proof.
+(* eq_subset'を使ったあとでrewriteしまくる形でもできるけれど、形式化に左右されづらいこの形式にした *)
+move=> A B.
+apply eq_axiom => x.
+split.
+- rewrite complementary_set_in /Cup {1}/In => HA_or_B.
+  rewrite /Cap {1}/In.
+  rewrite 2!complementary_set_in.
+  split.
+  + move=> HA.
+    apply HA_or_B.
+    by left.
+  + move=> HB.
+    apply HA_or_B.
+    by right.
+- rewrite complementary_set_in /Cup {2}/In.
+  case => HA HB.
+  case.
+  + by apply HA.
+  + by apply HB.
+Qed.
+
+(* (2.16)' *)
+Theorem de_morgan_cap: forall A B, (A \cap B)^c = A^c \cup B^c.
+Proof.
+move=> A B.
+apply eq_axiom => x.
+split.
+- rewrite complementary_set_in /Cap {1}/In => HA_and_B.
+  rewrite /Cup {1}/In.
+  rewrite 2!complementary_set_in.
+  by apply not_and_or.
+- rewrite /Cup {1}/In 3!complementary_set_in.
+  case => H HA_cap_B.
+  + apply H.
+    apply HA_cap_B.
+  + apply H.
+    apply HA_cap_B.
 Qed.
 
 
