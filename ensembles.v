@@ -5,6 +5,8 @@ Require Import Classical.
 
 Module Ensembles.
 
+Section Section1.
+
 Variable T: Type.
 
 Definition Ensemble := T -> Prop.
@@ -326,9 +328,9 @@ Qed.
 Definition Sub (A B: Ensemble) := fun x: T => x \in A /\ ~ x \in B.
 Notation "A - B" := (Sub A B). (* at level 50 *)
 
-Definition UniversalSet: Ensemble := fun _ => True.
+Definition FullSet: Ensemble := fun _ => True.
 
-Definition ComplementarySet (A: Ensemble) := UniversalSet - A.
+Definition ComplementarySet (A: Ensemble) := FullSet - A.
 Notation "A ^ 'c'" := (ComplementarySet A) (at level 30).
 
 Lemma complementary_set: forall A, A^c = fun x => ~ x \in A.
@@ -348,7 +350,7 @@ by rewrite complementary_set.
 Qed.
 
 (* (2.12.1) *)
-Theorem complementary_set_cup: forall A, A \cup A^c = UniversalSet.
+Theorem complementary_set_cup: forall A, A \cup A^c = FullSet.
 Proof.
 move=> A.
 apply eq_axiom => x.
@@ -380,7 +382,7 @@ split.
 Qed.
 
 (* (2.14.1) *)
-Theorem complementary_set_empty_set: EmptySet^c = UniversalSet.
+Theorem complementary_set_empty_set: EmptySet^c = FullSet.
 Proof.
 apply eq_axiom => x.
 split => // _.
@@ -388,11 +390,11 @@ by rewrite complementary_set_in.
 Qed.
 
 (* (2.14.2) *)
-Theorem complementary_set_universal_set: UniversalSet^c = EmptySet.
+Theorem complementary_set_full_set: FullSet^c = EmptySet.
 Proof.
 apply eq_axiom => x.
 split => //.
-by rewrite complementary_set_in /UniversalSet /In.
+by rewrite complementary_set_in /FullSet /In.
 Qed.
 
 (* (2.15) これどうして証明できたのかよくわからない *)
@@ -456,6 +458,20 @@ split.
   + apply H.
     apply HA_cap_B.
 Qed.
+
+End Section1.
+
+Section Section2.
+
+Variable T: Type.
+
+Variable FamilyEnsemble: (Ensemble (Ensemble T)).
+
+Variable Ensemble: Ensemble T.
+
+Definition CAP (A: FamilyEnsemble): Ensemble := 
+
+
 
 
 
