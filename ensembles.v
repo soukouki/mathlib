@@ -401,24 +401,18 @@ Proof.
 move=> A B.
 split.
 - rewrite 2!complementary_set /Subset /In => HA_to_B x.
-  Search (~ _ -> ~ _).
-  Search (_ -> _) (~ _) Prop.
-  auto.
-
-
-
-
-move=> A B HA_subset_B.
-rewrite /Subset => x.
-rewrite 2!complementary_set_in.
-move: HA_subset_B.
-Restart.
-move=> A B.
-rewrite /ComplementarySet /Sub /Subset /In => HA_to_B x.
-case => _ HB.
-split => //.
-suff: ~ B x -> ~ A x.
-  by apply.
+  rewrite /not => HB HA.
+  apply HB.
+  by apply HA_to_B.
+- rewrite 2!complementary_set /Subset /In => HB_to_A x HA.
+  move: (HB_to_A x).
+  rewrite /not.
+  move=> H.
+  apply NNPP.
+  rewrite /not.
+  move=> HB.
+  apply H => //.
+Qed.
 
 
 
