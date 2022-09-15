@@ -37,6 +37,12 @@ split.
   + by apply HB_subset_A.
 Qed.
 
+Lemma eq_subset': forall A B, A \subset B -> B \subset A -> A = B.
+Proof.
+move=> A B HAB HBA.
+apply eq_subset => //.
+Qed.
+
 (* (1.4)
    本にあるのは A \subset B /\ B \subset C だけれど、明らかに同等な上にこちらのほうがCoq的に扱いやすいのでこう書いた
    今後も同じような例が出てくるが、同様に行う *)
@@ -84,8 +90,7 @@ Qed.
 Theorem cup_diag: forall A, A \cup A = A.
 Proof.
 move=> A.
-apply eq_subset.
-split.
+apply eq_subset'.
 - by apply subsets_cup => //.
 - by apply subset_cup_l.
 Qed.
@@ -94,8 +99,7 @@ Qed.
 Theorem cup_comm: forall A B, A \cup B = B \cup A.
 Proof.
 move=> A B.
-apply eq_subset.
-split.
+apply eq_subset'.
 - rewrite /Cup /Subset /In => x.
   by apply or_comm.
 - rewrite /Cup /Subset /In => x.
@@ -106,8 +110,7 @@ Qed.
 Theorem cup_assoc: forall A B C, (A \cup B) \cup C = A \cup (B \cup C).
 Proof.
 move=> A B C.
-apply eq_subset.
-split.
+apply eq_subset'.
 - rewrite /Subset /Cup /In.
   move=> x.
   by apply or_assoc.
@@ -122,8 +125,7 @@ Proof.
 move=> A B.
 split.
 - move=> HA_subset_B.
-  apply eq_subset.
-  split.
+  apply eq_subset'.
   + by apply subsets_cup => //.
   + by apply subset_cup_r.
 - move=> H; rewrite -H.
@@ -186,8 +188,7 @@ Qed.
 Theorem cap_diag: forall A, A \cap A = A.
 Proof.
 move=> A.
-apply eq_subset.
-split.
+apply eq_subset'.
 - rewrite /Subset /Cap /In.
   move=> x.
   by case.
@@ -200,8 +201,7 @@ Qed.
 Theorem cap_comm: forall A B, A \cap B = B \cap A.
 Proof.
 move=> A B.
-apply eq_subset.
-split.
+apply eq_subset'.
 - rewrite /Subset /Cap /In.
   move=> x.
   by apply and_comm.
@@ -214,8 +214,7 @@ Qed.
 Theorem cap_assoc: forall A B C, (A \cap B) \cap C = A \cap (B \cap C).
 Proof.
 move=> A B C.
-apply eq_subset.
-split.
+apply eq_subset'.
 - rewrite /Subset /Cap /In.
   move=> x.
   by apply and_assoc.
@@ -230,8 +229,7 @@ Proof.
 move=> A B.
 split.
 - move=> HA_subset_B.
-  apply eq_subset.
-  split.
+  apply eq_subset'.
   + by apply cap_subset_l.
   + by apply subsets_cap => //.
 - move=> H; rewrite -H.
@@ -257,12 +255,71 @@ move=> A.
 by apply subset_cap_eq.
 Qed.
 
+(* (2.10) *)
+Theorem cup_cap_distrib: forall A B C, (A \cup B) \cap C = (A \cap C) \cup (B \cap C).
+Proof.
+move=> A B C.
+apply eq_subset'.
+- rewrite /Subset /Cup /Cap /In => x.
+  case.
+  case.
+  + move=> HA HC.
+    left.
+    by split => //.
+  + move=> HB HC.
+    right.
+    by split => //.
+- rewrite /Subset /Cup /Cap /In => x.
+  case.
+  + case => HA HC.
+    split => //.
+    by left.
+  + case => HB HC.
+    split => //.
+    by right.
+Qed.
 
+(* (2.11) *)
+Theorem cap_cup_distrib: forall A B C, (A \cap B) \cup C = (A \cup C) \cap (B \cup C).
+Proof.
+move=> A B C.
+apply eq_subset'.
+- rewrite /Subset /Cup /Cap /In => x.
+  case.
+  + case => HA HB.
+    split.
+    * by left.
+    * by left.
+  + move=> HC.
+    split.
+    * by right.
+    * by right.
+- rewrite /Subset /Cup /Cap /In => x.
+  case.
+  case.
+  + move=> HA.
+    case.
+    * by left.
+    * by right.
+  + by right.
+Qed.
 
+(* (2.11) *)
+Theorem cup_absorption: forall A B, (A \cup B) \cap A = A.
+Proof.
+move=> A B.
+rewrite cap_comm.
+apply subset_cap_eq.
+by apply subset_cup_l.
+Qed.
 
-
-
-
+(* (2.11)' *)
+Theorem cap_absorption: forall A B, (A \cap B) \cup A = A.
+Proof.
+move=> A B.
+apply subset_cup_eq.
+by apply cap_subset_l.
+Qed.
 
 
 
