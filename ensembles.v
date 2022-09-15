@@ -1,25 +1,26 @@
 (* 集合・位相入門(松坂)1 をCoqで証明しつつ読んでいく *)
 
 From mathcomp Require Import ssreflect.
+Require Import Classical.
 
 Module Ensembles.
 
-Variable U: Type.
+Variable T: Type.
 
-Definition Ensemble := U -> Prop.
+Definition Ensemble := T -> Prop.
 
-Definition In (a: U) (A: Ensemble) := A a.
-Notation "a \in A" := (In a A) (at level 11).
+Definition In (a: T) (A: Ensemble): Prop := A a.
+Notation "a \in A" := (In a A) (at level 55).
 
 Definition EmptySet: Ensemble := fun _ => False.
 Notation "\emptyset" := EmptySet.
 
 (* 外延性の公理 *)
-Axiom ensemble_eq: forall (A B: Ensemble),
-  (forall (x: U), (x \in A <-> x \in B)) -> A = B.
+Axiom eq_axiom: forall (A B: Ensemble),
+  (forall (x: T), (x \in A <-> x \in B)) -> A = B.
 
-Definition Subset (A B: Ensemble) := forall x, x \in A -> x \in B.
-Notation "A \subset B" := (Subset A B) (at level 11).
+Definition Subset (A B: Ensemble): Prop := forall x: T, x \in A -> x \in B.
+Notation "A \subset B" := (Subset A B) (at level 55).
 
 (* (1.3) *)
 Theorem eq_subset: forall A B, A = B <-> A \subset B /\ B \subset A.
@@ -31,7 +32,7 @@ split.
   by rewrite /Subset.
 - case.
   move=> HA_subset_B HB_subset_A.
-  apply ensemble_eq => x.
+  apply eq_axiom => x.
   split.
   + by apply HA_subset_B.
   + by apply HB_subset_A.
@@ -60,8 +61,8 @@ by rewrite /Subset /In /EmptySet.
 Qed.
 
 
-Definition Cup (A B: Ensemble) := fun x: U => x \in A \/ x \in B.
-Notation "A \cup B" := (Cup A B) (at level 10).
+Definition Cup (A B: Ensemble): Ensemble := fun x: T => x \in A \/ x \in B.
+Notation "A \cup B" := (Cup A B) (at level 50).
 
 (* (2.2.1) *)
 Theorem subset_cup_l: forall A B, A \subset A \cup B.
@@ -151,8 +152,8 @@ by apply subset_cup_eq.
 Qed.
 
 
-Definition Cap (A B: Ensemble) := fun x: U => x \in A /\ x \in B.
-Notation "A \cap B" := (Cap A B) (at level 10).
+Definition Cap (A B: Ensemble): Ensemble := fun x: T => x \in A /\ x \in B.
+Notation "A \cap B" := (Cap A B) (at level 50).
 
 (* (2.2.1)'
    本ではsupsetを使っているが、今回はすべてsubsetで統一する *)
@@ -320,6 +321,107 @@ move=> A B.
 apply subset_cup_eq.
 by apply cap_subset_l.
 Qed.
+
+
+Definition Sub (A B: Ensemble) := fun x: T => x \in A /\ ~ x \in B.
+Notation "A - B" := (Sub A B). (* at level 50 *)
+
+Definition UniversalSet: Ensemble := fun _ => True.
+
+Definition ComplementarySet (A: Ensemble) := UniversalSet - A.
+Notation "A ^ 'c'" := (ComplementarySet A) (at level 30).
+
+Lemma complementary_set: forall A, A^c = fun x => ~ x \in A.
+Proof.
+move=> A.
+apply eq_subset'.
+- rewrite /ComplementarySet /Sub /Subset /In => x.
+  by case.
+- rewrite /ComplementarySet /Sub /Subset /In => x.
+  by split => //.
+Qed.
+
+Lemma complementary_set_in: forall A x, x \in A^c <-> ~ x \in A.
+Proof.
+move=> A x.
+by rewrite complementary_set.
+Qed.
+
+(* (2.12.1) *)
+Theorem complementary_set_cup: forall A, A \cup A^c = UniversalSet.
+Proof.
+move=> A.
+apply eq_axiom => x.
+split => // _.
+rewrite complementary_set /Cup /In.
+by apply classic. (* ここで古典論理を使い始めた *)
+Qed.
+
+(* (2.12.2) *)
+Theorem complementary_set_cap: forall A, A \cap A^c = EmptySet.
+Proof.
+move=> A.
+apply eq_axiom => x.
+split => //.
+rewrite complementary_set /Cap /In.
+by case.
+Qed.
+
+(* (2.13) *)
+Theorem complementary_set_twice: forall A, A^c^c = A.
+Proof.
+move=> A.
+apply eq_axiom => x.
+rewrite 2!complementary_set_in.
+rewrite /In.
+split.
+- by apply NNPP.
+- by move=> H.
+Qed.
+
+(* (2.14.1) *)
+Theorem complementary_set_empty_set: EmptySet^c = UniversalSet.
+Proof.
+apply eq_axiom => x.
+split => // _.
+by rewrite complementary_set_in.
+Qed.
+
+(* (2.14.2) *)
+Theorem complementary_set_universal_set: UniversalSet^c = EmptySet.
+Proof.
+apply eq_axiom => x.
+split => //.
+by rewrite complementary_set_in /UniversalSet /In.
+Qed.
+
+(* (2.15) *)
+Theorem complementary_set_subset: forall A B, A \subset B <-> B^c \subset A^c.
+Proof.
+move=> A B.
+split.
+- rewrite 2!complementary_set /Subset /In => HA_to_B x.
+  Search (~ _ -> ~ _).
+  Search (_ -> _) (~ _) Prop.
+  auto.
+
+
+
+
+move=> A B HA_subset_B.
+rewrite /Subset => x.
+rewrite 2!complementary_set_in.
+move: HA_subset_B.
+Restart.
+move=> A B.
+rewrite /ComplementarySet /Sub /Subset /In => HA_to_B x.
+case => _ HB.
+split => //.
+suff: ~ B x -> ~ A x.
+  by apply.
+
+
+
 
 
 
