@@ -27,15 +27,11 @@ Proof.
 move=> A B.
 split.
 - move=> HA_eq_B.
-  split.
-  + rewrite HA_eq_B.
-    by rewrite /Subset.
-  + rewrite HA_eq_B.
-    by rewrite /Subset.
+  rewrite HA_eq_B.
+  by rewrite /Subset.
 - case.
   move=> HA_subset_B HB_subset_A.
-  apply ensemble_eq.
-  move=> x.
+  apply ensemble_eq => x.
   split.
   + by apply HA_subset_B.
   + by apply HB_subset_A.
@@ -47,19 +43,14 @@ Qed.
 Theorem subset_trans: forall A B C, A \subset B -> B \subset C -> A \subset C.
 Proof.
 move=> A B C HA_subset_B HB_subset_C.
-rewrite /Subset.
-move=> x Hx_in_A.
+rewrite /Subset => x Hx_in_A.
 by apply /HB_subset_C /HA_subset_B.
 Qed.
 
 (* (1.5) *)
 Theorem empty_set_subset: forall A, \emptyset \subset A.
 Proof.
-move=> A.
-rewrite /Subset.
-move=> x.
-rewrite /In.
-by rewrite /EmptySet.
+by rewrite /Subset /In /EmptySet.
 Qed.
 
 
@@ -69,10 +60,6 @@ Notation "A \cup B" := (Cup A B) (at level 10).
 (* (2.2.1) *)
 Theorem subset_cup_l: forall A B, A \subset A \cup B.
 Proof.
-move=> A B.
-rewrite /Subset.
-move=> x Hx_in_A.
-rewrite /Cup /In.
 by left.
 Qed.
 
@@ -80,9 +67,6 @@ Qed.
 Theorem subset_cup_r: forall A B, B \subset A \cup B.
 Proof.
 move=> A B.
-rewrite /Subset.
-move=> x Hx_in_B.
-rewrite /Cup /In.
 by right.
 Qed.
 
@@ -90,8 +74,7 @@ Qed.
 Theorem subsets_cup: forall A B C, A \subset C -> B \subset C -> A \cup B \subset C.
 Proof.
 move=> A B C HA_subset_C HB_subset_C.
-rewrite /Subset /Cup /In.
-move=> x.
+rewrite /Cup /In => x.
 case.
 - by apply /HA_subset_C.
 - by apply /HB_subset_C.
@@ -111,14 +94,11 @@ Qed.
 Theorem cup_comm: forall A B, A \cup B = B \cup A.
 Proof.
 move=> A B.
-Search Ensemble (_ = _).
 apply eq_subset.
 split.
-- rewrite /Cup /Subset /In.
-  move=> x.
+- rewrite /Cup /Subset /In => x.
   by apply or_comm.
-- rewrite /Cup /Subset /In.
-  move=> x.
+- rewrite /Cup /Subset /In => x.
   by apply or_comm.
 Qed.
 
@@ -154,24 +134,18 @@ Qed.
 Theorem subset_cups_subset: forall A B C, A \subset B -> A \cup C \subset B \cup C.
 Proof.
 move=> A B C HA_subset_B.
-rewrite /Subset /Cup /In.
-move=> x.
-case.
-- left.
+apply subsets_cup.
+- rewrite /Subset /Cup /In.
+  move=> x HA.
+  left.
   by apply HA_subset_B.
-- by right.
+- by apply subset_cup_r.
 Qed.
 
 (* (2.9) *)
 Theorem empty_set_cup: forall A, \emptyset \cup A = A.
 move=> A.
-apply eq_subset.
-split.
-- rewrite /Subset /Cup /In /EmptySet.
-  move=> x.
-  by case => //.
-- rewrite /Subset /Cup /In /EmptySet.
-  by right.
+by apply subset_cup_eq.
 Qed.
 
 
@@ -268,27 +242,21 @@ Qed.
 Theorem subset_caps_subset: forall A B C, A \subset B -> A \cap C \subset B \cap C.
 Proof.
 move=> A B C HA_subset_B.
-rewrite /Subset /Cap /In.
-move=> x.
-case.
-move=> HA HC.
-split => //.
-by apply HA_subset_B.
+apply subsets_cap.
+- rewrite /Subset /Cap /In.
+  move=> x.
+  case => HA HC.
+  by apply HA_subset_B.
+- by apply cap_subset_r.
 Qed.
 
 (* (2.9)' *)
 Theorem empty_set_cap: forall A, \emptyset \cap A = \emptyset.
 Proof.
 move=> A.
-apply eq_subset.
-split.
-- rewrite /Subset /Cap /In /EmptySet.
-  move=> x.
-  by case.
-- rewrite /Subset /Cap /In /EmptySet.
-  move=> x.
-  by case.
+by apply subset_cap_eq.
 Qed.
+
 
 
 
