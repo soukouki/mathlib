@@ -4,32 +4,18 @@ From mathcomp Require Import ssreflect.
 
 Module Ensembles.
 
-Record ensemble: Type := Ensemble {
-  carrier: Type;
-  In: carrier -> carrier -> Prop;
-  axiom_eq: forall (A B: carrier), (forall (x: carrier), (In x A <-> In x B)) -> A = B;
-  axiom_empty: exists A: carrier, forall x: carrier, ~ In x A
-  axiom_pairing: forall (a b: carrier), exists (
-}.
-
-Search ensemble.
-
-
-
-
 Variable U: Type.
 
-Definition Ensemble := U.
+Definition Ensemble := U -> Prop.
 
-Definition In (a: U) (A: Ensemble) := .
+Definition In (a: U) (A: Ensemble) := A a.
 Notation "a \in A" := (In a A) (at level 11).
+
+Definition EmptySet: Ensemble := fun _ => False.
 
 (* 外延性の公理 *)
 Axiom ensemble_eq: forall (A B: Ensemble),
   (forall (x: U), (x \in A <-> x \in B)) -> A = B.
-
-(* 空集合の公理 *)
-Axiom empty_set: exists EmptySet, forall x, ~(x \in EmptySet).
 
 Definition Subset (A B: Ensemble) := forall x, x \in A -> x \in B.
 Notation "A \subset B" := (Subset A B) (at level 11).
