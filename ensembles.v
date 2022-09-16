@@ -62,10 +62,10 @@ Proof.
 by move=> A.
 Qed.
 
-Inductive Cup (A B: Ensemble): Ensemble :=
-  | Cup_introl : forall x: T, x \in A -> x \in Cup A B
-  | Cup_intror : forall x: T, x \in B -> x \in Cup A B.
 
+Inductive Cup (A B: Ensemble): Ensemble :=
+  | Cup_introl: forall x: T, x \in A -> x \in Cup A B
+  | Cup_intror: forall x: T, x \in B -> x \in Cup A B.
 Notation "A \cup B" := (Cup A B) (at level 50).
 
 (* (2.2.1) *)
@@ -161,9 +161,9 @@ move=> A.
 by apply subset_cup_eq.
 Qed.
 
+
 Inductive Cap (B C: Ensemble): Ensemble :=
   Cap_intro: forall x: T, x \in B -> x \in C -> x \in (Cap B C).
-
 Notation "A \cap B" := (Cap A B) (at level 50).
 
 (* (2.2.1)'
@@ -467,11 +467,69 @@ Section Section2.
 
 Variable T: Type.
 
-Variable FamilyEnsemble: (Ensemble (Ensemble T)).
+Definition FamilyEnsemble := (Ensemble (Ensemble T)).
 
-Variable Ensemble: Ensemble T.
+Definition EnsembleT := Ensemble T.
 
-Definition CAP (A: FamilyEnsemble): Ensemble := 
+Notation "a \in A" := (In _ a A) (at level 55).
+Notation "A \subset B" := (Subset _ A B) (at level 55).
+Notation "A \cup B" := (Cup _ A B) (at level 50).
+Notation "A \cap B" := (Cap _ A B) (at level 50).
+Notation "A - B" := (Sub _ A B). (* at level 50 *)
+Notation "A ^ 'c'" := (ComplementarySet _ A) (at level 30).
+
+(* ドイツ文字の変数は、AA, BBのように2文字つなげて区別する *)
+
+Inductive CUP (AA: FamilyEnsemble): EnsembleT :=
+  | CUP_intro: forall x: T, (exists A: EnsembleT, A \in AA -> x \in A) -> x \in CUP AA.
+Notation "\CUP AA" := (CUP AA) (at level 50).
+
+Inductive CAP (AA: FamilyEnsemble): EnsembleT :=
+  | CAP_intro: forall x: T, (forall A: EnsembleT, A \in AA -> x \in A) -> x \in CAP AA.
+Notation "\CAP AA" := (CAP AA) (at level 50).
+
+(* (2.17) *)
+Theorem CUP_in: forall AA A, A \in AA -> A \subset \CUP AA.
+Proof.
+move=> AA A HA_in_AA.
+split.
+by exists A.
+Qed.
+
+(* (2.18) *)
+(* /\になってる部分は->だと思うんだけれど、->だとなかなか証明できなかった・・・そのうち考える *)
+Theorem CUP_subset: forall AA C, (forall A, A \in AA /\ A \subset C) -> \CUP AA \subset C.
+Proof.
+move=> AA C HA_subset_C.
+rewrite /Subset => x1.
+case => x2.
+case => A Hx_in_A.
+move: (HA_subset_C A).
+case => HA_in_AA.
+apply.
+by apply Hx_in_A.
+Qed.
+
+(* (2.17)' *)
+Theorem CAP_in: forall AA A, A \in AA -> \CAP AA \subset A.
+Proof.
+move=> AA A HA_in_AA.
+rewrite /Subset => x1.
+case => x2.
+by apply.
+Qed.
+
+(* (2.18)' *)
+Theorem CAP_subset: forall AA C, (forall A, A \in AA -> C \subset A) -> C \subset \CAP AA.
+Proof.
+move=> AA C HC_subset_A.
+rewrite /Subset => x1 Hx_in_C.
+split => A HA_in_AA.
+apply HC_subset_A => //.
+Qed.
+
+
+
 
 
 
