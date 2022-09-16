@@ -14,7 +14,7 @@ Definition Ensemble := T -> Prop.
 Definition In (a: T) (A: Ensemble): Prop := A a.
 Notation "a \in A" := (In a A) (at level 55).
 
-Definition EmptySet: Ensemble := fun _ => False.
+Inductive EmptySet: Ensemble := .
 Notation "\emptyset" := EmptySet.
 
 (* 外延性の公理 *)
@@ -59,11 +59,13 @@ Qed.
 (* (1.5) *)
 Theorem empty_set_subset: forall A, \emptyset \subset A.
 Proof.
-by rewrite /Subset /In /EmptySet.
+by move=> A.
 Qed.
 
+Inductive Cup (A B: Ensemble): Ensemble :=
+  | Cup_introl : forall x: T, x \in A -> x \in Cup A B
+  | Cup_intror : forall x: T, x \in B -> x \in Cup A B.
 
-Definition Cup (A B: Ensemble): Ensemble := fun x: T => x \in A \/ x \in B.
 Notation "A \cup B" := (Cup A B) (at level 50).
 
 (* (2.2.1) *)
@@ -75,7 +77,6 @@ Qed.
 (* (2.2.2) *)
 Theorem subset_cup_r: forall A B, B \subset A \cup B.
 Proof.
-move=> A B.
 by right.
 Qed.
 
@@ -83,8 +84,8 @@ Qed.
 Theorem subsets_cup: forall A B C, A \subset C -> B \subset C -> A \cup B \subset C.
 Proof.
 move=> A B C HA_subset_C HB_subset_C.
-rewrite /Cup /In => x.
-case.
+rewrite /Subset => x1.
+case => x2.
 - by apply /HA_subset_C.
 - by apply /HB_subset_C.
 Qed.
@@ -102,24 +103,32 @@ Qed.
 Theorem cup_comm: forall A B, A \cup B = B \cup A.
 Proof.
 move=> A B.
-apply eq_subset'.
-- rewrite /Cup /Subset /In => x.
-  by apply or_comm.
-- rewrite /Cup /Subset /In => x.
-  by apply or_comm.
+apply eq_axiom => x1.
+split.
+- case => x2.
+  + by right.
+  + by left.
+- case => x2.
+  + by right.
+  + by left.
 Qed.
 
 (* (2.6) *)
 Theorem cup_assoc: forall A B C, (A \cup B) \cup C = A \cup (B \cup C).
 Proof.
 move=> A B C.
-apply eq_subset'.
-- rewrite /Subset /Cup /In.
-  move=> x.
-  by apply or_assoc.
-- rewrite /Subset /Cup /In.
-  move=> x.
-  by apply or_assoc.
+apply eq_axiom => x.
+split.
+- case => x0.
+  + case => x1.
+    * by left.
+    * by right; left.
+  by right; right.
+- case => x0.
+  + by left; left.
+  + case => x1.
+    * by left; right.
+    * by right.
 Qed.
 
 (* (2.7) *)
@@ -140,8 +149,7 @@ Theorem subset_cups_subset: forall A B C, A \subset B -> A \cup C \subset B \cup
 Proof.
 move=> A B C HA_subset_B.
 apply subsets_cup.
-- rewrite /Subset /Cup /In.
-  move=> x HA.
+- move=> x HA.
   left.
   by apply HA_subset_B.
 - by apply subset_cup_r.
@@ -153,8 +161,9 @@ move=> A.
 by apply subset_cup_eq.
 Qed.
 
+Inductive Cap (B C: Ensemble): Ensemble :=
+  Cap_intro: forall x: T, x \in B -> x \in C -> x \in (Cap B C).
 
-Definition Cap (A B: Ensemble): Ensemble := fun x: T => x \in A /\ x \in B.
 Notation "A \cap B" := (Cap A B) (at level 50).
 
 (* (2.2.1)'
@@ -162,8 +171,7 @@ Notation "A \cap B" := (Cap A B) (at level 50).
 Theorem cap_subset_l: forall A B, A \cap B \subset A.
 Proof.
 move=> A B.
-rewrite /Subset /Cap /In.
-move=> x.
+rewrite /Subset => x.
 by case.
 Qed.
 
@@ -171,8 +179,7 @@ Qed.
 Theorem cap_subset_r: forall A B, A \cap B \subset B.
 Proof.
 move=> A B.
-rewrite /Subset /Cap /In.
-move=> x.
+rewrite /Subset => x.
 by case.
 Qed.
 
@@ -180,8 +187,7 @@ Qed.
 Theorem subsets_cap: forall A B C, C \subset A -> C \subset B -> C \subset A \cap B.
 Proof.
 move=> A B C HC_subset_A HC_subset_B.
-rewrite /Subset /Cap /In.
-move=> x.
+rewrite /Subset => x.
 split.
 - by apply HC_subset_A.
 - by apply HC_subset_B.
@@ -191,39 +197,37 @@ Qed.
 Theorem cap_diag: forall A, A \cap A = A.
 Proof.
 move=> A.
-apply eq_subset'.
-- rewrite /Subset /Cap /In.
-  move=> x.
-  by case.
-- rewrite /Subset /Cap /In.
-  move=> x.
-  by split => //.
+apply eq_axiom => x.
+split.
+- by case.
+- by split => //.
 Qed.
 
 (* (2.5)' *)
 Theorem cap_comm: forall A B, A \cap B = B \cap A.
 Proof.
 move=> A B.
-apply eq_subset'.
-- rewrite /Subset /Cap /In.
-  move=> x.
-  by apply and_comm.
-- rewrite /Subset /Cap /In.
-  move=> x.
-  by apply and_comm.
+apply eq_axiom => x.
+split.
+- by case.
+- by case.
 Qed.
 
 (* (2.6)' *)
 Theorem cap_assoc: forall A B C, (A \cap B) \cap C = A \cap (B \cap C).
 Proof.
 move=> A B C.
-apply eq_subset'.
-- rewrite /Subset /Cap /In.
-  move=> x.
-  by apply and_assoc.
-- rewrite /Subset /Cap /In.
-  move=> x.
-  by apply and_assoc.
+apply eq_axiom => x1.
+split.
+- case => x2.
+  by case.
+- case => x2 HA HBC.
+  split.
+  + split => //.
+    move: HBC.
+    by case.
+  + move: HBC.
+    by case.
 Qed.
 
 (* (2.7)' *)
@@ -234,7 +238,8 @@ split.
 - move=> HA_subset_B.
   apply eq_subset'.
   + by apply cap_subset_l.
-  + by apply subsets_cap => //.
+  + split => //.
+    by apply HA_subset_B.
 - move=> H; rewrite -H.
   by apply cap_subset_r.
 Qed.
@@ -244,9 +249,8 @@ Theorem subset_caps_subset: forall A B C, A \subset B -> A \cap C \subset B \cap
 Proof.
 move=> A B C HA_subset_B.
 apply subsets_cap.
-- rewrite /Subset /Cap /In.
-  move=> x.
-  case => HA HC.
+- rewrite /Subset => x1.
+  case => x2 HA HC.
   by apply HA_subset_B.
 - by apply cap_subset_r.
 Qed.
@@ -262,22 +266,19 @@ Qed.
 Theorem cup_cap_distrib: forall A B C, (A \cup B) \cap C = (A \cap C) \cup (B \cap C).
 Proof.
 move=> A B C.
-apply eq_subset'.
-- rewrite /Subset /Cup /Cap /In => x.
-  case.
-  case.
-  + move=> HA HC.
-    left.
+apply eq_axiom => x1.
+split.
+- case => x2.
+  case => x3 H HC.
+  + left.
     by split => //.
-  + move=> HB HC.
-    right.
+  + right.
     by split => //.
-- rewrite /Subset /Cup /Cap /In => x.
-  case.
-  + case => HA HC.
+- case => x2.
+  + case => x3 HA HC.
     split => //.
     by left.
-  + case => HB HC.
+  + case => x3 HB HC.
     split => //.
     by right.
 Qed.
@@ -286,23 +287,18 @@ Qed.
 Theorem cap_cup_distrib: forall A B C, (A \cap B) \cup C = (A \cup C) \cap (B \cup C).
 Proof.
 move=> A B C.
-apply eq_subset'.
-- rewrite /Subset /Cup /Cap /In => x.
-  case.
-  + case => HA HB.
-    split.
-    * by left.
-    * by left.
-  + move=> HC.
-    split.
-    * by right.
-    * by right.
-- rewrite /Subset /Cup /Cap /In => x.
-  case.
-  case.
-  + move=> HA.
-    case.
-    * by left.
+apply eq_axiom => x1.
+split.
+- case => x2.
+  + case => x3 HA HB.
+    split; by left.
+  + split; by right.
+- case => x2.
+  + case => x3 H HBC.
+    move: HBC H.
+    case => x4 H HA.
+    * left.
+      split => //.
     * by right.
   + by right.
 Qed.
@@ -355,7 +351,11 @@ Proof.
 move=> A.
 apply eq_axiom => x.
 split => // _.
-rewrite complementary_set /Cup /In.
+rewrite complementary_set.
+suff: x \in A \/ ~x \in A.
+  case => H.
+  - by left.
+  - by right.
 by apply classic. (* ここで古典論理を使い始めた *)
 Qed.
 
@@ -365,7 +365,7 @@ Proof.
 move=> A.
 apply eq_axiom => x.
 split => //.
-rewrite complementary_set /Cap /In.
+rewrite complementary_set.
 by case.
 Qed.
 
@@ -375,7 +375,6 @@ Proof.
 move=> A.
 apply eq_axiom => x.
 rewrite 2!complementary_set_in.
-rewrite /In.
 split.
 - by apply NNPP.
 - by move=> H.
@@ -422,41 +421,44 @@ Theorem de_morgan_cup: forall A B, (A \cup B)^c = A^c \cap B^c.
 Proof.
 (* eq_subset'を使ったあとでrewriteしまくる形でもできるけれど、形式化に左右されづらいこの形式にした *)
 move=> A B.
-apply eq_axiom => x.
+apply eq_axiom => x1.
 split.
-- rewrite complementary_set_in /Cup {1}/In => HA_or_B.
-  rewrite /Cap {1}/In.
-  rewrite 2!complementary_set_in.
+- rewrite complementary_set_in => HA_cup_B.
   split.
-  + move=> HA.
-    apply HA_or_B.
+  + rewrite complementary_set_in => HA.
+    apply HA_cup_B.
     by left.
-  + move=> HB.
-    apply HA_or_B.
+  + rewrite complementary_set_in => HB.
+    apply HA_cup_B.
     by right.
-- rewrite complementary_set_in /Cup {2}/In.
-  case => HA HB.
-  case.
-  + by apply HA.
-  + by apply HB.
+- case => x2.
+  rewrite 3!complementary_set_in => HA HB HAB.
+  move: HAB HA HB.
+  by case => x3 //.
 Qed.
 
 (* (2.16)' *)
 Theorem de_morgan_cap: forall A B, (A \cap B)^c = A^c \cup B^c.
 Proof.
 move=> A B.
-apply eq_axiom => x.
+apply eq_axiom => x1.
 split.
-- rewrite complementary_set_in /Cap {1}/In => HA_and_B.
-  rewrite /Cup {1}/In.
-  rewrite 2!complementary_set_in.
-  by apply not_and_or.
-- rewrite /Cup {1}/In 3!complementary_set_in.
-  case => H HA_cap_B.
-  + apply H.
-    apply HA_cap_B.
-  + apply H.
-    apply HA_cap_B.
+- rewrite complementary_set_in => HA_cap_B.
+  suff: ~ x1 \in A \/ ~ x1 \in B.
+    case.
+    + by left.
+    + by right.
+  apply not_and_or => HA_or_B.
+  apply HA_cap_B.
+  by case HA_or_B.
+- rewrite complementary_set_in.
+  case => x2.
+  + rewrite complementary_set_in => HA HA_cap_B.
+    apply HA.
+    by case HA_cap_B.
+  + rewrite complementary_set_in => HB HA_cap_B.
+    apply HB.
+    by case HA_cap_B.
 Qed.
 
 End Section1.
