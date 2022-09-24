@@ -530,7 +530,7 @@ Qed.
 
 (* S2 問題1についてはやろうかどうか迷ったけど、一旦置いとく *)
 
-Lemma empty_set_eq_not_in: forall A, A = \emptyset <-> forall x: T, ~ x \in A.
+Lemma empty_set_not_in: forall A, A = \emptyset <-> forall x: T, ~ x \in A.
 Proof.
 move=> A.
 split.
@@ -556,14 +556,14 @@ split.
   apply or_to_imply.
   apply not_and_or.
   move: HA_cap_B.
-  rewrite empty_set_eq_not_in => HA_cap_B.
+  rewrite empty_set_not_in => HA_cap_B.
   specialize (HA_cap_B x) => HA_and_B.
   apply HA_cap_B.
   split.
   + by apply HA_and_B.
   + by apply HA_and_B.
 - move=> HA_subset_Bc.
-  rewrite empty_set_eq_not_in => x.
+  rewrite empty_set_not_in => x.
   case => x' HA.
   by apply HA_subset_Bc.
 Qed.
@@ -668,7 +668,7 @@ split.
 Qed.
 
 (* S2 問題3c *)
-Theorem sub_empty_set_subset: forall A B, A - B = \emptyset <-> A \subset B.
+Theorem sub_eq_empty_set: forall A B, A - B = \emptyset <-> A \subset B.
 Proof.
 move=> A B.
 rewrite sub_cap_complementary_set.
@@ -676,9 +676,124 @@ rewrite cap_eq_empty_set.
 by rewrite complementary_set_twice.
 Qed.
 
+(* S2 問題4a *)
+Theorem sub_cup: forall A B C, A - (B \cup C) = (A - B) \cap (A - C).
+Proof.
+move=> A B C.
+apply eq_axiom => x.
+split.
+- case => HA HBC.
+  split.
+  + split => //.
+    move=> H.
+    apply HBC.
+    by left.
+  + split => //.
+    move=> H.
+    apply HBC.
+    by right.
+- case => x' HAB HAC.
+  split.
+  + by apply HAB.
+  + rewrite -complementary_set_in.
+    rewrite de_morgan_cup.
+    split.
+    * rewrite complementary_set_in.
+      by apply HAB.
+    * rewrite complementary_set_in.
+      by apply HAC.
+Qed.
 
+(* S2 問題4b *)
+Theorem sub_cap: forall A B C, A - (B \cap C) = (A - B) \cup (A - C).
+Proof.
+move=> A B C.
+apply eq_axiom => x.
+split.
+- case => HA HAB.
+  move: HAB HA.
+  rewrite -complementary_set_in.
+  rewrite de_morgan_cap.
+  case => x'.
+  + rewrite complementary_set_in.
+    left.
+    by split => //.
+  + rewrite complementary_set_in.
+    right.
+    by split => //.
+- case => x'.
+  + case => HA HB.
+    split => //.
+    move=> H.
+    by apply /HB /(cap_subset_l _ B C).
+  + case => HA HC.
+    split => //.
+    move=> H.
+    by apply /HC /(cap_subset_r _ B C).
+Qed.
 
+(* S2 問題4c *)
+Theorem cup_sub: forall A B C, (A \cup B) - C = (A - C) \cup (B - C).
+Proof.
+move=> A B C.
+apply eq_axiom => x.
+split.
+- case.
+  case => x'.
+  + move=> HA HC.
+    left.
+    by split => //.
+  + move=> HB HC.
+    right.
+    by split => //.
+- case => x' H.
+  + split.
+    * left.
+      by apply H.
+    * by apply H.
+  + split.
+    * right.
+      by apply H.
+    * by apply H.
+Qed.
 
+(* S2 問題4d *)
+Theorem cap_sub: forall A B C, (A \cap B) - C = (A - C) \cap (B - C).
+Proof.
+move=> A B C.
+apply eq_axiom => x.
+split.
+- case.
+  case => x' HA HB HC.
+  split.
+  + by split => //.
+  + by split => //.
+- case => x'.
+  case => HA HC.
+  case => HB _.
+  split => //.
+Qed.
+
+(* S2 問題4e *)
+Theorem cap_sub': forall A B C, A \cap (B - C) = (A \cap B) - (A \cap C).
+Proof.
+move=> A B C.
+apply eq_axiom => x.
+split.
+- case => x'.
+  move=> HA HBC; move: HBC HA.
+  case => HB HC HA.
+  split.
+  + by split => //.
+  + move=> H.
+    by apply /HC /(cap_subset_r _ A C).
+- case.
+  case => x' HA HB HAC.
+  split => //.
+  split => //.
+  move=> H.
+  by apply /HAC.
+Qed.
 
 
 
