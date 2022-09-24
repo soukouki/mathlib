@@ -470,12 +470,12 @@ Variable T: Type.
 Definition FamilyEnsemble := (Ensemble (Ensemble T)).
 
 Notation "a \in A" := (In _ a A) (at level 55).
-Notation "\emptyset" := (EmptySet T).
-Notation "A \subset B" := (Subset T A B) (at level 55).
-Notation "A \cup B" := (Cup T A B) (at level 50).
-Notation "A \cap B" := (Cap T A B) (at level 50).
-Notation "A - B" := (Sub T A B). (* at level 50 *)
-Notation "A ^ 'c'" := (ComplementarySet T A) (at level 30).
+Notation "\emptyset" := (EmptySet _).
+Notation "A \subset B" := (Subset _ A B) (at level 55).
+Notation "A \cup B" := (Cup _ A B) (at level 50).
+Notation "A \cap B" := (Cap _ A B) (at level 50).
+Notation "A - B" := (Sub _ A B). (* at level 50 *)
+Notation "A ^ 'c'" := (ComplementarySet _ A) (at level 30).
 
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別する *)
 
@@ -545,7 +545,7 @@ Qed.
 
 (* S2 問題2 *)
 (* 本ではAとBの入れ替わったバージョンもあるが、そちらは簡単に導けるので今回はこちらだけ証明する *)
-Theorem cap_eq_empty_set: forall A B, A \cap B = \emptyset <-> A \subset B^c.
+Theorem cap_eq_empty_set: forall A B: Ensemble T, A \cap B = \emptyset <-> A \subset B^c.
 Proof.
 move=> A B.
 split.
@@ -571,7 +571,7 @@ Qed.
 (* S2 問題3a 本ではA=B=C=Dと4つの式を等号でつないでいるが、今回はA=D, A=B, A=Cの3つの定理として順番に証明していく *)
 
 (* S2 問題3a-1 (A=D) *)
-Theorem sub_cap_complementary_set: forall A B, A - B = A \cap B^c.
+Theorem sub_cap_complementary_set: forall A B: Ensemble T, A - B = A \cap B^c.
 Proof.
 move=> A B.
 apply eq_axiom => x.
@@ -587,7 +587,7 @@ split.
 Qed.
 
 (* S2 問題3a-2 (A=B) *)
-Theorem sub_cup_sub: forall A B, A - B = (A \cup B) - B.
+Theorem sub_cup_sub: forall A B: Ensemble T, A - B = (A \cup B) - B.
 Proof.
 move=> A B.
 apply eq_subset'.
@@ -605,7 +605,7 @@ apply eq_subset'.
 Qed.
 
 (* S2 問題3a-3 (A=C) *)
-Theorem sub_cap_sub: forall A B, A - B = A - (A \cap B).
+Theorem sub_cap_sub: forall A B: Ensemble T, A - B = A - (A \cap B).
 Proof.
 move=> A B.
 apply eq_subset'.
@@ -631,7 +631,7 @@ apply eq_subset'.
     * by apply (cap_subset_r _ A (B^c)).
 Qed.
 
-Lemma sub_empty_set: forall A, A - \emptyset = A.
+Lemma sub_empty_set: forall A: Ensemble T, A - \emptyset = A.
 Proof.
 move=> A.
 apply eq_axiom => x.
@@ -641,7 +641,7 @@ split.
 Qed.
 
 (* S2 問題3b *)
-Theorem sub_cap_empty: forall A B, A - B = A <-> A \cap B = \emptyset.
+Theorem sub_cap_empty: forall A B: Ensemble T, A - B = A <-> A \cap B = \emptyset.
 Proof.
 move=> A B.
 split.
@@ -655,20 +655,8 @@ split.
   by apply sub_empty_set.
 Qed.
 
-Lemma complementay_set_twice: forall A, (A^c)^c = A.
-Proof.
-move=> A.
-apply eq_axiom => x.
-split.
-- rewrite 2!complementary_set_in => H.
-  by apply NNPP.
-- move=> H.
-  rewrite 2!complementary_set_in.
-  by apply.
-Qed.
-
 (* S2 問題3c *)
-Theorem sub_eq_empty_set: forall A B, A - B = \emptyset <-> A \subset B.
+Theorem sub_eq_empty_set: forall A B: Ensemble T, A - B = \emptyset <-> A \subset B.
 Proof.
 move=> A B.
 rewrite sub_cap_complementary_set.
@@ -677,7 +665,7 @@ by rewrite complementary_set_twice.
 Qed.
 
 (* S2 問題4a *)
-Theorem sub_cup: forall A B C, A - (B \cup C) = (A - B) \cap (A - C).
+Theorem sub_cup: forall A B C: Ensemble T, A - (B \cup C) = (A - B) \cap (A - C).
 Proof.
 move=> A B C.
 apply eq_axiom => x.
@@ -692,20 +680,17 @@ split.
     move=> H.
     apply HBC.
     by right.
-- case => x' HAB HAC.
-  split.
-  + by apply HAB.
-  + rewrite -complementary_set_in.
-    rewrite de_morgan_cup.
-    split.
-    * rewrite complementary_set_in.
-      by apply HAB.
-    * rewrite complementary_set_in.
-      by apply HAC.
+- case => x2.
+  case => HA HB.
+  case => _ HC.
+  split => //.
+  move=> H.
+  move: HB HC.
+  by case H => //.
 Qed.
 
 (* S2 問題4b *)
-Theorem sub_cap: forall A B C, A - (B \cap C) = (A - B) \cup (A - C).
+Theorem sub_cap: forall A B C: Ensemble T, A - (B \cap C) = (A - B) \cup (A - C).
 Proof.
 move=> A B C.
 apply eq_axiom => x.
@@ -733,7 +718,7 @@ split.
 Qed.
 
 (* S2 問題4c *)
-Theorem cup_sub: forall A B C, (A \cup B) - C = (A - C) \cup (B - C).
+Theorem cup_sub: forall A B C: Ensemble T, (A \cup B) - C = (A - C) \cup (B - C).
 Proof.
 move=> A B C.
 apply eq_axiom => x.
@@ -758,7 +743,7 @@ split.
 Qed.
 
 (* S2 問題4d *)
-Theorem cap_sub: forall A B C, (A \cap B) - C = (A - C) \cap (B - C).
+Theorem cap_sub: forall A B C: Ensemble T, (A \cap B) - C = (A - C) \cap (B - C).
 Proof.
 move=> A B C.
 apply eq_axiom => x.
@@ -775,7 +760,7 @@ split.
 Qed.
 
 (* S2 問題4e *)
-Theorem cap_sub': forall A B C, A \cap (B - C) = (A \cap B) - (A \cap C).
+Theorem cap_sub': forall A B C: Ensemble T, A \cap (B - C) = (A \cap B) - (A \cap C).
 Proof.
 move=> A B C.
 apply eq_axiom => x.
@@ -794,6 +779,43 @@ split.
   move=> H.
   by apply /HAC.
 Qed.
+
+(* S2 問題5a *)
+Theorem sub_sub_eq_sub_cup: forall A B C: Ensemble T, (A - B) - C = A - (B \cup C).
+Proof.
+move=> A B C.
+apply eq_axiom => x.
+split.
+- case.
+  case => HA HB HC.
+  split => // H.
+  move: HB HC.
+  case H => //.
+- case => HA HBC.
+  split.
+  + split => // H.
+    apply HBC.
+    by left.
+  + move=> H.
+    apply HBC.
+    by right.
+Qed.
+
+(* S2 問題5b *)
+Theorem sub_sub_eq_cup: forall A B C: Ensemble T, A - (B - C) = (A - B) \cup (A \cap C).
+Proof.
+move=> A B C.
+rewrite -{2}[C]complementary_set_twice.
+rewrite -sub_cap_complementary_set.
+rewrite -sub_cap.
+by rewrite -sub_cap_complementary_set.
+Qed.
+
+(* ここらへんやり終えたら、解説みてキレイにできそうなところは直したい。とりあえずあまりCupとCapは崩さないでやりたい。 *)
+
+
+
+
 
 
 
