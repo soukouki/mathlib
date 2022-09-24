@@ -472,6 +472,7 @@ Definition FamilyEnsemble := (Ensemble (Ensemble T)).
 Definition EnsembleT := Ensemble T.
 
 Notation "a \in A" := (In _ a A) (at level 55).
+Notation "\emptyset" := (EmptySet _).
 Notation "A \subset B" := (Subset _ A B) (at level 55).
 Notation "A \cup B" := (Cup _ A B) (at level 50).
 Notation "A \cap B" := (Cap _ A B) (at level 50).
@@ -527,6 +528,46 @@ rewrite /Subset => x1 Hx_in_C.
 split => A HA_in_AA.
 apply HC_subset_A => //.
 Qed.
+
+Lemma empty_set_eq_not_in: forall A, A = \emptyset <-> forall x: T, ~ x \in A.
+Proof.
+move=> A.
+split.
+- move=> HA x.
+  by rewrite HA.
+- move=> Hnx.
+  apply eq_axiom => x.
+  split => //.
+  move: (Hnx x).
+  by [].
+Qed.
+
+(* S2 問題 2 *)
+(* 本ではAとBの入れ替わったバージョンもあるが、そちらは簡単に導けるので今回はこちらだけ証明する *)
+Theorem cap_eq_empty_set: forall A B: EnsembleT, A \cap B = \emptyset <-> A \subset B^c.
+Proof.
+move=> A B.
+split.
+- move=> HA_cap_B.
+  rewrite /Subset => x Hx_in_A.
+  apply complementary_set_in.
+  move: Hx_in_A.
+  apply or_to_imply.
+  apply not_and_or.
+  move: HA_cap_B.
+  rewrite empty_set_eq_not_in => HA_cap_B.
+  specialize (HA_cap_B x) => HA_and_B.
+  apply HA_cap_B.
+  split.
+  + by apply HA_and_B.
+  + by apply HA_and_B.
+- move=> HA_subset_Bc.
+  rewrite empty_set_eq_not_in => x.
+  case => x' HA. clear x; rename x' into x.
+  by apply HA_subset_Bc.
+Qed.
+
+
 
 
 
