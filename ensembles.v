@@ -529,6 +529,9 @@ split => A HA_in_AA.
 apply HC_subset_A => //.
 Qed.
 
+
+(* S2 問題1についてはやろうかどうか迷ったけど、一旦置いとく *)
+
 Lemma empty_set_eq_not_in: forall A, A = \emptyset <-> forall x: T, ~ x \in A.
 Proof.
 move=> A.
@@ -542,7 +545,7 @@ split.
   by [].
 Qed.
 
-(* S2 問題 2 *)
+(* S2 問題2 *)
 (* 本ではAとBの入れ替わったバージョンもあるが、そちらは簡単に導けるので今回はこちらだけ証明する *)
 Theorem cap_eq_empty_set: forall A B: EnsembleT, A \cap B = \emptyset <-> A \subset B^c.
 Proof.
@@ -563,13 +566,72 @@ split.
   + by apply HA_and_B.
 - move=> HA_subset_Bc.
   rewrite empty_set_eq_not_in => x.
-  case => x' HA. clear x; rename x' into x.
+  case => x' HA.
   by apply HA_subset_Bc.
 Qed.
 
+(* S2 問題3 本ではA=B=C=Dと4つの式を等号でつないでいるが、今回はA=D, A=B, A=Cの3つの定理として順番に証明していく *)
 
+(* S2 問題3-1 (A=D) *)
+Theorem sub_cap_complementary_set: forall A B: EnsembleT, A - B = A \cap B^c.
+Proof.
+move=> A B.
+apply eq_axiom => x.
+split.
+- split.
+  + by apply H.
+  + apply complementary_set_in.
+    by apply H.
+- case => x' HA HB.
+  split => //.
+  move: HB.
+  by apply complementary_set_in.
+Qed.
 
+(* S2 問題3-2 (A=B) *)
+Theorem sub_cup_sub: forall A B: EnsembleT, A - B = (A \cup B) - B.
+Proof.
+move=> A B.
+apply eq_subset'.
+- split.
+  + left.
+    by apply H.
+  + by apply H.
+- split.
+  + move: H.
+    case.
+    by case => //.
+  + move: H.
+    case.
+    by case => //.
+Qed.
 
+(* S2 問題3-3 (A=C) *)
+Theorem sub_cap_sub: forall A B: EnsembleT, A - B = A - (A \cap B).
+Proof.
+move=> A B.
+apply eq_subset'.
+- split.
+  + apply H.
+  + move: H.
+    apply (subset_trans _ (A - B) (B^c) ((A \cap B)^c)).
+    * rewrite sub_cap_complementary_set.
+      by apply cap_subset_r.
+    * rewrite de_morgan_cap.
+      by right.
+- apply (subset_trans _ (A - (A \cap B)) (A \cap B^c) (A - B)).
+  + move=> x H.
+    split.
+    * by apply H.
+    * rewrite complementary_set_in.
+      move: H.
+      case => HA HA_cap_B HB.
+      apply HA_cap_B.
+      split => //.
+  + split.
+    * by apply (cap_subset_l _ A (B^c)).
+    * by apply (cap_subset_r _ A (B^c)).
+Qed.
 
 
 
