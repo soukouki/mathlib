@@ -570,9 +570,9 @@ split.
   by apply HA_subset_Bc.
 Qed.
 
-(* S2 問題3 本ではA=B=C=Dと4つの式を等号でつないでいるが、今回はA=D, A=B, A=Cの3つの定理として順番に証明していく *)
+(* S2 問題3a 本ではA=B=C=Dと4つの式を等号でつないでいるが、今回はA=D, A=B, A=Cの3つの定理として順番に証明していく *)
 
-(* S2 問題3-1 (A=D) *)
+(* S2 問題3a-1 (A=D) *)
 Theorem sub_cap_complementary_set: forall A B: EnsembleT, A - B = A \cap B^c.
 Proof.
 move=> A B.
@@ -588,7 +588,7 @@ split.
   by apply complementary_set_in.
 Qed.
 
-(* S2 問題3-2 (A=B) *)
+(* S2 問題3a-2 (A=B) *)
 Theorem sub_cup_sub: forall A B: EnsembleT, A - B = (A \cup B) - B.
 Proof.
 move=> A B.
@@ -606,7 +606,7 @@ apply eq_subset'.
     by case => //.
 Qed.
 
-(* S2 問題3-3 (A=C) *)
+(* S2 問題3a-3 (A=C) *)
 Theorem sub_cap_sub: forall A B: EnsembleT, A - B = A - (A \cap B).
 Proof.
 move=> A B.
@@ -633,6 +633,29 @@ apply eq_subset'.
     * by apply (cap_subset_r _ A (B^c)).
 Qed.
 
+Lemma sub_empty_set: forall A: EnsembleT, A - \emptyset = A.
+Proof.
+move=> A.
+apply eq_axiom => x.
+split.
+- by case.
+- by split => //.
+Qed.
+
+(* S2 問題3b *)
+Theorem sub_cap_empty: forall A B: EnsembleT, A - B = A <-> A \cap B = \emptyset.
+Proof.
+move=> A B.
+split.
+- move=> HA; rewrite -HA.
+  apply cap_eq_empty_set.
+  move=> x H.
+  apply complementary_set_in.
+  apply H.
+- move=> HA_cap_B.
+  rewrite sub_cap_sub HA_cap_B.
+  by apply sub_empty_set.
+Qed.
 
 
 
