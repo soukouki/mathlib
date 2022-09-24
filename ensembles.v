@@ -469,24 +469,22 @@ Variable T: Type.
 
 Definition FamilyEnsemble := (Ensemble (Ensemble T)).
 
-Definition EnsembleT := Ensemble T.
-
 Notation "a \in A" := (In _ a A) (at level 55).
-Notation "\emptyset" := (EmptySet _).
-Notation "A \subset B" := (Subset _ A B) (at level 55).
-Notation "A \cup B" := (Cup _ A B) (at level 50).
-Notation "A \cap B" := (Cap _ A B) (at level 50).
-Notation "A - B" := (Sub _ A B). (* at level 50 *)
-Notation "A ^ 'c'" := (ComplementarySet _ A) (at level 30).
+Notation "\emptyset" := (EmptySet T).
+Notation "A \subset B" := (Subset T A B) (at level 55).
+Notation "A \cup B" := (Cup T A B) (at level 50).
+Notation "A \cap B" := (Cap T A B) (at level 50).
+Notation "A - B" := (Sub T A B). (* at level 50 *)
+Notation "A ^ 'c'" := (ComplementarySet T A) (at level 30).
 
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別する *)
 
-Inductive CUP (AA: FamilyEnsemble): EnsembleT :=
-  | CUP_intro: forall x: T, (exists A: EnsembleT, A \in AA -> x \in A) -> x \in CUP AA.
+Inductive CUP (AA: FamilyEnsemble): Ensemble T :=
+  | CUP_intro: forall x: T, (exists A: Ensemble T, A \in AA -> x \in A) -> x \in CUP AA.
 Notation "\CUP AA" := (CUP AA) (at level 50).
 
-Inductive CAP (AA: FamilyEnsemble): EnsembleT :=
-  | CAP_intro: forall x: T, (forall A: EnsembleT, A \in AA -> x \in A) -> x \in CAP AA.
+Inductive CAP (AA: FamilyEnsemble): Ensemble T :=
+  | CAP_intro: forall x: T, (forall A: Ensemble T, A \in AA -> x \in A) -> x \in CAP AA.
 Notation "\CAP AA" := (CAP AA) (at level 50).
 
 (* (2.17) *)
@@ -547,7 +545,7 @@ Qed.
 
 (* S2 問題2 *)
 (* 本ではAとBの入れ替わったバージョンもあるが、そちらは簡単に導けるので今回はこちらだけ証明する *)
-Theorem cap_eq_empty_set: forall A B: EnsembleT, A \cap B = \emptyset <-> A \subset B^c.
+Theorem cap_eq_empty_set: forall A B, A \cap B = \emptyset <-> A \subset B^c.
 Proof.
 move=> A B.
 split.
@@ -573,7 +571,7 @@ Qed.
 (* S2 問題3a 本ではA=B=C=Dと4つの式を等号でつないでいるが、今回はA=D, A=B, A=Cの3つの定理として順番に証明していく *)
 
 (* S2 問題3a-1 (A=D) *)
-Theorem sub_cap_complementary_set: forall A B: EnsembleT, A - B = A \cap B^c.
+Theorem sub_cap_complementary_set: forall A B, A - B = A \cap B^c.
 Proof.
 move=> A B.
 apply eq_axiom => x.
@@ -589,7 +587,7 @@ split.
 Qed.
 
 (* S2 問題3a-2 (A=B) *)
-Theorem sub_cup_sub: forall A B: EnsembleT, A - B = (A \cup B) - B.
+Theorem sub_cup_sub: forall A B, A - B = (A \cup B) - B.
 Proof.
 move=> A B.
 apply eq_subset'.
@@ -607,7 +605,7 @@ apply eq_subset'.
 Qed.
 
 (* S2 問題3a-3 (A=C) *)
-Theorem sub_cap_sub: forall A B: EnsembleT, A - B = A - (A \cap B).
+Theorem sub_cap_sub: forall A B, A - B = A - (A \cap B).
 Proof.
 move=> A B.
 apply eq_subset'.
@@ -633,7 +631,7 @@ apply eq_subset'.
     * by apply (cap_subset_r _ A (B^c)).
 Qed.
 
-Lemma sub_empty_set: forall A: EnsembleT, A - \emptyset = A.
+Lemma sub_empty_set: forall A, A - \emptyset = A.
 Proof.
 move=> A.
 apply eq_axiom => x.
@@ -643,7 +641,7 @@ split.
 Qed.
 
 (* S2 問題3b *)
-Theorem sub_cap_empty: forall A B: EnsembleT, A - B = A <-> A \cap B = \emptyset.
+Theorem sub_cap_empty: forall A B, A - B = A <-> A \cap B = \emptyset.
 Proof.
 move=> A B.
 split.
@@ -656,6 +654,28 @@ split.
   rewrite sub_cap_sub HA_cap_B.
   by apply sub_empty_set.
 Qed.
+
+Lemma complementay_set_twice: forall A, (A^c)^c = A.
+Proof.
+move=> A.
+apply eq_axiom => x.
+split.
+- rewrite 2!complementary_set_in => H.
+  by apply NNPP.
+- move=> H.
+  rewrite 2!complementary_set_in.
+  by apply.
+Qed.
+
+(* S2 問題3c *)
+Theorem sub_empty_set_subset: forall A B, A - B = \emptyset <-> A \subset B.
+Proof.
+move=> A B.
+rewrite sub_cap_complementary_set.
+rewrite cap_eq_empty_set.
+by rewrite complementary_set_twice.
+Qed.
+
 
 
 
