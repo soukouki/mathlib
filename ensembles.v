@@ -444,6 +444,7 @@ Qed.
 
 End Section1.
 
+
 Section Section2.
 
 Variable T: Type.
@@ -467,6 +468,7 @@ Notation "\CUP AA" := (CUP AA) (at level 50).
 Inductive CAP (AA: FamilyEnsemble): Ensemble T :=
   | CAP_intro: forall x: T, (forall A: Ensemble T, A \in AA -> x \in A) -> x \in CAP AA.
 Notation "\CAP AA" := (CAP AA) (at level 50).
+
 
 (* (2.17) *)
 Theorem CUP_in: forall AA A, A \in AA -> A \subset \CUP AA.
@@ -759,6 +761,89 @@ rewrite sub_cap.
 rewrite [A - C^c]sub_cap_complementary_set.
 by rewrite complementary_set_twice.
 Qed.
+
+(* S2 問題6 *)
+Theorem hoge: forall A C: Ensemble T, A \subset C -> forall B, A \cup (B \cap C) = (A \cup B) \cap C.
+Proof.
+move=> A C HA_subset_C B.
+apply eq_axiom => x1.
+split.
+- case => x2.
+  + move=> HA.
+    split.
+    * by left.
+    * by apply HA_subset_C.
+  + move=> HBC.
+    split.
+    * right.
+      by case HBC.
+    * by case HBC.
+- case => x2.
+  case => x3.
+  + by left.
+  + move: HA_subset_C.
+    rewrite subset_cap_eq => HA HB HC.
+    rewrite -HA -cup_cap_distrib.
+    split => //.
+    by right.
+Qed.
+
+Definition SymmetricDifference (A B: Ensemble T) := (A \cap B^c) \cup (A^c \cap B).
+Notation "A \triangle B" := (SymmetricDifference A B) (at level 50).
+
+(* もう一つの等式 *)
+Lemma symmetric_difference_sub_cup: forall A B, A \triangle B = (A - B) \cup (B - A).
+Proof.
+move=> A B.
+rewrite /SymmetricDifference.
+rewrite 2!sub_cap_complementary_set.
+by rewrite [B \cap A^c]cap_comm.
+Qed.
+
+(* S2 問題7a *)
+Theorem symmetric_difference_comm: forall A B, A \triangle B = B \triangle A.
+Proof.
+move=> A B.
+rewrite /SymmetricDifference.
+rewrite [B \cap A^c]cap_comm [B^c \cap A]cap_comm.
+by rewrite cup_comm.
+Qed.
+
+(* S2 問題7b *)
+Theorem symmetric_difference_sub: forall A B, A \triangle B = (A \cup B) - (A \cap B).
+Proof.
+move=> A B.
+apply eq_axiom => x1.
+split.
+- rewrite symmetric_difference_sub_cup.
+  case => x2.
+  + case => HA HB.
+    split.
+    * by left.
+    * rewrite -complementary_set_in.
+      rewrite de_morgan_cap.
+      by right.
+  + case => HB HA.
+    split.
+    * by right.
+    * rewrite -complementary_set_in.
+      rewrite de_morgan_cap.
+      by left.
+- case.
+  case => x2;
+    rewrite -complementary_set_in;
+    rewrite de_morgan_cap.
+  + move=> HA HAB; move: HAB HA.
+    case => x3.
+    * by rewrite complementary_set_in.
+    * rewrite /SymmetricDifference.
+      by left.
+  + move=> HB HAB; move: HAB HB.
+    case => x3.
+    * by right.
+    * by rewrite complementary_set_in.
+Qed.
+
 
 
 
