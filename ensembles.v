@@ -313,22 +313,55 @@ by apply cap_subset_l.
 Qed.
 
 
-Definition Sub (A B: Ensemble) := fun x: T => x \in A /\ ~ x \in B.
+Inductive Sub (A B: Ensemble): Ensemble :=
+  | Sub_intro: forall x: T, x \in A -> ~ x \in B -> x \in Sub A B.
 Notation "A - B" := (Sub A B). (* at level 50 *)
 
-Definition FullSet: Ensemble := fun _ => True.
+Lemma sub_empty_set: forall A, A - \emptyset = A.
+Proof.
+move=> A.
+apply eq_axiom => x.
+split.
+- by case.
+- by split => //.
+Qed.
 
-Definition ComplementarySet (A: Ensemble) := FullSet - A.
+Lemma empty_set_sub: forall A, \emptyset - A = \emptyset.
+Proof.
+move=> A.
+apply eq_axiom => x.
+split => //.
+by case.
+Qed.
+
+Inductive FullSet: Ensemble :=
+  | FullSet_intro: forall x, x \in FullSet.
+
+Lemma full_set_cap: forall A, FullSet \cap A = A.
+Proof.
+move=> A.
+by rewrite cap_comm -subset_cap_eq.
+Qed.
+
+Lemma full_set_cup: forall A, FullSet \cup A = FullSet.
+Proof.
+move=> A.
+by rewrite cup_comm -subset_cup_eq.
+Qed.
+
+Inductive ComplementarySet (A: Ensemble): Ensemble :=
+  | ComplementarySet_intro: forall x, x \in FullSet - A -> x \in ComplementarySet A.
 Notation "A ^ 'c'" := (ComplementarySet A) (at level 30).
 
 Lemma complementary_set: forall A, A^c = fun x => ~ x \in A.
 Proof.
 move=> A.
 apply eq_subset'.
-- rewrite /ComplementarySet /Sub /Subset /In => x.
+- move=> x1 HA.
+  case HA => x2.
   by case.
-- rewrite /ComplementarySet /Sub /Subset /In => x.
-  by split => //.
+- split.
+  split => //.
 Qed.
 
 Lemma complementary_set_in: forall A x, x \in A^c <-> ~ x \in A.
@@ -380,8 +413,9 @@ Qed.
 (* (2.14.2) *)
 Theorem complementary_set_full_set: FullSet^c = EmptySet.
 Proof.
-apply eq_axiom => x.
+apply eq_axiom => x1.
 split => //.
+case => x2.
 by case.
 Qed.
 
@@ -538,6 +572,8 @@ split.
 - move=> HA_subset_Bc.
   rewrite empty_set_not_in => x.
   case => x' HA.
+  suff: ~ x' \in B. by [].
+  rewrite -complementary_set_in.
   by apply HA_subset_Bc.
 Qed.
 
@@ -549,10 +585,8 @@ Proof.
 move=> A B.
 apply eq_axiom => x.
 split.
-- split.
-  + by apply H.
-  + apply complementary_set_in.
-    by apply H.
+- split;
+  by case H.
 - case => x' HA HB.
   split => //.
   by rewrite -complementary_set_in.
@@ -562,41 +596,21 @@ Qed.
 Theorem sub_cup_sub: forall A B: Ensemble T, A - B = (A \cup B) - B.
 Proof.
 move=> A B.
-apply eq_axiom => x.
-split.
-- split.
-  + left.
-    by apply H.
-  + by apply H.
-- split.
-  + case H.
-    case => //.
-  + by case H.
+rewrite 2!sub_cap_complementary_set.
+rewrite cup_cap_distrib.
+rewrite complementary_set_cap.
+by rewrite cup_comm empty_set_cup.
 Qed.
 
 (* S2 問題3a-3 (A=C) *)
 Theorem sub_cap_sub: forall A B: Ensemble T, A - B = A - (A \cap B).
 Proof.
 move=> A B.
-apply eq_subset'.
-- move=> x.
-  case => HA HB.
-  split => // HA_cap_B.
-  by apply /HB /(cap_subset_r _ A B).
-- move=> x.
-  case => HA HA_cap_B.
-  split => // HB.
-  apply HA_cap_B.
-  by split => //.
-Qed.
-
-Lemma sub_empty_set: forall A: Ensemble T, A - \emptyset = A.
-Proof.
-move=> A.
-apply eq_axiom => x.
-split.
-- by case.
-- by split => //.
+rewrite 2!sub_cap_complementary_set.
+rewrite de_morgan_cap.
+rewrite [A \cap (_ \cup _)]cap_comm cup_cap_distrib.
+rewrite [A^c \cap A]cap_comm complementary_set_cap empty_set_cup.
+by rewrite cap_comm.
 Qed.
 
 (* S2 問題3b *)
@@ -606,9 +620,8 @@ move=> A B.
 split.
 - move=> HA; rewrite -HA.
   apply cap_eq_empty_set.
-  move=> x H.
-  apply complementary_set_in.
-  apply H.
+  rewrite sub_cap_complementary_set.
+  by apply cap_subset_r.
 - move=> HA_cap_B.
   rewrite sub_cap_sub HA_cap_B.
   by apply sub_empty_set.
@@ -714,29 +727,19 @@ by rewrite complementary_set_twice.
 Qed.
 
 (* S2 問題6 *)
-Theorem hoge: forall A C: Ensemble T, A \subset C -> forall B, A \cup (B \cap C) = (A \cup B) \cap C.
+Theorem cup_cap_eq_cup_cap: forall A C: Ensemble T, A \subset C -> forall B, A \cup (B \cap C) = (A \cup B) \cap C.
 Proof.
-move=> A C HA_subset_C B.
-apply eq_axiom => x1.
-split.
-- case => x2.
-  + move=> HA.
-    split.
-    * by left.
-    * by apply HA_subset_C.
-  + move=> HBC.
-    split.
-    * right.
-      by case HBC.
-    * by case HBC.
-- case => x2.
-  case => x3.
-  + by left.
-  + move: HA_subset_C.
-    rewrite subset_cap_eq => HA HB HC.
-    rewrite -HA -cup_cap_distrib.
-    split => //.
-    by right.
+move => A C HA_subset_C B.
+apply eq_subset'.
+- rewrite cup_comm cap_cup_distrib.
+  rewrite cup_comm.
+  rewrite 2![(A \cup B) \cap _]cap_comm.
+  apply subset_caps_subset.
+  rewrite -{2}[C]cup_diag cup_comm.
+  by apply subset_cups_subset.
+- rewrite cup_cap_distrib.
+  apply subset_cups_subset.
+  apply cap_subset_l.
 Qed.
 
 Definition SymmetricDifference (A B: Ensemble T) := (A \cap B^c) \cup (A^c \cap B).
@@ -764,35 +767,15 @@ Qed.
 Theorem symmetric_difference_sub: forall A B, A \triangle B = (A \cup B) - (A \cap B).
 Proof.
 move=> A B.
-apply eq_axiom => x1.
-split.
-- rewrite symmetric_difference_sub_cup.
-  case => x2.
-  + case => HA HB.
-    split.
-    * by left.
-    * rewrite -complementary_set_in.
-      rewrite de_morgan_cap.
-      by right.
-  + case => HB HA.
-    split.
-    * by right.
-    * rewrite -complementary_set_in.
-      rewrite de_morgan_cap.
-      by left.
-- case.
-  case => x2;
-    rewrite -complementary_set_in;
-    rewrite de_morgan_cap.
-  + move=> HA HAB; move: HAB HA.
-    case => x3.
-    * by rewrite complementary_set_in.
-    * rewrite /SymmetricDifference.
-      by left.
-  + move=> HB HAB; move: HAB HB.
-    case => x3.
-    * by right.
-    * by rewrite complementary_set_in.
+rewrite /SymmetricDifference.
+rewrite cap_cup_distrib.
+rewrite cup_comm cap_cup_distrib.
+rewrite cup_comm complementary_set_cup full_set_cap.
+rewrite cup_comm.
+rewrite [B^c \cup _]cup_comm cap_cup_distrib.
+rewrite complementary_set_cup [_ \cap FullSet _]cap_comm full_set_cap.
+rewrite -de_morgan_cap.
+by rewrite -sub_cap_complementary_set.
 Qed.
 
 (* S2 問題7c *)
