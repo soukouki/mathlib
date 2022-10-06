@@ -841,6 +841,48 @@ apply eq_trans_r with
   by [].
 Qed.
 
+(* S2 問題8a *)
+Theorem symmetric_difference_empty_set_l: forall A, A \triangle (EmptySet T) = A.
+Proof.
+move=> A.
+rewrite /SymmetricDifference.
+rewrite complementary_set_empty_set.
+rewrite cap_comm full_set_cap.
+rewrite cap_comm empty_set_cap.
+by rewrite cup_comm empty_set_cup.
+Qed.
+
+(* S2 問題8b *)
+Theorem symmetric_difference_full_set: forall A, A \triangle (FullSet T) = A^c.
+Proof.
+move=> A.
+rewrite /SymmetricDifference.
+rewrite complementary_set_full_set.
+rewrite cap_comm empty_set_cap.
+rewrite cap_comm full_set_cap.
+by rewrite empty_set_cup.
+Qed.
+
+(* S2 問題8c *)
+Theorem symmetric_difference_empty_set_r: forall A, A \triangle A = (EmptySet T).
+Proof.
+move=> A.
+rewrite /SymmetricDifference.
+rewrite [A^c \cap A]cap_comm.
+rewrite complementary_set_cap.
+by rewrite empty_set_cup.
+Qed.
+
+(* S2 問題8d *)
+Theorem symmetric_difference_complementary_set: forall A, A \triangle A^c = (FullSet T).
+Proof.
+move=> A.
+rewrite /SymmetricDifference.
+rewrite complementary_set_twice.
+rewrite 2!cap_diag.
+by rewrite complementary_set_cup.
+Qed.
+
 
 
 
