@@ -787,9 +787,9 @@ apply eq_trans_r with
   (y := (A \cap B^c \cap C^c) \cup (B \cap C^c \cap A^c) \cup (C \cap B^c \cap A^c) \cup (A \cap B \cap C)).
 - rewrite /SymmetricDifference.
   rewrite de_morgan_cup.
-  rewrite !de_morgan_cap.
-  rewrite !complementary_set_twice.
-  rewrite !cup_cap_distrib.
+  rewrite 2!de_morgan_cap.
+  rewrite 2!complementary_set_twice.
+  rewrite 3!cup_cap_distrib.
   rewrite [A^c \cap (A \cup B^c)]cap_comm cup_cap_distrib.
   rewrite complementary_set_cap empty_set_cup.
   rewrite [B \cap (A \cup B ^ c)]cap_comm cup_cap_distrib.
@@ -801,15 +801,15 @@ apply eq_trans_r with
   by [].
 - rewrite /SymmetricDifference.
   rewrite de_morgan_cup.
-  rewrite !de_morgan_cap.
-  rewrite !complementary_set_twice.
+  rewrite 2!de_morgan_cap.
+  rewrite 2!complementary_set_twice.
   rewrite cup_cap_distrib.
   rewrite [B^c \cap (B \cup C^c)]cap_comm cup_cap_distrib.
   rewrite complementary_set_cap empty_set_cup.
   rewrite [C \cap (B \cup C^c)]cap_comm cup_cap_distrib.
   rewrite [C^c \cap C]cap_comm complementary_set_cap.
   rewrite [_ \cup \emptyset]cup_comm empty_set_cup.
-  rewrite ![_ \cap (_ \cup _)]cap_comm !cup_cap_distrib.
+  rewrite 2![_ \cap (_ \cup _)]cap_comm 2!cup_cap_distrib.
   rewrite {1}cup_comm.
   rewrite -cup_assoc.
   rewrite [((B \cap C^c \cap A^c) \cup (B^c \cap C \cap A^c)) \cup (C^c \cap B^c \cap A)]cup_comm.
@@ -825,29 +825,22 @@ Theorem symmetric_difference_cap_distrib: forall A B C,
   A \cap (B \triangle C) = (A \cap B) \triangle (A \cap C).
 Proof.
 move=> A B C.
-rewrite !symmetric_difference_sub_cup.
-symmetry.
-rewrite 2!sub_cap_complementary_set.
-Search (_ \cap _^c).
-Search ((_ \cap _)^c).
-rewrite de_morgan_cap.
-Search (_ \cap (_ \cup _)).
-rewrite cap_comm cup_cap_distrib.
-Search (_ \cap (_ \cap _)).
-rewrite cap_comm [A \cap B]cap_comm.
-rewrite [(B \cap A) \cap A^c]cap_assoc.
-Search (_ \cap _^c) EmptySet.
-rewrite complementary_set_cap.
-rewrite cap_comm empty_set_cap empty_set_cup.
-rewrite de_morgan_cap.
-rewrite [(A \cap C) \cap (_ \cup _)]cap_comm cup_cap_distrib.
-rewrite -[A^c \cap (A \cap C)]cap_assoc.
-rewrite [A^c \cap A]cap_comm complementary_set_cap.
-rewrite empty_set_cap [_ \cup \emptyset]cup_comm empty_set_cup.
+apply eq_trans_r with
+  (y := (A \cap B \cap C^c) \cup (A \cap C \cap B^c)).
+- rewrite /SymmetricDifference.
+  rewrite cap_comm cup_cap_distrib.
+  rewrite [B \cap C^c]cap_comm [(C^c \cap B) \cap A]cap_assoc [C^c \cap (B \cap A)]cap_comm [B \cap A]cap_comm.
+  rewrite [(B^c \cap C) \cap A]cap_assoc [B^c \cap (C \cap A)]cap_comm [C \cap A]cap_comm.
+  by [].
+- rewrite /SymmetricDifference.
+  rewrite 2!de_morgan_cap.
+  rewrite [(A \cap B) \cap (A^c \cup C^c)]cap_comm 2!cup_cap_distrib.
+  rewrite -2![A^c \cap (A \cap _)]cap_assoc.
+  rewrite [A^c \cap A]cap_comm complementary_set_cap 2!empty_set_cap 2!empty_set_cup.
+  rewrite 2![_^c \cap _]cap_comm.
+  by [].
+Qed.
 
-
-
-cap_cup_distrib.
 
 
 
