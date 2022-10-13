@@ -495,17 +495,17 @@ Notation "A ^ 'c'" := (ComplementarySet _ A) (at level 30).
 
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別する *)
 
-Inductive CUP (AA: FamilyEnsemble): Ensemble T :=
-  | CUP_intro: forall x: T, (exists A: Ensemble T, A \in AA -> x \in A) -> x \in CUP AA.
-Notation "\CUP AA" := (CUP AA) (at level 50).
+Inductive BigCup (AA: FamilyEnsemble): Ensemble T :=
+  | big_cup_intro: forall x: T, (exists A: Ensemble T, A \in AA -> x \in A) -> x \in BigCup AA.
+Notation "\bigcup AA" := (BigCup AA) (at level 50).
 
-Inductive CAP (AA: FamilyEnsemble): Ensemble T :=
-  | CAP_intro: forall x: T, (forall A: Ensemble T, A \in AA -> x \in A) -> x \in CAP AA.
-Notation "\CAP AA" := (CAP AA) (at level 50).
+Inductive BigCap (AA: FamilyEnsemble): Ensemble T :=
+  | big_cap_intro: forall x: T, (forall A: Ensemble T, A \in AA -> x \in A) -> x \in BigCap AA.
+Notation "\bigcap AA" := (BigCap AA) (at level 50).
 
 
 (* (2.17) *)
-Theorem CUP_in: forall AA A, A \in AA -> A \subset \CUP AA.
+Theorem big_cup_in: forall AA A, A \in AA -> A \subset \bigcup AA.
 Proof.
 move=> AA A HA_in_AA.
 split.
@@ -514,7 +514,7 @@ Qed.
 
 (* (2.18) *)
 (* /\になってる部分は->だと思うんだけれど、->だと証明できなかった・・・そのうち考える *)
-Theorem CUP_subset: forall AA C, (forall A, A \in AA /\ A \subset C) -> \CUP AA \subset C.
+Theorem big_cup_subset: forall AA C, (forall A, A \in AA /\ A \subset C) -> \bigcup AA \subset C.
 Proof.
 move=> AA C HA_subset_C x1.
 case => x2.
@@ -526,7 +526,7 @@ by apply Hx_in_A.
 Qed.
 
 (* (2.17)' *)
-Theorem CAP_in: forall AA A, A \in AA -> \CAP AA \subset A.
+Theorem big_cap_in: forall AA A, A \in AA -> \bigcap AA \subset A.
 Proof.
 move=> AA A HA_in_AA x1.
 case => x2.
@@ -534,7 +534,7 @@ by apply.
 Qed.
 
 (* (2.18)' *)
-Theorem CAP_subset: forall AA C, (forall A, A \in AA -> C \subset A) -> C \subset \CAP AA.
+Theorem big_cap_subset: forall AA C, (forall A, A \in AA -> C \subset A) -> C \subset \bigcap AA.
 Proof.
 move=> AA C HC_subset_A x1 Hx_in_C.
 split => A HA_in_AA.
