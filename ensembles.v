@@ -485,13 +485,22 @@ Variable T: Type.
 
 Definition FamilyEnsemble := (Ensemble (Ensemble T)).
 
-Notation "a \in A" := (In _ a A) (at level 55).
-Notation "\emptyset" := (EmptySet _).
-Notation "A \subset B" := (Subset _ A B) (at level 55).
-Notation "A \cup B" := (Cup _ A B) (at level 50).
-Notation "A \cap B" := (Cap _ A B) (at level 50).
-Notation "A - B" := (Sub _ A B). (* at level 50 *)
-Notation "A ^ 'c'" := (ComplementarySet _ A) (at level 30).
+Arguments In {_} _ _.
+Arguments EmptySet {_}.
+Arguments FullSet {_}.
+Arguments Subset {_} _ _.
+Arguments Cup {_} _ _.
+Arguments Cap {_} _ _.
+Arguments Sub {_} _ _.
+Arguments ComplementarySet {_} _.
+
+Notation "a \in A" := (In a A) (at level 55).
+Notation "\emptyset" := (EmptySet).
+Notation "A \subset B" := (Subset A B) (at level 55).
+Notation "A \cup B" := (Cup A B) (at level 50).
+Notation "A \cap B" := (Cap A B) (at level 50).
+Notation "A - B" := (Sub A B). (* at level 50 *)
+Notation "A ^ 'c'" := (ComplementarySet A) (at level 30).
 
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別する *)
 
@@ -773,7 +782,7 @@ rewrite cup_comm cap_cup_distrib.
 rewrite cup_comm complementary_set_cup full_set_cap.
 rewrite cup_comm.
 rewrite [B^c \cup _]cup_comm cap_cup_distrib.
-rewrite complementary_set_cup [_ \cap FullSet _]cap_comm full_set_cap.
+rewrite complementary_set_cup [_ \cap FullSet]cap_comm full_set_cap.
 rewrite -de_morgan_cap.
 by rewrite -sub_cap_complementary_set.
 Qed.
@@ -842,7 +851,7 @@ apply eq_trans_r with
 Qed.
 
 (* S2 問題8a *)
-Theorem symmetric_difference_empty_set_l: forall A, A \triangle (EmptySet T) = A.
+Theorem symmetric_difference_empty_set_l: forall A, A \triangle EmptySet = A.
 Proof.
 move=> A.
 rewrite /SymmetricDifference.
@@ -853,7 +862,7 @@ by rewrite cup_comm empty_set_cup.
 Qed.
 
 (* S2 問題8b *)
-Theorem symmetric_difference_full_set: forall A, A \triangle (FullSet T) = A^c.
+Theorem symmetric_difference_full_set: forall A, A \triangle FullSet = A^c.
 Proof.
 move=> A.
 rewrite /SymmetricDifference.
@@ -864,7 +873,7 @@ by rewrite empty_set_cup.
 Qed.
 
 (* S2 問題8c *)
-Theorem symmetric_difference_empty_set_r: forall A, A \triangle A = (EmptySet T).
+Theorem symmetric_difference_empty_set_r: forall A, A \triangle A = EmptySet.
 Proof.
 move=> A.
 rewrite /SymmetricDifference.
@@ -874,7 +883,7 @@ by rewrite empty_set_cup.
 Qed.
 
 (* S2 問題8d *)
-Theorem symmetric_difference_complementary_set: forall A, A \triangle A^c = (FullSet T).
+Theorem symmetric_difference_complementary_set: forall A, A \triangle A^c = FullSet.
 Proof.
 move=> A.
 rewrite /SymmetricDifference.
