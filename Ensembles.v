@@ -986,7 +986,7 @@ case: (classic (x2 \in A2)).
     rewrite not_or_and.
     case => _.
     rewrite not_and_or.
-    case => //.
+    by case => //.
 - move=> HA2.
   apply sym_diff_in_notin.
   right.
@@ -1027,15 +1027,37 @@ split.
     by apply (sub_sym_diff B2 B1 A2 A1).
 Qed.
 
+Definition Correspondence (A B: Type) := A -> Ensemble B.
+Notation "A ->> B" := (Correspondence A B) (at level 90).
 
-Definition Correspondence {T U: Type} := T -> Ensemble U.
+Definition CorrespondenceGraph {A B: Type} (C: A ->> B) := (fun x: (A * B) => C (fst x) (snd x)): Ensemble (A * B).
+
 (* 
-Definition Mapping {T U: Type} := T -> U.
+Inductive Mapping (T U: Type) :=
+  | Mapping_Intro: (T -> U) -> Mapping T U.
 これは関数と等しいので、今回は定義しない。
  *)
 
-値域どうする？
+(* (3.1) *)
+Theorem correspondence_from_graph:
+  forall A B (C: Correspondence A B) (a: A), C a = ((fun b => (CorrespondenceGraph C) (pair a b)): Ensemble B).
+Proof.
+move=> A B C a.
+by [].
+Qed.
 
+(* S3 定理1 *)
+Theorem exists_one_graph_from_pair: forall A B (X: Ensemble (A * B)), exists! (G: A ->> B), X = CorrespondenceGraph G.
+Proof.
+move=> A B X.
+exists (fun a b => X (pair a b)).
+split.
+- rewrite /CorrespondenceGraph.
+  apply eq_axiom => x.
+  by rewrite /In -surjective_pairing.
+- move=> C HX.
+  by rewrite HX.
+Qed.
 
 
 
