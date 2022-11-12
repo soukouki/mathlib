@@ -1,7 +1,9 @@
 (* 集合・位相入門(松坂)1 をCoqで証明しつつ読んでいく *)
 
+Add LoadPath "." as Local.
+
 From mathcomp Require Import ssreflect.
-Require Import Classical.
+Require Import Local.Classical.
 
 Module Ensembles.
 
@@ -932,22 +934,6 @@ move=> A B x.
 by rewrite sym_diff_sub_cup -cup_or 2!sub_iff [x \in B /\ x \notin A]and_comm.
 Qed.
 
-Lemma not_or_and': forall P Q, ~ (P \/ Q) <-> ~ P /\ ~ Q.
-Proof.
-move=> P Q.
-split.
-- by apply not_or_and.
-- by apply and_not_or.
-Qed.
-
-Lemma not_and_or': forall P Q, ~ (P /\ Q) <-> ~ P \/ ~Q.
-Proof.
-move=> P Q.
-split.
-- by apply not_and_or.
-- by apply or_not_and.
-Qed.
-
 Lemma sub_sym_diff: forall A1 A2 B1 B2 x,
   x \in A1 - B1 ->
   A1 \triangle A2 = B1 \triangle B2 ->
@@ -969,9 +955,9 @@ case: (classic (x2 \in A2)).
     * by case.
   + case => _.
     rewrite sym_diff_in_notin.
-    rewrite not_or_and'.
+    rewrite not_or_and.
     case => _.
-    rewrite not_and_or'.
+    rewrite not_and_or.
     case => //.
 - move=> HA2.
   apply sym_diff_in_notin.
@@ -986,8 +972,8 @@ case: (classic (x2 \in A2)).
     * by case.
   + case.
     rewrite !sym_diff_in_notin.
-    rewrite not_or_and'.
-    rewrite not_and_or'.
+    rewrite not_or_and.
+    rewrite not_and_or.
     case.
     by case.
 Qed.
