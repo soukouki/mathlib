@@ -70,7 +70,7 @@ by apply /HB_subset_C /HA_subset_B.
 Qed.
 
 (* (1.5) *)
-Theorem empty_set_subset: forall A, \emptyset \subset A.
+Theorem emptyset_subset: forall A, \emptyset \subset A.
 Proof.
 by move=> A.
 Qed.
@@ -166,7 +166,7 @@ apply subsets_cup.
 Qed.
 
 (* (2.9) *)
-Theorem empty_set_cup: forall A, \emptyset \cup A = A.
+Theorem emptyset_cup: forall A, \emptyset \cup A = A.
 Proof.
 move=> A.
 by apply subset_cup_eq.
@@ -261,7 +261,7 @@ apply subsets_cap => x1.
 Qed.
 
 (* (2.9)' *)
-Theorem empty_set_cap: forall A, \emptyset \cap A = \emptyset.
+Theorem emptyset_cap: forall A, \emptyset \cap A = \emptyset.
 Proof.
 move=> A.
 by apply subset_cap_eq.
@@ -340,7 +340,7 @@ split.
   by apply Sub_intro.
 Qed.
 
-Lemma sub_empty_set: forall A, A - \emptyset = A.
+Lemma sub_emptyset: forall A, A - \emptyset = A.
 Proof.
 move=> A.
 apply eq_axiom => x.
@@ -349,7 +349,7 @@ split.
 - by split => //.
 Qed.
 
-Lemma empty_set_sub: forall A, \emptyset - A = \emptyset.
+Lemma emptyset_sub: forall A, \emptyset - A = \emptyset.
 Proof.
 move=> A.
 apply eq_axiom => x.
@@ -357,20 +357,31 @@ split => //.
 by case.
 Qed.
 
+Lemma sub_sim_emptyset: forall A, A - A = \emptyset.
+Proof.
+move=> A.
+apply eq_axiom => x.
+split => //.
+rewrite sub_iff.
+by case.
+Qed.
+
+
 Inductive FullSet: Ensemble :=
   | FullSet_intro: forall x, x \in FullSet.
 
-Lemma full_set_cap: forall A, FullSet \cap A = A.
+Lemma fullset_cap: forall A, FullSet \cap A = A.
 Proof.
 move=> A.
 by rewrite cap_comm -subset_cap_eq.
 Qed.
 
-Lemma full_set_cup: forall A, FullSet \cup A = FullSet.
+Lemma fullset_cup: forall A, FullSet \cup A = FullSet.
 Proof.
 move=> A.
 by rewrite cup_comm -subset_cup_eq.
 Qed.
+
 
 Inductive ComplementarySet (A: Ensemble): Ensemble :=
   | ComplementarySet_intro: forall x, x \in FullSet - A -> x \in ComplementarySet A.
@@ -426,7 +437,7 @@ split.
 Qed.
 
 (* (2.14.1) *)
-Theorem compset_empty_set: EmptySet^c = FullSet.
+Theorem compset_emptyset: EmptySet^c = FullSet.
 Proof.
 apply eq_axiom => x.
 split => // _.
@@ -434,7 +445,7 @@ by rewrite compset_in.
 Qed.
 
 (* (2.14.2) *)
-Theorem compset_full_set: FullSet^c = EmptySet.
+Theorem compset_fullset: FullSet^c = EmptySet.
 Proof.
 apply eq_axiom => x1.
 split => //.
@@ -497,6 +508,36 @@ split.
   + rewrite compset_in => HB HA_cap_B.
     apply HB.
     by case HA_cap_B.
+Qed.
+
+Lemma sub_fullset: forall A, A - FullSet = \emptyset.
+Proof.
+move=> A.
+apply eq_axiom => x.
+rewrite sub_iff.
+rewrite -compset_in compset_fullset.
+rewrite cap_and.
+by rewrite cap_comm emptyset_cap.
+Qed.
+
+Lemma fullset_sub: forall A, FullSet - A = A^c.
+Proof.
+move=> A.
+apply eq_axiom => x.
+rewrite sub_iff.
+rewrite -compset_in.
+rewrite cap_and.
+by rewrite fullset_cap.
+Qed.
+
+Lemma sub_compset: forall A, A - A^c = A.
+Proof.
+move=> A.
+apply eq_axiom => x.
+rewrite sub_iff.
+rewrite -compset_in.
+rewrite compset_twice.
+by split => //; case.
 Qed.
 
 End Section1.
@@ -577,7 +618,7 @@ Qed.
 
 (* S2 問題1についてはやろうかどうか迷ったけど、一旦置いとく *)
 
-Lemma empty_set_not_in: forall A, A = \emptyset <-> forall x: T, x \notin A.
+Lemma emptyset_not_in: forall A, A = \emptyset <-> forall x: T, x \notin A.
 Proof.
 move=> A.
 split.
@@ -590,8 +631,8 @@ split.
 Qed.
 
 (* S2 問題2 *)
-(* 本ではAとBの入れ替わったバージョンもあるが、そちらは簡単に導けるので今回はこちらだけ証明する *)
-Theorem cap_eq_empty_set: forall A B: Ensemble T, A \cap B = \emptyset <-> A \subset B^c.
+(* 本ではAとBの入れ替わったバージョンもあるが、そちらはこちらが成り立つことから自明に求められるため、省略する *)
+Theorem cap_eq_emptyset: forall A B: Ensemble T, A \cap B = \emptyset <-> A \subset B^c.
 Proof.
 move=> A B.
 split.
@@ -601,9 +642,9 @@ split.
   rewrite cup_or.
   rewrite -de_morgan_cap.
   rewrite HA_cap_B.
-  by rewrite compset_empty_set.
+  by rewrite compset_emptyset.
 - move=> HA_subset_Bc.
-  rewrite empty_set_not_in => x.
+  rewrite emptyset_not_in => x.
   case => x' HA.
   suff: x' \notin B. by [].
   rewrite -compset_in.
@@ -617,22 +658,18 @@ Theorem sub_cap_compset: forall A B: Ensemble T, A - B = A \cap B^c.
 Proof.
 move=> A B.
 apply eq_axiom => x.
-split.
-- split;
-  by case H.
-- case => x' HA HB.
-  split => //.
-  by rewrite -compset_in.
+by rewrite sub_iff -cap_and -compset_in.
 Qed.
 
 (* S2 問題3a-2 (A=B) *)
 Theorem sub_cup_sub: forall A B: Ensemble T, A - B = (A \cup B) - B.
 Proof.
 move=> A B.
+apply eq_axiom => x.
 rewrite 2!sub_cap_compset.
 rewrite cup_cap_distrib.
 rewrite compset_cap.
-by rewrite cup_comm empty_set_cup.
+by rewrite cup_comm emptyset_cup.
 Qed.
 
 (* S2 問題3a-3 (A=C) *)
@@ -642,7 +679,7 @@ move=> A B.
 rewrite 2!sub_cap_compset.
 rewrite de_morgan_cap.
 rewrite [A \cap (_ \cup _)]cap_comm cup_cap_distrib.
-rewrite [A^c \cap A]cap_comm compset_cap empty_set_cup.
+rewrite [A^c \cap A]cap_comm compset_cap emptyset_cup.
 by rewrite cap_comm.
 Qed.
 
@@ -652,20 +689,20 @@ Proof.
 move=> A B.
 split.
 - move=> HA; rewrite -HA.
-  apply cap_eq_empty_set.
+  apply cap_eq_emptyset.
   rewrite sub_cap_compset.
   by apply cap_subset_r.
 - move=> HA_cap_B.
   rewrite sub_cap_sub HA_cap_B.
-  by apply sub_empty_set.
+  by apply sub_emptyset.
 Qed.
 
 (* S2 問題3c *)
-Theorem sub_eq_empty_set: forall A B: Ensemble T, A - B = \emptyset <-> A \subset B.
+Theorem sub_eq_emptyset: forall A B: Ensemble T, A - B = \emptyset <-> A \subset B.
 Proof.
 move=> A B.
 rewrite sub_cap_compset.
-rewrite cap_eq_empty_set.
+rewrite cap_eq_emptyset.
 by rewrite compset_twice.
 Qed.
 
@@ -730,7 +767,7 @@ rewrite cup_cap_distrib.
 rewrite -cap_assoc.
 rewrite [A^c \cap A]cap_comm.
 rewrite compset_cap.
-rewrite empty_set_cap empty_set_cup.
+rewrite emptyset_cap emptyset_cup.
 rewrite [C^c \cap _]cap_comm.
 rewrite cap_assoc.
 by rewrite -sub_cap_compset.
@@ -775,12 +812,11 @@ apply eq_subset'.
   apply cap_subset_l.
 Qed.
 
-(* TODO 差を使った方の公式に直す *)
-Definition SymmetricDifference (A B: Ensemble T) := (A \cap B^c) \cup (A^c \cap B).
+Definition SymmetricDifference (A B: Ensemble T) := (A - B) \cup (B - A).
 Notation "A \triangle B" := (SymmetricDifference A B) (at level 50).
 
 (* もう一つの等式 *)
-Lemma sym_diff_sub_cup: forall A B, A \triangle B = (A - B) \cup (B - A).
+Lemma sym_diff_compset: forall A B, A \triangle B = (A \cap B^c) \cup (A^c \cap B).
 Proof.
 move=> A B.
 rewrite /SymmetricDifference.
@@ -792,7 +828,7 @@ Qed.
 Theorem sym_diff_comm: forall A B, A \triangle B = B \triangle A.
 Proof.
 move=> A B.
-rewrite /SymmetricDifference.
+rewrite 2!sym_diff_compset.
 rewrite [B \cap A^c]cap_comm [B^c \cap A]cap_comm.
 by rewrite cup_comm.
 Qed.
@@ -802,14 +838,10 @@ Theorem sym_diff_sub: forall A B, A \triangle B = (A \cup B) - (A \cap B).
 Proof.
 move=> A B.
 rewrite /SymmetricDifference.
-rewrite cap_cup_distrib.
-rewrite cup_comm cap_cup_distrib.
-rewrite cup_comm compset_cup full_set_cap.
-rewrite cup_comm.
-rewrite [B^c \cup _]cup_comm cap_cup_distrib.
-rewrite compset_cup [_ \cap FullSet]cap_comm full_set_cap.
-rewrite -de_morgan_cap.
-by rewrite -sub_cap_compset.
+rewrite cup_sub.
+rewrite 2!sub_cap.
+rewrite 2!sub_sim_emptyset.
+by rewrite [_ \cup \emptyset]cup_comm 2!emptyset_cup.
 Qed.
 
 (* S2 問題7c *)
@@ -819,30 +851,30 @@ Proof.
 move=> A B C.
 apply eq_trans_r with
   (y := (A \cap B^c \cap C^c) \cup (B \cap C^c \cap A^c) \cup (C \cap B^c \cap A^c) \cup (A \cap B \cap C)).
-- rewrite /SymmetricDifference.
+- rewrite 2!sym_diff_compset.
   rewrite de_morgan_cup.
   rewrite 2!de_morgan_cap.
   rewrite 2!compset_twice.
   rewrite 3!cup_cap_distrib.
   rewrite [A^c \cap (A \cup B^c)]cap_comm cup_cap_distrib.
-  rewrite compset_cap empty_set_cup.
+  rewrite compset_cap emptyset_cup.
   rewrite [B \cap (A \cup B ^ c)]cap_comm cup_cap_distrib.
   rewrite [B^c \cap B]cap_comm compset_cap.
-  rewrite [_ \cup \emptyset]cup_comm empty_set_cup.
+  rewrite [_ \cup \emptyset]cup_comm emptyset_cup.
   rewrite -cup_assoc.
   rewrite [(A^c \cap B) \cap C^c]cap_assoc [A^c \cap _]cap_comm.
   rewrite [B^c \cap A^c]cap_comm [(A^c \cap B^c) \cap C]cap_assoc [A^c \cap (B^c \cap C)]cap_comm [B^c \cap C]cap_comm.
   by [].
-- rewrite /SymmetricDifference.
+- rewrite 2!sym_diff_compset.
   rewrite de_morgan_cup.
   rewrite 2!de_morgan_cap.
   rewrite 2!compset_twice.
   rewrite cup_cap_distrib.
   rewrite [B^c \cap (B \cup C^c)]cap_comm cup_cap_distrib.
-  rewrite compset_cap empty_set_cup.
+  rewrite compset_cap emptyset_cup.
   rewrite [C \cap (B \cup C^c)]cap_comm cup_cap_distrib.
   rewrite [C^c \cap C]cap_comm compset_cap.
-  rewrite [_ \cup \emptyset]cup_comm empty_set_cup.
+  rewrite [_ \cup \emptyset]cup_comm emptyset_cup.
   rewrite 2![_ \cap (_ \cup _)]cap_comm 2!cup_cap_distrib.
   rewrite {1}cup_comm.
   rewrite -cup_assoc.
@@ -861,62 +893,58 @@ Proof.
 move=> A B C.
 apply eq_trans_r with
   (y := (A \cap B \cap C^c) \cup (A \cap C \cap B^c)).
-- rewrite /SymmetricDifference.
+- rewrite sym_diff_compset.
   rewrite cap_comm cup_cap_distrib.
   rewrite [B \cap C^c]cap_comm [(C^c \cap B) \cap A]cap_assoc [C^c \cap (B \cap A)]cap_comm [B \cap A]cap_comm.
   rewrite [(B^c \cap C) \cap A]cap_assoc [B^c \cap (C \cap A)]cap_comm [C \cap A]cap_comm.
   by [].
-- rewrite /SymmetricDifference.
+- rewrite sym_diff_compset.
   rewrite 2!de_morgan_cap.
   rewrite [(A \cap B) \cap (A^c \cup C^c)]cap_comm 2!cup_cap_distrib.
   rewrite -2![A^c \cap (A \cap _)]cap_assoc.
-  rewrite [A^c \cap A]cap_comm compset_cap 2!empty_set_cap 2!empty_set_cup.
+  rewrite [A^c \cap A]cap_comm compset_cap 2!emptyset_cap 2!emptyset_cup.
   rewrite 2![_^c \cap _]cap_comm.
   by [].
 Qed.
 
 (* S2 問題8a *)
-Theorem sym_diff_empty_set_l: forall A, A \triangle EmptySet = A.
+Theorem sym_diff_emptyset_l: forall A, A \triangle EmptySet = A.
 Proof.
 move=> A.
 rewrite /SymmetricDifference.
-rewrite compset_empty_set.
-rewrite cap_comm full_set_cap.
-rewrite cap_comm empty_set_cap.
-by rewrite cup_comm empty_set_cup.
+rewrite sub_emptyset emptyset_sub.
+by rewrite cup_comm emptyset_cup.
 Qed.
 
 (* S2 問題8b *)
-Theorem sym_diff_full_set: forall A, A \triangle FullSet = A^c.
+Theorem sym_diff_fullset: forall A, A \triangle FullSet = A^c.
 Proof.
 move=> A.
 rewrite /SymmetricDifference.
-rewrite compset_full_set.
-rewrite cap_comm empty_set_cap.
-rewrite cap_comm full_set_cap.
-by rewrite empty_set_cup.
+rewrite sub_fullset fullset_sub.
+by rewrite emptyset_cup.
 Qed.
 
 (* S2 問題8c *)
-Theorem sym_diff_empty_set_r: forall A, A \triangle A = EmptySet.
+Theorem sym_diff_emptyset_r: forall A, A \triangle A = EmptySet.
 Proof.
 move=> A.
 rewrite /SymmetricDifference.
-rewrite [A^c \cap A]cap_comm.
-rewrite compset_cap.
-by rewrite empty_set_cup.
+rewrite sub_sim_emptyset.
+by rewrite cup_diag.
 Qed.
 
 (* S2 問題8d *)
-Theorem sym_diff_compset: forall A, A \triangle A^c = FullSet.
+Theorem sym_diff_compset_fullset: forall A, A \triangle A^c = FullSet.
 Proof.
 move=> A.
-rewrite /SymmetricDifference.
+rewrite sym_diff_compset.
 rewrite compset_twice.
 rewrite 2!cap_diag.
 by rewrite compset_cup.
 Qed.
 
+(* 最初の方に置き直そうかと思ったが、古典論理を使っているので暫定的にここに置く *)
 Lemma eq_in_notin: forall A B (x: T), A = B -> (x \in A /\ x \in B) \/ (x \notin A /\ x \notin B).
 Proof.
 move=> A B x Heq.
@@ -931,7 +959,7 @@ Qed.
 Lemma sym_diff_in_notin: forall A B x, x \in A \triangle B <-> (x \in A /\ x \notin B) \/ (x \notin A /\ x \in B).
 Proof.
 move=> A B x.
-by rewrite sym_diff_sub_cup -cup_or 2!sub_iff [x \in B /\ x \notin A]and_comm.
+by rewrite /SymmetricDifference -cup_or 2!sub_iff [x \in B /\ x \notin A]and_comm.
 Qed.
 
 Lemma sub_sym_diff: forall A1 A2 B1 B2 x,
@@ -984,7 +1012,7 @@ Proof.
 move=> A1 A2 B1 B2 Htriangle.
 rewrite -eq_iff => x0.
 split.
-- rewrite sym_diff_sub_cup.
+- rewrite {1}/SymmetricDifference.
   case => x1 Hsub.
   + by apply (sub_sym_diff A1 A2 B1 B2).
   + rewrite sym_diff_comm.
@@ -992,7 +1020,7 @@ split.
 - assert (Htriangle': A2 \triangle A1 = B2 \triangle B1).
     symmetry.
     by rewrite [B2 \triangle B1]sym_diff_comm [A2 \triangle A1]sym_diff_comm.
-  rewrite sym_diff_sub_cup.
+  rewrite {1}/SymmetricDifference.
   case => x1 Hsub.
   + by apply (sub_sym_diff A2 A1 B2 B1).
   + rewrite sym_diff_comm.
