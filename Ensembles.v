@@ -1027,37 +1027,67 @@ split.
     by apply (sub_sym_diff B2 B1 A2 A1).
 Qed.
 
-Definition Correspondence (A B: Type) := A -> Ensemble B.
-Notation "A ->> B" := (Correspondence A B) (at level 90).
+(* Corr = Correspondence *)
+Definition Corr (A B: Type) := A -> Ensemble B.
+Notation "A ->c B" := (Corr A B) (at level 90).
 
-Definition CorrespondenceGraph {A B: Type} (C: A ->> B) := (fun x: (A * B) => C (fst x) (snd x)): Ensemble (A * B).
-
-(* 
-Inductive Mapping (T U: Type) :=
-  | Mapping_Intro: (T -> U) -> Mapping T U.
-これは関数と等しいので、今回は定義しない。
- *)
+Definition CorrGraph {A B: Type} (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => C (fst x) (snd x)).
 
 (* (3.1) *)
-Theorem correspondence_from_graph:
-  forall A B (C: Correspondence A B) (a: A), C a = ((fun b => (CorrespondenceGraph C) (pair a b)): Ensemble B).
+Theorem corr_from_graph:
+  forall A B (C: A ->c B) (a: A), C a = ((fun b => (CorrGraph C) (pair a b)): Ensemble B).
 Proof.
 move=> A B C a.
 by [].
 Qed.
 
 (* S3 定理1 *)
-Theorem exists_one_graph_from_pair: forall A B (X: Ensemble (A * B)), exists! (G: A ->> B), X = CorrespondenceGraph G.
+Theorem exists_one_graph_from_pair: forall A B (X: Ensemble (A * B)), exists! (G: A ->c B), X = CorrGraph G.
 Proof.
 move=> A B X.
 exists (fun a b => X (pair a b)).
 split.
-- rewrite /CorrespondenceGraph.
+- rewrite /CorrGraph.
   apply eq_axiom => x.
   by rewrite /In -surjective_pairing.
 - move=> C HX.
   by rewrite HX.
 Qed.
+
+Definition DefRange   {A B: Type} (C: A ->c B): Ensemble A := fun a: A => exists b: B, (a, b) \in CorrGraph(C).
+Definition ValueRange {A B: Type} (C: A ->c B): Ensemble B := fun b: B => exists a: A, (a, b) \in CorrGraph(C).
+
+Definition InvCorr {A B: Type} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
+
+(* (3.2) *)
+Theorem in_inv_corr: forall A B (C: A ->c B) a b, b \in C a <-> a \in (InvCorr C) b.
+Proof. by []. Qed.
+
+(* (3.3) *)
+Theorem def_range_inv_corr_to_value_range: forall A B (C: A ->c B), DefRange(InvCorr C) = ValueRange C.
+Proof. by []. Qed.
+
+(* (3.3)' *)
+Theorem value_range_inv_corr_to_def_range: forall A B (C: A ->c B), DefRange(InvCorr C) = ValueRange C.
+Proof. by []. Qed.
+
+(* 3.4 *)
+Theorem inv_corr_twice: forall A B (C: A ->c B), InvCorr (InvCorr C) = C.
+Proof. by []. Qed.
+
+(* p.27 *)
+Theorem inv_corr_not_empty: forall A B b (C: A ->c B), (InvCorr C b <> \emptyset) <-> b \in ValueRange C.
+
+(* 
+(* Map = Mapping *)
+Definition Map (A B: Type) := A -> B.
+Notation "A -> B" := (Corr A B) (at level 90).
+
+これは関数と等しいので、今回は定義しない。
+ *)
+
+Definition Identity {A: Type} (C: A ->c A) := identity.
+
 
 
 
