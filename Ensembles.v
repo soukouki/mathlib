@@ -1107,9 +1107,9 @@ Notation "A -> B" := (Corr A B) (at level 90).
 
 Definition Identity {A: Type} (C: A ->c A) := identity.
 
+End Section2.
 
-
-
+End Ensembles.
 
 
 
