@@ -944,21 +944,15 @@ rewrite 2!cap_diag.
 by rewrite compset_cup.
 Qed.
 
-Lemma eq_in_notin: forall A B (x: T), A = B -> (x \in A /\ x \in B) \/ (x \notin A /\ x \notin B).
+Lemma sym_diff_not_in_from_in: forall A B x, x \in A -> x \in B -> x \notin A \triangle B.
 Proof.
-move=> A B x Heq.
-rewrite -Heq.
-case (classic (x \in A)) => HA.
-- left.
-  by split => //.
-- right.
-  by split => //.
-Qed.
-
-Lemma sym_diff_in_notin: forall A B x, x \in A \triangle B <-> (x \in A /\ x \notin B) \/ (x \notin A /\ x \in B).
-Proof.
-move=> A B x.
-by rewrite /SymmetricDifference -cup_or 2!sub_iff [x \in B /\ x \notin A]and_comm.
+move=> A B x1 HA HB H.
+move: H HA HB.
+case => x2.
+- rewrite sub_iff.
+  by case.
+- rewrite sub_iff.
+  by case.
 Qed.
 
 Lemma sub_sym_diff: forall A1 A2 B1 B2 x,
@@ -970,39 +964,26 @@ move=> A1 A2 B1 B2 x1.
 case => x2 => HA1 HB1 Htriangle.
 case: (classic (x2 \in A2)).
 - move=> HA2.
-  apply sym_diff_in_notin.
   left.
   split => //.
-  apply eq_in_notin with (x := x2) in Htriangle.
-  case Htriangle.
-  + case.
-    rewrite sym_diff_in_notin.
-    case.
-    * by case.
-    * by case.
-  + case => _.
-    rewrite sym_diff_in_notin.
-    rewrite not_or_and.
-    case => _.
-    rewrite not_and_or.
-    by case => //.
+  have: x2 \notin A1 \triangle A2.
+    by apply sym_diff_not_in_from_in => //.
+  rewrite Htriangle => HBnotin HB2.
+  apply /HBnotin.
+  rewrite sym_diff_comm.
+  left.
+  by split.
 - move=> HA2.
-  apply sym_diff_in_notin.
   right.
   split => //.
-  apply eq_in_notin with (x := x2) in Htriangle.
-  case Htriangle.
-  + case => _.
-    rewrite sym_diff_in_notin.
-    case.
-    * by case.
-    * by case.
-  + case.
-    rewrite !sym_diff_in_notin.
-    rewrite not_or_and.
-    rewrite not_and_or.
-    case.
-    by case.
+  have: x2 \in A1 \triangle A2.
+    left.
+    by split.
+  rewrite Htriangle => H.
+  move: HB1.
+  case H => x3.
+  + by case.
+  + by case.
 Qed.
 
 (* S2 問題9 *)
