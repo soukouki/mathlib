@@ -395,7 +395,7 @@ apply eq_subset'.
   case HA => x2.
   by case.
 - split.
-  split => //.
+  by split => //.
 Qed.
 
 Lemma compset_in: forall A x, x \in A^c <-> x \notin A.
@@ -944,7 +944,6 @@ rewrite 2!cap_diag.
 by rewrite compset_cup.
 Qed.
 
-(* 最初の方に置き直そうかと思ったが、古典論理を使っているので暫定的にここに置く *)
 Lemma eq_in_notin: forall A B (x: T), A = B -> (x \in A /\ x \in B) \/ (x \notin A /\ x \notin B).
 Proof.
 move=> A B x Heq.
@@ -974,8 +973,8 @@ case: (classic (x2 \in A2)).
   apply sym_diff_in_notin.
   left.
   split => //.
-  move: (eq_in_notin _ _ x2 Htriangle).
-  case.
+  apply eq_in_notin with (x := x2) in Htriangle.
+  case Htriangle.
   + case.
     rewrite sym_diff_in_notin.
     case.
@@ -991,8 +990,8 @@ case: (classic (x2 \in A2)).
   apply sym_diff_in_notin.
   right.
   split => //.
-  move: (eq_in_notin _ _ x2 Htriangle).
-  case.
+  apply eq_in_notin with (x := x2) in Htriangle.
+  case Htriangle.
   + case => _.
     rewrite sym_diff_in_notin.
     case.
@@ -1059,6 +1058,8 @@ Definition ValueRange {A B: Type} (C: A ->c B): Ensemble B := fun b: B => exists
 
 Definition InvCorr {A B: Type} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
+(* ココらへん証明抜けてたっぽい *)
+
 (* (3.2) *)
 Theorem in_inv_corr: forall A B (C: A ->c B) a b, b \in C a <-> a \in (InvCorr C) b.
 Proof. by []. Qed.
@@ -1077,6 +1078,24 @@ Proof. by []. Qed.
 
 (* p.27 *)
 Theorem inv_corr_not_empty: forall A B b (C: A ->c B), (InvCorr C b <> \emptyset) <-> b \in ValueRange C.
+move=> A B b C.
+split.
+- move=> Hneq.
+  apply NNPP => Hnot_in.
+  apply Hneq.
+  apply eq_axiom => x.
+  split => //.
+  move=> Hin_inv.
+  apply False_ind.
+  apply Hnot_in.
+  exists x.
+  by apply Hin_inv.
+- move=> Hb Hneq.
+  move: Hb.
+  case => a Hgraph.
+  suff: a \notin (InvCorr C b) => //.
+  by rewrite Hneq.
+Qed.
 
 (* 
 (* Map = Mapping *)
