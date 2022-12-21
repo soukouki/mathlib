@@ -852,20 +852,18 @@ by rewrite !sub_iff !and_assoc [_ \notin _ /\ _ \notin _]and_comm.
 Qed.
 
 (* きれいな解法を思いつかなかった *)
-Lemma sub_merge: forall A B C: Ensemble T, A - (B - C) - C = A - B - C.
+Lemma sub_merge: forall A B C: Ensemble T, (A - C) - (B - C) = A - B - C.
 Proof.
 move=> A B C.
 rewrite !sub_cap_compset.
 rewrite de_morgan_cap.
 rewrite compset_twice.
-rewrite [A \cap (_ \cup _)]cap_comm.
+rewrite 2!cap_assoc.
+rewrite [C^c \cap _]cap_comm.
 rewrite cup_cap_distrib.
-rewrite [B^c \cap A]cap_comm.
-rewrite cup_cap_distrib.
-rewrite [C \cap A]cap_comm.
-rewrite [A \cap C \cap C^c]cap_assoc compset_cap.
-rewrite [_ \cap \emptyset]cap_comm emptyset_cap.
-by rewrite [_ \cup \emptyset]cup_comm emptyset_cup.
+rewrite compset_cap.
+rewrite [_ \cup \emptyset]cup_comm emptyset_cup.
+by rewrite [B^c \cap C^c]cap_comm.
 Qed.
 
 Lemma sub_sub_cap: forall A B C: Ensemble T, A - (B - C) \cap B = A \cap B \cap C.
@@ -874,7 +872,6 @@ move=> A B C.
 rewrite !sub_cap_compset.
 rewrite de_morgan_cap.
 rewrite compset_twice.
-Search (_ \cap (_ \cup _)).
 rewrite cap_assoc.
 rewrite cup_cap_distrib.
 rewrite [B^c \cap B]cap_comm compset_cap.
@@ -886,11 +883,10 @@ Lemma sym_diff_assoc_help: forall A B C: Ensemble T,
   (A - ((B - C) \cup (C - B))) = ((A - B) - C) \cup (A \cap B \cap C).
 Proof.
 move=> A B C.
-Search (_ - (_ \cup _)).
 rewrite -sub_sub_eq_sub_cup.
 rewrite sub_sub_eq_cup.
+rewrite sub_comm.
 rewrite sub_merge.
-Search (_ - (_ - _)).
 by rewrite sub_sub_cap.
 Qed.
 
