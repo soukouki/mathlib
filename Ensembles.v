@@ -844,46 +844,75 @@ rewrite 2!sub_sim_emptyset.
 by rewrite [_ \cup \emptyset]cup_comm 2!emptyset_cup.
 Qed.
 
+Lemma sub_comm: forall A B C: Ensemble T, (A - B) - C = (A - C) - B.
+Proof.
+move=> A B C.
+apply eq_axiom => x.
+by rewrite !sub_iff !and_assoc [_ \notin _ /\ _ \notin _]and_comm.
+Qed.
+
+(* きれいな解法を思いつかなかった *)
+Lemma sub_merge: forall A B C: Ensemble T, A - (B - C) - C = A - B - C.
+Proof.
+move=> A B C.
+rewrite !sub_cap_compset.
+rewrite de_morgan_cap.
+rewrite compset_twice.
+rewrite [A \cap (_ \cup _)]cap_comm.
+rewrite cup_cap_distrib.
+rewrite [B^c \cap A]cap_comm.
+rewrite cup_cap_distrib.
+rewrite [C \cap A]cap_comm.
+rewrite [A \cap C \cap C^c]cap_assoc compset_cap.
+rewrite [_ \cap \emptyset]cap_comm emptyset_cap.
+by rewrite [_ \cup \emptyset]cup_comm emptyset_cup.
+Qed.
+
+Lemma sub_sub_cap: forall A B C: Ensemble T, A - (B - C) \cap B = A \cap B \cap C.
+Proof.
+move=> A B C.
+rewrite !sub_cap_compset.
+rewrite de_morgan_cap.
+rewrite compset_twice.
+Search (_ \cap (_ \cup _)).
+rewrite cap_assoc.
+rewrite cup_cap_distrib.
+rewrite [B^c \cap B]cap_comm compset_cap.
+rewrite emptyset_cup.
+by rewrite [C \cap B]cap_comm cap_assoc.
+Qed.
+
+Lemma sym_diff_assoc_help: forall A B C: Ensemble T,
+  (A - ((B - C) \cup (C - B))) = ((A - B) - C) \cup (A \cap B \cap C).
+Proof.
+move=> A B C.
+Search (_ - (_ \cup _)).
+rewrite -sub_sub_eq_sub_cup.
+rewrite sub_sub_eq_cup.
+rewrite sub_merge.
+Search (_ - (_ - _)).
+by rewrite sub_sub_cap.
+Qed.
+
 (* S2 問題7c *)
 Theorem sym_diff_assoc: forall A B C,
   (A \triangle B) \triangle C = A \triangle (B \triangle C).
 Proof.
 move=> A B C.
 apply eq_trans_r with
-  (y := (A \cap B^c \cap C^c) \cup (B \cap C^c \cap A^c) \cup (C \cap B^c \cap A^c) \cup (A \cap B \cap C)).
-- rewrite 2!sym_diff_compset.
-  rewrite de_morgan_cup.
-  rewrite 2!de_morgan_cap.
-  rewrite 2!compset_twice.
-  rewrite 3!cup_cap_distrib.
-  rewrite [A^c \cap (A \cup B^c)]cap_comm cup_cap_distrib.
-  rewrite compset_cap emptyset_cup.
-  rewrite [B \cap (A \cup B ^ c)]cap_comm cup_cap_distrib.
-  rewrite [B^c \cap B]cap_comm compset_cap.
-  rewrite [_ \cup \emptyset]cup_comm emptyset_cup.
-  rewrite -cup_assoc.
-  rewrite [(A^c \cap B) \cap C^c]cap_assoc [A^c \cap _]cap_comm.
-  rewrite [B^c \cap A^c]cap_comm [(A^c \cap B^c) \cap C]cap_assoc [A^c \cap (B^c \cap C)]cap_comm [B^c \cap C]cap_comm.
-  by [].
-- rewrite 2!sym_diff_compset.
-  rewrite de_morgan_cup.
-  rewrite 2!de_morgan_cap.
-  rewrite 2!compset_twice.
-  rewrite cup_cap_distrib.
-  rewrite [B^c \cap (B \cup C^c)]cap_comm cup_cap_distrib.
-  rewrite compset_cap emptyset_cup.
-  rewrite [C \cap (B \cup C^c)]cap_comm cup_cap_distrib.
-  rewrite [C^c \cap C]cap_comm compset_cap.
-  rewrite [_ \cup \emptyset]cup_comm emptyset_cup.
-  rewrite 2![_ \cap (_ \cup _)]cap_comm 2!cup_cap_distrib.
-  rewrite {1}cup_comm.
-  rewrite -cup_assoc.
-  rewrite [((B \cap C^c \cap A^c) \cup (B^c \cap C \cap A^c)) \cup (C^c \cap B^c \cap A)]cup_comm.
-  rewrite -cup_assoc.
-  rewrite [(C^c \cap B^c) \cap A]cap_assoc [C^c \cap (B^c \cap A)]cap_comm [B^c \cap A]cap_comm.
-  rewrite [B^c \cap C]cap_comm.
-  rewrite [B \cap C]cap_comm [(C \cap B) \cap A]cap_assoc [C \cap (B \cap A)]cap_comm [B \cap A]cap_comm.
-  by [].
+  (y := (A - B - C) \cup (B - C - A) \cup (C - A - B) \cup (A \cap B \cap C)).
+- rewrite /SymmetricDifference.
+  rewrite cup_sub.
+  rewrite [B - A - C]sub_comm.
+  rewrite sym_diff_assoc_help.
+  rewrite [C \cap A]cap_comm cap_assoc [C \cap B]cap_comm cap_assoc.
+  by rewrite !cup_assoc.
+- rewrite /SymmetricDifference.
+  rewrite cup_sub.
+  rewrite [C - B - A]sub_comm.
+  rewrite sym_diff_assoc_help.
+  rewrite cup_assoc [(_ \cap _) \cup _]cup_comm.
+  by rewrite !cup_assoc.
 Qed.
 
 (* S2 問題7d *)
