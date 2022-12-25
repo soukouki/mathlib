@@ -3,6 +3,7 @@
 Add LoadPath "." as Local.
 
 From mathcomp Require Import ssreflect.
+Require Import Coq.Logic.Description.
 Require Import Local.Classical.
 
 Module Ensembles.
@@ -1111,7 +1112,41 @@ Notation "A -> B" := (Corr A B) (at level 90).
 これは関数と等しいので、今回は定義しない。
  *)
 
-Definition Identity {A: Type} (C: A ->c A) := identity.
+Definition MapGraph {A B: Type} (M: A -> B): Ensemble (A * B) := (fun x: (A * B) => M (fst x) = (snd x)).
+
+Definition Identity {A: Type} (M: A -> A) := identity.
+
+(* S3 定理2 *)
+(* とりあえず正解を見ながら写してみたけど、全然理解できてない。 *)
+Theorem map_exists_result: forall {A B: Type} (G: Ensemble (A * B)),
+  (exists M: A -> B, G = MapGraph M) <-> (forall a, exists! b, (a, b) \in G).
+Proof.
+move=> A B G.
+split.
+- case => M HG a.
+  exists (M a).
+  by rewrite HG.
+- move=> HinG.
+  have: (forall a: A, {b: B | (a, b) \in G}).
+    move=> a.
+    apply constructive_definite_description.
+    apply (HinG a).
+  move=> Hb.
+  exists (fun a: A => proj1_sig (Hb a)).
+  apply eq_subset'.
+  + move=> x Hx.
+    have: (uniqueness (fun b: B => (fst x, b) \in G)).
+      by apply unique_existence.
+    apply.
+    * by apply proj2_sig.
+    * by rewrite -surjective_pairing.
+  + rewrite /MapGraph.
+    move=> x Hx.
+    rewrite (surjective_pairing x).
+    rewrite -Hx.
+    by apply proj2_sig.
+Qed.
+
 
 End Section2.
 
