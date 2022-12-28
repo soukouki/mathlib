@@ -1033,35 +1033,36 @@ split.
     by apply (sub_sym_diff B2 B1 A2 A1).
 Qed.
 
+
 (* Corr = Correspondence *)
 Definition Corr (A B: Type) := A -> Ensemble B.
 Notation "A ->c B" := (Corr A B) (at level 90).
 
-Definition CorrGraph {A B: Type} (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => C (fst x) (snd x)).
+Definition Graph {A B: Type} (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => C (fst x) (snd x)).
 
 (* (3.1) *)
 Theorem corr_from_graph:
-  forall A B (C: A ->c B) (a: A), C a = ((fun b => (CorrGraph C) (pair a b)): Ensemble B).
+  forall A B (C: A ->c B) (a: A), C a = ((fun b => (Graph C) (pair a b)): Ensemble B).
 Proof.
 move=> A B C a.
 by [].
 Qed.
 
 (* S3 定理1 *)
-Theorem exists_one_graph_from_pair: forall A B (X: Ensemble (A * B)), exists! (G: A ->c B), X = CorrGraph G.
+Theorem exists_one_graph_from_pair: forall A B (X: Ensemble (A * B)), exists! (G: A ->c B), X = Graph G.
 Proof.
 move=> A B X.
 exists (fun a b => X (pair a b)).
 split.
-- rewrite /CorrGraph.
+- rewrite /Graph.
   apply eq_axiom => x.
   by rewrite /In -surjective_pairing.
 - move=> C HX.
   by rewrite HX.
 Qed.
 
-Definition DefRange   {A B: Type} (C: A ->c B): Ensemble A := fun a: A => exists b: B, (a, b) \in CorrGraph(C).
-Definition ValueRange {A B: Type} (C: A ->c B): Ensemble B := fun b: B => exists a: A, (a, b) \in CorrGraph(C).
+Definition DefRange   {A B: Type} (C: A ->c B): Ensemble A := fun a: A => exists b: B, (a, b) \in Graph(C).
+Definition ValueRange {A B: Type} (C: A ->c B): Ensemble B := fun b: B => exists a: A, (a, b) \in Graph(C).
 
 Definition InvCorr {A B: Type} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
@@ -1112,20 +1113,23 @@ Notation "A -> B" := (Corr A B) (at level 90).
 これは関数と等しいので、今回は定義しない。
  *)
 
-Definition MapGraph {A B: Type} (M: A -> B): Ensemble (A * B) := (fun x: (A * B) => M (fst x) = (snd x)).
+Definition MapAsCorr {A B: Type} (M: A -> B): A ->c B := 
+  fun a b => b = M a.
 
 Definition Identity {A: Type} (M: A -> A) := identity.
 
 (* S3 定理2 *)
 (* とりあえず正解を見ながら写してみたけど、全然理解できてない。 *)
 Theorem map_exists_result: forall {A B: Type} (G: Ensemble (A * B)),
-  (exists M: A -> B, G = MapGraph M) <-> (forall a, exists! b, (a, b) \in G).
+  (exists M: A -> B, G = Graph (MapAsCorr M)) <-> (forall a, exists! b, (a, b) \in G).
 Proof.
 move=> A B G.
 split.
 - case => M HG a.
   exists (M a).
-  by rewrite HG.
+  rewrite HG /=.
+  rewrite /unique.
+  by split.
 - move=> HinG.
   have: (forall a: A, {b: B | (a, b) \in G}).
     move=> a.
@@ -1138,15 +1142,14 @@ split.
     have: (uniqueness (fun b: B => (fst x, b) \in G)).
       by apply unique_existence.
     apply.
-    * by apply proj2_sig.
     * by rewrite -surjective_pairing.
-  + rewrite /MapGraph.
-    move=> x Hx.
+    * apply proj2_sig.
+  + move=> x Hx.
+    rewrite /MapAsCorr /Graph /In in Hx.
     rewrite (surjective_pairing x).
-    rewrite -Hx.
+    rewrite Hx.
     by apply proj2_sig.
 Qed.
-
 
 End Section2.
 
