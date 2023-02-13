@@ -1038,7 +1038,7 @@ Qed.
 Definition Corr (A B: Type) := A -> Ensemble B.
 Notation "A ->c B" := (Corr A B) (at level 90).
 
-Definition Graph {A B: Type} (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => C (fst x) (snd x)).
+Definition Graph {A B: Type} (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => (snd x) \in C (fst x)).
 
 (* (3.1) *)
 Theorem corr_from_graph:
@@ -1085,7 +1085,8 @@ Theorem inv_corr_twice: forall A B (C: A ->c B), InvCorr (InvCorr C) = C.
 Proof. by []. Qed.
 
 (* p.27 *)
-Theorem inv_corr_not_empty: forall A B b (C: A ->c B), (InvCorr C b <> \emptyset) <-> b \in ValueRange C.
+Theorem inv_corr_is_not_empty_iff_in_value_range: forall A B b (C: A ->c B),
+  (InvCorr C b <> \emptyset) <-> b \in ValueRange C.
 move=> A B b C.
 split.
 - move=> Hneq.
@@ -1120,14 +1121,14 @@ Definition Identity {A: Type} (M: A -> A) := identity.
 
 (* S3 定理2 *)
 (* とりあえず正解を見ながら写してみたけど、全然理解できてない。 *)
-Theorem map_exists_result: forall {A B: Type} (G: Ensemble (A * B)),
+Theorem exist_one_map_equivalent_to_graphs: forall {A B} G,
   (exists M: A -> B, G = Graph (MapAsCorr M)) <-> (forall a, exists! b, (a, b) \in G).
 Proof.
 move=> A B G.
 split.
 - case => M HG a.
   exists (M a).
-  rewrite HG /=.
+  rewrite HG.
   rewrite /unique.
   by split.
 - move=> HinG.
