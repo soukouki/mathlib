@@ -801,16 +801,13 @@ Qed.
 Theorem cup_cap_eq_cup_cap: forall A C: Ensemble T, A \subset C -> forall B, A \cup (B \cap C) = (A \cup B) \cap C.
 Proof.
 move => A C HA_subset_C B.
-apply eq_subset'.
-- rewrite cup_comm cap_cup_distrib.
-  rewrite cup_comm.
-  rewrite 2![(A \cup B) \cap _]cap_comm.
-  apply subset_caps_subset.
-  rewrite -{2}[C]cup_diag cup_comm.
-  by apply subset_cups_subset.
-- rewrite cup_cap_distrib.
-  apply subset_cups_subset.
-  apply cap_subset_l.
+rewrite cup_comm.
+rewrite cap_cup_distrib.
+rewrite [B \cup A]cup_comm [C \cup A]cup_comm.
+have: A \cup C = C.
+  by rewrite -subset_cup_eq.
+move=> H.
+by rewrite H.
 Qed.
 
 Definition SymmetricDifference (A B: Ensemble T) := (A - B) \cup (B - A).
