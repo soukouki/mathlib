@@ -1089,11 +1089,10 @@ split.
 - move=> Hneq.
   apply NNPP => Hnot_in.
   apply Hneq.
-  apply eq_axiom => x.
-  split => //.
-  move=> Hin_inv.
+  apply eq_subset' => // x Hin_inv.
   apply False_ind.
   apply Hnot_in.
+  rewrite /ValueRange.
   exists x.
   by apply Hin_inv.
 - move=> Hb Hneq.
@@ -1116,8 +1115,13 @@ Definition MapAsCorr {A B: Type} (M: A -> B): A ->c B :=
 
 Definition Identity {A: Type} (M: A -> A) := identity.
 
+(* 分かりづらいんじゃ！ *)
+Set Implicit Arguments.
+Definition get_value := proj1_sig.
+Definition get_proof := proj2_sig.
+Unset Implicit Arguments.
+
 (* S3 定理2 *)
-(* とりあえず正解を見ながら写してみたけど、全然理解できてない。 *)
 Theorem exist_one_map_equivalent_to_graphs: forall {A B} G,
   (exists M: A -> B, G = Graph (MapAsCorr M)) <-> (forall a, exists! b, (a, b) \in G).
 Proof.
@@ -1126,27 +1130,28 @@ split.
 - case => M HG a.
   exists (M a).
   rewrite HG.
-  rewrite /unique.
-  by split.
+  by split => //.
 - move=> HinG.
   have: (forall a: A, {b: B | (a, b) \in G}).
     move=> a.
     apply constructive_definite_description.
-    apply (HinG a).
-  move=> Hb.
-  exists (fun a: A => proj1_sig (Hb a)).
+    by apply (HinG a).
+  move=> Sigb.
+  exists (fun a: A => get_value (Sigb a)).
   apply eq_subset'.
   + move=> x Hx.
+    rewrite /Graph /MapAsCorr /In.
+    (* bからグラフ上の(a, b)は一意に求められることを示す -> _ = _ を処理するのに使える *)
     have: (uniqueness (fun b: B => (fst x, b) \in G)).
       by apply unique_existence.
     apply.
     * by rewrite -surjective_pairing.
-    * apply proj2_sig.
+    * by apply get_proof.
   + move=> x Hx.
     rewrite /MapAsCorr /Graph /In in Hx.
     rewrite (surjective_pairing x).
     rewrite Hx.
-    by apply proj2_sig.
+    by apply get_proof.
 Qed.
 
 End Section2.
