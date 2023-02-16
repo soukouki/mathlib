@@ -1154,6 +1154,71 @@ split.
     by apply get_proof.
 Qed.
 
+(* S3 問題3 *)
+Theorem map_as_corr_inv_corr: forall {A B: Type} (C: A ->c B),
+  (exists! M: A -> B, MapAsCorr M = C) <->
+  (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
+Proof.
+move=> A B C.
+split.
+- move=> HM.
+  have: {M: A -> B | MapAsCorr M = C}.
+    by apply constructive_definite_description.
+  clear HM => HM.
+  split.
+  + apply eq_subset' => // a _.
+    rewrite /In /DefRange.
+    exists (get_value HM a).
+    rewrite /In /Graph /snd /fst.
+    move: (get_proof HM) => H.
+    try rewrite -H.
+
+
+
+
+move=> A B C.
+split.
+- move=> Hexists.
+  split.
+  + apply eq_subset' => // a _.
+    rewrite /DefRange /In.
+    have: {M: A -> B | MapAsCorr M = C}.
+      by apply constructive_definite_description.
+    move=> Hm.
+    exists ((proj1_sig Hm) a).
+    rewrite /Graph /In /=.
+    move: (proj2_sig Hm) => Hm'.
+    try rewrite -Hm'.
+    admit.
+  + move=> b b' Hbneqb'.
+    apply eq_subset' => // a.
+    have: {M: A -> B | MapAsCorr M = C}.
+      by apply constructive_definite_description.
+    move=> Hm.
+    move: (proj2_sig Hm) => Hm'.
+    rewrite -Hm'. (* こっちではできるんだ *)
+    rewrite /MapAsCorr.
+    (* bかb'のどっちかを固定しないと無理そう？ *)
+    admit.
+- case => HDefRange HInvCorr.
+  rewrite -unique_existence.
+  split.
+  + exists . Aを受け取ってBを返す関数がいる。そんでそれ自体をMapAsCorrに渡すとCと等しくなる、
+
+
+- move=> Hexists.
+  split.
+  + apply eq_subset' => // a _.
+    rewrite /DefRange /In.
+    have: {M: A -> B | MapAsCorr M = C}.
+      apply constructive_definite_description.
+      by apply Hexists.
+    move=> Hm.
+    exists ((proj1_sig Hm) a).
+    rewrite /Graph /In /=.
+    Search proj1_sig.
+    apply proj2_sig.
+
 End Section2.
 
 End Ensembles.
