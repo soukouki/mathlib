@@ -633,7 +633,7 @@ Qed.
 
 (* S2 問題2 *)
 (* 本ではAとBの入れ替わったバージョンもあるが、そちらはこちらが成り立つことから自明に求められるため、省略する *)
-Theorem cap_eq_emptyset: forall A B: Ensemble T, A \cap B = \emptyset <-> A \subset B^c.
+Theorem cap_eq_emptyset: forall (A B: Ensemble T), A \cap B = \emptyset <-> A \subset B^c.
 Proof.
 move=> A B.
 split.
@@ -1166,13 +1166,23 @@ split.
     by apply constructive_definite_description.
   clear HM => HM.
   split.
-  + apply eq_subset' => // a _.
+  + apply eq_subset' => // a HA.
     rewrite /In /DefRange.
     exists (get_value HM a).
     rewrite /In /Graph /snd /fst.
-    move: (get_proof HM) => H.
-    try rewrite -H.
+    rewrite /In.
+    Search proj1_sig.
+    rewrite /get_value.
+    move: (proj2_sig HM) => H.
+    try rewrite -H. (* Dependent type error *)
+    admit.
+  + move=> b b' HB.
+    move: (iffLR (emptyset_not_in (InvCorr C b \cap InvCorr C b'))).
+    move=> H.
+    
 
+
+    move: emptyset_not_in.
 
 
 
