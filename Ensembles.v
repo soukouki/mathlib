@@ -7,6 +7,9 @@ Require Import Coq.Logic.Description.
 Require Import Local.Classical.
 
 Module Ensembles.
+Declare Scope ensemble_scope.
+Open Scope ensemble_scope.
+
 
 Section Section1.
 
@@ -544,12 +547,6 @@ Qed.
 End Section1.
 
 
-Section Section2.
-
-Variable T: Type.
-
-Definition FamilyEnsemble := (Ensemble (Ensemble T)).
-
 Arguments In {_} _ _.
 Arguments EmptySet {_}.
 Arguments FullSet {_}.
@@ -559,14 +556,21 @@ Arguments Cap {_} _ _.
 Arguments Sub {_} _ _.
 Arguments ComplementarySet {_} _.
 
-Notation "a \in A" := (In a A) (at level 55).
-Notation "a \notin A" := (~ In a A) (at level 55).
-Notation "\emptyset" := (EmptySet).
-Notation "A \subset B" := (Subset A B) (at level 55).
-Notation "A \cup B" := (Cup A B) (at level 50).
-Notation "A \cap B" := (Cap A B) (at level 50).
-Notation "A - B" := (Sub A B). (* at level 50 *)
-Notation "A ^ 'c'" := (ComplementarySet A) (at level 30).
+Notation "a \in A" := (In a A) (at level 55): ensemble_scope.
+Notation "a \notin A" := (~ In a A) (at level 55): ensemble_scope.
+Notation "\emptyset" := (EmptySet): ensemble_scope.
+Notation "A \subset B" := (Subset A B) (at level 55): ensemble_scope.
+Notation "A \cup B" := (Cup A B) (at level 50): ensemble_scope.
+Notation "A \cap B" := (Cap A B) (at level 50): ensemble_scope.
+Notation "A - B" := (Sub A B) (* at level 50 *): ensemble_scope.
+Notation "A ^ 'c'" := (ComplementarySet A) (at level 30): ensemble_scope.
+
+
+Section Section2.
+
+Variable T: Type.
+
+Definition FamilyEnsemble := (Ensemble (Ensemble T)).
 
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別する *)
 
@@ -577,7 +581,6 @@ Notation "\bigcup AA" := (BigCup AA) (at level 50).
 Inductive BigCap (AA: FamilyEnsemble): Ensemble T :=
   | big_cap_intro: forall x: T, (forall A: Ensemble T, A \in AA -> x \in A) -> x \in BigCap AA.
 Notation "\bigcap AA" := (BigCap AA) (at level 50).
-
 
 (* (2.17) *)
 Theorem big_cup_in: forall AA A, A \in AA -> A \subset \bigcup AA.
@@ -1030,6 +1033,17 @@ split.
     by apply (sub_sym_diff B2 B1 A2 A1).
 Qed.
 
+End Section2.
+
+
+Arguments BigCup {_} _ _.
+Arguments BigCap {_} _ _.
+
+Notation "\bigcup AA" := (BigCup AA) (at level 50).
+Notation "\bigcap AA" := (BigCap AA) (at level 50).
+
+
+Section Section3.
 
 (* Corr = Correspondence *)
 Definition Corr (A B: Type) := A -> Ensemble B.
@@ -1177,9 +1191,14 @@ split.
     try rewrite -H. (* Dependent type error *)
     admit.
   + move=> b b' HB.
-    move: (iffLR (emptyset_not_in (InvCorr C b \cap InvCorr C b'))).
+    apply (iffRL (emptyset_not_in _ (InvCorr C b \cap InvCorr C b'))) => a.
+    Search (_ \in _ \cap _).
     move=> H.
+    apply HB. 
+    move: H.
+    case => a' HinB HinB'.
     
+
 
 
     move: emptyset_not_in.
