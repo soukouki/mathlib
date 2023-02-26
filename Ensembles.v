@@ -1077,7 +1077,21 @@ Definition ValueRange {A B: Type} (C: A ->c B): Ensemble B := fun b: B => exists
 
 Definition InvCorr {A B: Type} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
-(* ココらへん証明抜けてたっぽい *)
+Theorem def_range_neq_empty_set: forall A B (C: A ->c B), DefRange C = fun a: A => C a <> \emptyset.
+Proof.
+move=> A B C.
+apply eq_subset'.
+- move=> a.
+  rewrite /In /DefRange.
+  case => b HinG.
+  rewrite emptyset_not_in => H.
+  by apply (H b).
+- move=> a.
+  rewrite /In /DefRange.
+  rewrite emptyset_not_in.
+  Search (~ (forall _, _)).
+  
+
 
 (* (3.2) *)
 Theorem in_inv_corr: forall A B (C: A ->c B) a b, b \in C a <-> a \in (InvCorr C) b.
