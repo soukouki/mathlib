@@ -177,8 +177,8 @@ by apply subset_cup_eq.
 Qed.
 
 
-Inductive Cap (B C: Ensemble): Ensemble :=
-  Cap_intro: forall x: T, x \in B -> x \in C -> x \in (Cap B C).
+Inductive Cap (A B: Ensemble): Ensemble :=
+  Cap_intro: forall x: T, x \in A -> x \in B -> x \in (Cap A B).
 Notation "A \cap B" := (Cap A B) (at level 50).
 
 (* (2.2.1)'
