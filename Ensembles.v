@@ -10,7 +10,6 @@ Module Ensembles.
 Declare Scope ensemble_scope.
 Open Scope ensemble_scope.
 
-
 Section Section1.
 
 Variable T: Type.
@@ -1047,7 +1046,7 @@ Section Section3.
 
 (* Corr = Correspondence *)
 Definition Corr (A B: Type) := A -> Ensemble B.
-Notation "A ->c B" := (Corr A B) (at level 90).
+Notation "A ->c B" := (Corr A B) (at level 99).
 
 Definition Graph {A B: Type} (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => (snd x) \in C (fst x)).
 
@@ -1089,9 +1088,14 @@ apply eq_subset'.
 - move=> a.
   rewrite /In /DefRange.
   rewrite emptyset_not_in.
-  Search (~ (forall _, _)).
-  
-
+  move=> H.
+  apply NNPP => HH.
+  apply H => b.
+  move: H.
+  case => bb HHH.
+  apply HH.
+  by exists bb.
+Qed.
 
 (* (3.2) *)
 Theorem in_inv_corr: forall A B (C: A ->c B) a b, b \in C a <-> a \in (InvCorr C) b.
@@ -1206,6 +1210,9 @@ split.
     admit.
   + move=> b b' HB.
     apply (iffRL (emptyset_not_in _ (InvCorr C b \cap InvCorr C b'))) => a.
+    
+
+
     Search (_ \in _ \cap _).
     move=> H.
     apply HB. 
@@ -1215,9 +1222,8 @@ split.
 
 
 
-    move: emptyset_not_in.
 
-
+Restart.
 
 move=> A B C.
 split.
