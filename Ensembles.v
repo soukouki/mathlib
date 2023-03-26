@@ -1090,11 +1090,9 @@ apply eq_subset'.
   rewrite emptyset_not_in.
   move=> H.
   apply NNPP => HH.
-  apply H => b.
-  move: H.
-  case => bb HHH.
+  apply H => b HB.
   apply HH.
-  by exists bb.
+  by exists b.
 Qed.
 
 (* (3.2) *)
