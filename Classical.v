@@ -40,10 +40,35 @@ rewrite 2!not_imply.
 by rewrite or_comm {1}and_comm.
 Qed.
 
+Lemma forall_iff_not_exists_not: forall {A} (F: A -> Prop),
+  (forall x: A, F x) <-> ~ (exists x: A, ~ F x).
+Proof.
+move=> A F.
+split.
+- move=> Hforall.
+  case => x Hnot.
+  by move: (Hforall x).
+- move=> Hexists x.
+  apply NNPP => Hnot.
+  apply Hexists.
+  by exists x.
+Qed.
 
-
-
-
+Lemma exists_iff_not_forall_not: forall {A} (F: A -> Prop),
+  (exists x: A, F x) <-> ~ (forall x: A, ~ F x).
+Proof.
+move=> A F.
+split.
+- move=> Hexists Hforall.
+  move: Hexists.
+  case => x HF.
+  by move: (Hforall x).
+- move=> Hforall.
+  apply NNPP => Hexists.
+  apply Hforall => x HF.
+  apply Hexists.
+  by exists x.
+Qed.
 
 
 

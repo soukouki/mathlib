@@ -1088,10 +1088,8 @@ apply eq_subset'.
 - move=> a.
   rewrite /In /DefRange.
   rewrite emptyset_not_in.
-  move=> H.
-  apply NNPP => HH.
-  apply H => b HB.
-  apply HH.
+  rewrite -exists_iff_not_forall_not.
+  case => b Hin.
   by exists b.
 Qed.
 
