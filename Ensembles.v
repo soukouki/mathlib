@@ -1251,6 +1251,38 @@ split.
   admit.
 Admitted.
 
+(* メモ: Imageが来たら先でexists *)
+Definition Image {A B: Type} (f: A -> B) (P: Ensemble A): Ensemble B :=
+  fun b: B => exists a, f a = b.
+
+(* p.30 *)
+Theorem image_def_range_eq_value_range: forall {A B} (f: A -> B) {P},
+  Image f P = ValueRange (MapAsCorr f).
+Proof.
+move=> A B f P.
+apply eq_subset'.
+- move=> b. 
+  case => a Ha.
+  by exists a.
+- move=> b.
+  case => a Hb.
+  by exists a.
+Qed.
+
+(* p.30 *)
+Theorem image_emptyset_iff: forall {A B} (f: A -> B) {P},
+  Image f P = \emptyset <-> P = \emptyset.
+Proof.
+move=> A B f P.
+split.
+- admit.
+  (* わからん *)
+- move=> Hp.
+  rewrite Hp.
+  rewrite /Image.
+  (* exists a: A, f a = bは存在しないんだけれど、多分古典論理を使う必要がありそう *)
+  admit.
+
 End Section3.
 
 End Ensembles.
