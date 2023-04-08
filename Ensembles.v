@@ -1199,7 +1199,6 @@ split.
     exists (get_value HM a).
     rewrite /In /Graph /snd /fst.
     rewrite /In.
-    Search proj1_sig.
     rewrite /get_value.
     move: (proj2_sig HM) => H.
     try rewrite -H. (* Dependent type error *)
@@ -1209,7 +1208,6 @@ split.
     
 
 
-    Search (_ \in _ \cap _).
     move=> H.
     apply HB. 
     move: H.
@@ -1248,23 +1246,12 @@ split.
 - case => HDefRange HInvCorr.
   rewrite -unique_existence.
   split.
-  + exists . Aを受け取ってBを返す関数がいる。そんでそれ自体をMapAsCorrに渡すとCと等しくなる、
+  + (* exists (fun a: A => C a). Aを受け取ってBを返す関数がいる。そんでそれ自体をMapAsCorrに渡すとCと等しくなる、
+    と思ったけど、Ensemble Bの中からbを取り出せる(emptysetでない)という証明もしないといけないから、そのままではいけない *)
+  admit.
+Admitted.
 
-
-- move=> Hexists.
-  split.
-  + apply eq_subset' => // a _.
-    rewrite /DefRange /In.
-    have: {M: A -> B | MapAsCorr M = C}.
-      apply constructive_definite_description.
-      by apply Hexists.
-    move=> Hm.
-    exists ((proj1_sig Hm) a).
-    rewrite /Graph /In /=.
-    Search proj1_sig.
-    apply proj2_sig.
-
-End Section2.
+End Section3.
 
 End Ensembles.
 
