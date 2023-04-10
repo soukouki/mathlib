@@ -1251,18 +1251,20 @@ split.
   admit.
 Admitted.
 
+
 (* メモ: Imageが来たら先でexists *)
 Definition Image {A B: Type} (f: A -> B) (P: Ensemble A): Ensemble B :=
-  fun b: B => exists a, f a = b.
+  fun b: B => exists a, a \in P /\ f a = b.
 
 (* p.30 *)
-Theorem image_def_range_eq_value_range: forall {A B} (f: A -> B) {P},
-  Image f P = ValueRange (MapAsCorr f).
+Theorem image_def_range_eq_value_range: forall {A B} (f: A -> B),
+  Image f (FullSet: Ensemble A) = ValueRange (MapAsCorr f).
 Proof.
-move=> A B f P.
+move=> A B f.
 apply eq_subset'.
 - move=> b. 
-  case => a Ha.
+  case => a.
+  case => _ Heq.
   by exists a.
 - move=> b.
   case => a Hb.
@@ -1282,27 +1284,42 @@ split.
   by exists a.
 - move=> HP.
   rewrite emptyset_not_in => b.
-  
-  rewrite /In /Image.
-  case.
-  admit.
-  (* これPが消えちゃうんだけど、なんか条件ミスってない？
-  ImageのPって幽霊型でいいんだっけ？ *)
-(* - move=> HP.
-  rewrite HP. clear HP P.
-  rewrite emptyset_not_in => b.
   case => a.
-  move: (f a) => b'.
-  (* b' = b -> False でダメそう *) *)
-Admitted.
+  case.
+  by rewrite HP.
+Qed.
+
+
+Definition InvImage {A B: Type} (f: A -> B) (Q: Ensemble B): Ensemble A :=
+  fun a: A => f a \in Q.
+
+(* p.31 *)
+Theorem invimage_fullset: forall {A B} (f: A -> B),
+  InvImage f (FullSet: Ensemble B) = (FullSet: Ensemble A).
+Proof.
+move=> A B f.
+by apply eq_subset' => //.
+Qed.
+
+(* 4.1 *)
+Theorem image_subset {A B} (f: A -> B) (P1 P2: Ensemble A): 
+  P1 \subset P2 -> Image f P1 \subset Image f P2.
+Proof.
+move=> Hsub b.
+case => a.
+case => HP1 Heq.
+exists a.
+split => //.
+by apply Hsub.
+Qed.
+
 
 
 
 End Section3.
+About hoge.
 
 End Ensembles.
-
-
 
 
 
