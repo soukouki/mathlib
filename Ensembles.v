@@ -1275,13 +1275,28 @@ Theorem image_emptyset_iff: forall {A B} (f: A -> B) {P},
 Proof.
 move=> A B f P.
 split.
-- admit.
-  (* わからん *)
-- move=> Hp.
-  rewrite Hp.
-  rewrite /Image.
-  (* exists a: A, f a = bは存在しないんだけれど、多分古典論理を使う必要がありそう *)
+- rewrite emptyset_not_in.
+  move=> Himg.
+  rewrite emptyset_not_in => a HP.
+  apply (Himg (f a)).
+  by exists a.
+- move=> HP.
+  rewrite emptyset_not_in => b.
+  
+  rewrite /In /Image.
+  case.
   admit.
+  (* これPが消えちゃうんだけど、なんか条件ミスってない？
+  ImageのPって幽霊型でいいんだっけ？ *)
+(* - move=> HP.
+  rewrite HP. clear HP P.
+  rewrite emptyset_not_in => b.
+  case => a.
+  move: (f a) => b'.
+  (* b' = b -> False でダメそう *) *)
+Admitted.
+
+
 
 End Section3.
 
