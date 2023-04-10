@@ -1251,16 +1251,20 @@ split.
   admit.
 Admitted.
 
+End Section3.
+
+
+Section Section4.
+
 
 (* メモ: Imageが来たら先でexists *)
 Definition Image {A B: Type} (f: A -> B) (P: Ensemble A): Ensemble B :=
   fun b: B => exists a, a \in P /\ f a = b.
 
 (* p.30 *)
-Theorem image_def_range_eq_value_range: forall {A B} (f: A -> B),
+Theorem image_def_range_eq_value_range {A B} (f: A -> B):
   Image f (FullSet: Ensemble A) = ValueRange (MapAsCorr f).
 Proof.
-move=> A B f.
 apply eq_subset'.
 - move=> b. 
   case => a.
@@ -1272,10 +1276,9 @@ apply eq_subset'.
 Qed.
 
 (* p.30 *)
-Theorem image_emptyset_iff: forall {A B} (f: A -> B) {P},
+Theorem image_emptyset_iff {A B} (f: A -> B) {P}:
   Image f P = \emptyset <-> P = \emptyset.
 Proof.
-move=> A B f P.
 split.
 - rewrite emptyset_not_in.
   move=> Himg.
@@ -1294,10 +1297,9 @@ Definition InvImage {A B: Type} (f: A -> B) (Q: Ensemble B): Ensemble A :=
   fun a: A => f a \in Q.
 
 (* p.31 *)
-Theorem invimage_fullset: forall {A B} (f: A -> B),
+Theorem invimage_fullset {A B} (f: A -> B):
   InvImage f (FullSet: Ensemble B) = (FullSet: Ensemble A).
 Proof.
-move=> A B f.
 by apply eq_subset' => //.
 Qed.
 
@@ -1316,7 +1318,7 @@ Qed.
 
 
 
-End Section3.
+End Section4.
 About hoge.
 
 End Ensembles.
