@@ -13,8 +13,10 @@ Open Scope ensemble_scope.
 Section Section1.
 
 Variable T: Type.
+Implicit Type x: T.
 
 Definition Ensemble := T -> Prop.
+Implicit Types A B C: Ensemble.
 
 Definition In (a: T) (A: Ensemble): Prop := A a.
 Notation "a \in A" := (In a A) (at level 55).
@@ -28,23 +30,21 @@ Notation "\emptyset" := EmptySet.
 Axiom eq_axiom: forall (A B: Ensemble),
   (forall (x: T), (x \in A <-> x \in B)) -> A = B.
 
-Lemma eq_iff: forall (A B: Ensemble),
+Lemma eq_iff A B:
   (forall (x: T), (x \in A <-> x \in B)) <-> A = B.
 Proof.
-move=> A B.
 split.
 - by apply eq_axiom.
 - move=> HAB x.
   by rewrite HAB.
 Qed.
 
-Definition Subset (A B: Ensemble): Prop := forall x: T, x \in A -> x \in B.
+Definition Subset A B: Prop := forall x, x \in A -> x \in B.
 Notation "A \subset B" := (Subset A B) (at level 55).
 
 (* (1.3) *)
-Theorem eq_subset: forall A B, A = B <-> A \subset B /\ B \subset A.
+Theorem eq_subset A B: A = B <-> A \subset B /\ B \subset A.
 Proof.
-move=> A B.
 split.
 - move=> HA_eq_B.
   rewrite HA_eq_B.
@@ -57,49 +57,42 @@ split.
   + by apply HB_subset_A.
 Qed.
 
-Lemma eq_subset': forall A B, A \subset B -> B \subset A -> A = B.
+Lemma eq_subset' A B: A \subset B -> B \subset A -> A = B.
 Proof.
-move=> A B HAB HBA.
+move=> HAB HBA.
 apply eq_subset => //.
 Qed.
 
 (* (1.4)
    本にあるのは A \subset B /\ B \subset C だけれど、明らかに同等な上にこちらのほうがCoq的に扱いやすいのでこう書いた
    今後も同じような例が出てくるが、同様に行う *)
-Theorem subset_trans: forall A B C, A \subset B -> B \subset C -> A \subset C.
+Theorem subset_trans A B C: A \subset B -> B \subset C -> A \subset C.
 Proof.
-move=> A B C HA_subset_B HB_subset_C.
+move=> HA_subset_B HB_subset_C.
 rewrite /Subset => x Hx_in_A.
 by apply /HB_subset_C /HA_subset_B.
 Qed.
 
 (* (1.5) *)
-Theorem emptyset_subset: forall A, \emptyset \subset A.
-Proof.
-by move=> A.
-Qed.
+Theorem emptyset_subset A: \emptyset \subset A.
+Proof. by []. Qed.
 
 
-Inductive Cup (A B: Ensemble): Ensemble :=
+Inductive Cup A B: Ensemble :=
   | Cup_introl: forall x: T, x \in A -> x \in Cup A B
   | Cup_intror: forall x: T, x \in B -> x \in Cup A B.
 Notation "A \cup B" := (Cup A B) (at level 50).
 
 (* (2.2.1) *)
-Theorem subset_cup_l: forall A B, A \subset A \cup B.
-Proof.
-by left.
-Qed.
+Theorem subset_cup_l A B: A \subset A \cup B.
+Proof. by left. Qed.
 
 (* (2.2.2) *)
-Theorem subset_cup_r: forall A B, B \subset A \cup B.
-Proof.
-by right.
-Qed.
+Theorem subset_cup_r A B: B \subset A \cup B.
+Proof. by right. Qed.
 
-Lemma cup_or: forall A B x, x \in A \/ x \in B <-> x \in A \cup B.
+Lemma cup_or A B x: x \in A \/ x \in B <-> x \in A \cup B.
 Proof.
-move=> A B x.
 split.
 - case => H.
   + by left.
@@ -110,9 +103,9 @@ split.
 Qed.
 
 (* 2.3 *)
-Theorem subsets_cup: forall A B C, A \subset C -> B \subset C -> A \cup B \subset C.
+Theorem subsets_cup A B C: A \subset C -> B \subset C -> A \cup B \subset C.
 Proof.
-move=> A B C HA_subset_C HB_subset_C.
+move=> HA_subset_C HB_subset_C.
 rewrite /Subset => x1.
 case => x2.
 - by apply /HA_subset_C.
@@ -120,36 +113,32 @@ case => x2.
 Qed.
 
 (* (2.4) *)
-Theorem cup_diag: forall A, A \cup A = A.
+Theorem cup_diag A: A \cup A = A.
 Proof.
-move=> A.
 apply eq_subset'.
 - by apply subsets_cup => //.
 - by apply subset_cup_l.
 Qed.
 
 (* (2.5) *)
-Theorem cup_comm: forall A B, A \cup B = B \cup A.
+Theorem cup_comm A B: A \cup B = B \cup A.
 Proof.
-move=> A B.
 apply eq_subset' => x;
   rewrite -2!cup_or;
   by rewrite or_comm.
 Qed.
 
 (* (2.6) *)
-Theorem cup_assoc: forall A B C, (A \cup B) \cup C = A \cup (B \cup C).
+Theorem cup_assoc A B C: (A \cup B) \cup C = A \cup (B \cup C).
 Proof.
-move=> A B C.
 apply eq_subset' => x;
   rewrite -4!cup_or;
   by rewrite or_assoc.
 Qed.
 
 (* (2.7) *)
-Theorem subset_cup_eq: forall A B, A \subset B <-> A \cup B = B.
+Theorem subset_cup_eq A B: A \subset B <-> A \cup B = B.
 Proof.
-move=> A B.
 split.
 - move=> HA_subset_B.
   apply eq_subset'.
@@ -160,9 +149,9 @@ split.
 Qed.
 
 (* (2.8) *)
-Theorem subset_cups_subset: forall A B C, A \subset B -> A \cup C \subset B \cup C.
+Theorem subset_cups_subset A B C: A \subset B -> A \cup C \subset B \cup C.
 Proof.
-move=> A B C HA_subset_B.
+move=> HA_subset_B.
 apply subsets_cup.
 - left.
   by apply HA_subset_B.
@@ -170,52 +159,47 @@ apply subsets_cup.
 Qed.
 
 (* (2.9) *)
-Theorem emptyset_cup: forall A, \emptyset \cup A = A.
-Proof.
-move=> A.
-by apply subset_cup_eq.
-Qed.
+Theorem emptyset_cup A: \emptyset \cup A = A.
+Proof. by apply subset_cup_eq. Qed.
 
 
-Inductive Cap (A B: Ensemble): Ensemble :=
+Inductive Cap A B: Ensemble :=
   Cap_intro: forall x: T, x \in A -> x \in B -> x \in (Cap A B).
 Notation "A \cap B" := (Cap A B) (at level 50).
 
 (* (2.2.1)'
    本ではsupsetを使っているが、今回はすべてsubsetで統一する *)
-Theorem cap_subset_l: forall A B, A \cap B \subset A.
+Theorem cap_subset_l A B: A \cap B \subset A.
 Proof.
-move=> A B x.
+move=> x.
 by case.
 Qed.
 
 (* (2.2.2)' *)
-Theorem cap_subset_r: forall A B, A \cap B \subset B.
+Theorem cap_subset_r A B: A \cap B \subset B.
 Proof.
-move=> A B x.
+move=> x.
 by case.
 Qed.
 
-Lemma cap_and: forall A B x, x \in A /\ x \in B <-> x \in A \cap B.
+Lemma cap_and A B x: x \in A /\ x \in B <-> x \in A \cap B.
 Proof.
-move=> A B x.
 split;
   by case.
 Qed.
 
 (* (2.3)' *)
-Theorem subsets_cap: forall A B C, C \subset A -> C \subset B -> C \subset A \cap B.
+Theorem subsets_cap A B C: C \subset A -> C \subset B -> C \subset A \cap B.
 Proof.
-move=> A B C HC_subset_A HC_subset_B x.
+move=> HC_subset_A HC_subset_B x.
 split.
 - by apply HC_subset_A.
 - by apply HC_subset_B.
 Qed.
 
 (* (2.4)' *)
-Theorem cap_diag: forall A, A \cap A = A.
+Theorem cap_diag A: A \cap A = A.
 Proof.
-move=> A.
 apply eq_subset' => x;
   rewrite -cap_and.
 - by case.
@@ -223,9 +207,8 @@ apply eq_subset' => x;
 Qed.
 
 (* (2.5)' *)
-Theorem cap_comm: forall A B, A \cap B = B \cap A.
+Theorem cap_comm A B: A \cap B = B \cap A.
 Proof.
-move=> A B.
 apply eq_subset' => x;
   rewrite -2!cap_and.
 - by rewrite and_comm.
@@ -233,18 +216,16 @@ apply eq_subset' => x;
 Qed.
 
 (* (2.6)' *)
-Theorem cap_assoc: forall A B C, (A \cap B) \cap C = A \cap (B \cap C).
+Theorem cap_assoc A B C: (A \cap B) \cap C = A \cap (B \cap C).
 Proof.
-move=> A B C.
 apply eq_subset' => x;
   rewrite -4!cap_and;
   by rewrite and_assoc.
 Qed.
 
 (* (2.7)' *)
-Theorem subset_cap_eq: forall A B, A \subset B <-> A \cap B = A.
+Theorem subset_cap_eq A B: A \subset B <-> A \cap B = A.
 Proof.
-move=> A B.
 split.
 - move=> HA_subset_B.
   apply eq_subset'.
@@ -255,9 +236,9 @@ split.
 Qed.
 
 (* (2.8)' *)
-Theorem subset_caps_subset: forall A B C, A \subset B -> A \cap C \subset B \cap C.
+Theorem subset_caps_subset A B C: A \subset B -> A \cap C \subset B \cap C.
 Proof.
-move=> A B C HA_subset_B.
+move=> HA_subset_B.
 apply subsets_cap => x1.
 - case => x2 HA HC.
   by apply HA_subset_B.
@@ -265,37 +246,28 @@ apply subsets_cap => x1.
 Qed.
 
 (* (2.9)' *)
-Theorem emptyset_cap: forall A, \emptyset \cap A = \emptyset.
-Proof.
-move=> A.
-by apply subset_cap_eq.
-Qed.
+Theorem emptyset_cap A: \emptyset \cap A = \emptyset.
+Proof. by apply subset_cap_eq. Qed.
 
 (* (2.10) *)
-Theorem cup_cap_distrib: forall A B C, (A \cup B) \cap C = (A \cap C) \cup (B \cap C).
+Theorem cup_cap_distrib A B C: (A \cup B) \cap C = (A \cap C) \cup (B \cap C).
 Proof.
-move=> A B C.
 apply eq_axiom => x1.
 split.
 - case => x2.
-  case => x3 H HC.
-  + left.
-    by split => //.
-  + right.
-    by split => //.
-- case => x2.
-  + case => x3 HA HC.
+  by case => x3 H HC;
+    [left | right];
     split => //.
-    by left.
-  + case => x3 HB HC.
-    split => //.
-    by right.
+- case => x2;
+    case => x3;
+    [move=> HA | move=> HB];
+    split => //;
+    by [left | right].
 Qed.
 
 (* (2.11) *)
-Theorem cap_cup_distrib: forall A B C, (A \cap B) \cup C = (A \cup C) \cap (B \cup C).
+Theorem cap_cup_distrib A B C: (A \cap B) \cup C = (A \cup C) \cap (B \cup C).
 Proof.
-move=> A B C.
 apply eq_axiom => x1.
 split.
 - case => x2.
@@ -313,30 +285,27 @@ split.
 Qed.
 
 (* (2.11) *)
-Theorem cup_absorption: forall A B, (A \cup B) \cap A = A.
+Theorem cup_absorption A B: (A \cup B) \cap A = A.
 Proof.
-move=> A B.
 rewrite cap_comm.
 apply subset_cap_eq.
 by apply subset_cup_l.
 Qed.
 
 (* (2.11)' *)
-Theorem cap_absorption: forall A B, (A \cap B) \cup A = A.
+Theorem cap_absorption A B: (A \cap B) \cup A = A.
 Proof.
-move=> A B.
 apply subset_cup_eq.
 by apply cap_subset_l.
 Qed.
 
 
-Inductive Sub (A B: Ensemble): Ensemble :=
+Inductive Sub A B: Ensemble :=
   | Sub_intro: forall x: T, x \in A -> x \notin B -> x \in Sub A B.
 Notation "A - B" := (Sub A B). (* at level 50 *)
 
-Lemma sub_iff: forall A B x, x \in A - B <-> x \in A /\ x \notin B.
+Lemma sub_iff A B x: x \in A - B <-> x \in A /\ x \notin B.
 Proof.
-move=> A B x.
 split.
 - case => x1.
   by split => //.
@@ -344,26 +313,23 @@ split.
   by apply Sub_intro.
 Qed.
 
-Lemma sub_emptyset: forall A, A - \emptyset = A.
+Lemma sub_emptyset A: A - \emptyset = A.
 Proof.
-move=> A.
 apply eq_axiom => x.
 split.
 - by case.
 - by split => //.
 Qed.
 
-Lemma emptyset_sub: forall A, \emptyset - A = \emptyset.
+Lemma emptyset_sub A: \emptyset - A = \emptyset.
 Proof.
-move=> A.
 apply eq_axiom => x.
 split => //.
 by case.
 Qed.
 
-Lemma sub_sim_emptyset: forall A, A - A = \emptyset.
+Lemma sub_sim_emptyset A: A - A = \emptyset.
 Proof.
-move=> A.
 apply eq_axiom => x.
 split => //.
 rewrite sub_iff.
@@ -374,26 +340,19 @@ Qed.
 Inductive FullSet: Ensemble :=
   | FullSet_intro: forall x, x \in FullSet.
 
-Lemma fullset_cap: forall A, FullSet \cap A = A.
-Proof.
-move=> A.
-by rewrite cap_comm -subset_cap_eq.
-Qed.
+Lemma fullset_cap A: FullSet \cap A = A.
+Proof. by rewrite cap_comm -subset_cap_eq. Qed.
 
-Lemma fullset_cup: forall A, FullSet \cup A = FullSet.
-Proof.
-move=> A.
-by rewrite cup_comm -subset_cup_eq.
-Qed.
+Lemma fullset_cup A: FullSet \cup A = FullSet.
+Proof. by rewrite cup_comm -subset_cup_eq. Qed.
 
 
 Inductive ComplementarySet (A: Ensemble): Ensemble :=
   | ComplementarySet_intro: forall x, x \in FullSet - A -> x \in ComplementarySet A.
 Notation "A ^ 'c'" := (ComplementarySet A) (at level 30).
 
-Lemma __compset: forall A, A^c = fun x => x \notin A.
+Lemma __compset A: A^c = fun x => x \notin A.
 Proof.
-move=> A.
 apply eq_subset'.
 - move=> x1 HA.
   case HA => x2.
@@ -402,16 +361,12 @@ apply eq_subset'.
   by split => //.
 Qed.
 
-Lemma compset_in: forall A x, x \in A^c <-> x \notin A.
-Proof.
-move=> A x.
-by rewrite __compset.
-Qed.
+Lemma compset_in A x: x \in A^c <-> x \notin A.
+Proof. by rewrite __compset. Qed.
 
 (* (2.12.1) *)
-Theorem compset_cup: forall A, A \cup A^c = FullSet.
+Theorem compset_cup A: A \cup A^c = FullSet.
 Proof.
-move=> A.
 apply eq_axiom => x.
 split => // _.
 rewrite -cup_or.
@@ -420,9 +375,8 @@ by apply classic. (* ここで古典論理を使い始めた *)
 Qed.
 
 (* (2.12.2) *)
-Theorem compset_cap: forall A, A \cap A^c = EmptySet.
+Theorem compset_cap A: A \cap A^c = EmptySet.
 Proof.
-move=> A.
 apply eq_axiom => x1.
 split => //.
 case => x2.
@@ -430,9 +384,8 @@ by rewrite compset_in.
 Qed.
 
 (* (2.13) *)
-Theorem compset_twice: forall A, A^c^c = A.
+Theorem compset_twice A: A^c^c = A.
 Proof.
-move=> A.
 apply eq_axiom => x.
 rewrite 2!compset_in.
 split.
@@ -458,9 +411,8 @@ by case.
 Qed.
 
 (* (2.15) *)
-Theorem compset_subset: forall A B, A \subset B <-> B^c \subset A^c.
+Theorem compset_subset A B: A \subset B <-> B^c \subset A^c.
 Proof.
-move=> A B.
 split.
 - move=> HA_subset_B x.
   rewrite 2!compset_in => HB HA.
@@ -474,9 +426,8 @@ Qed.
 
 
 (* (2.16) *)
-Theorem de_morgan_cup: forall A B, (A \cup B)^c = A^c \cap B^c.
+Theorem de_morgan_cup A B: (A \cup B)^c = A^c \cap B^c.
 Proof.
-move=> A B.
 apply eq_axiom => x1.
 split.
 - rewrite compset_in => HA_cup_B.
@@ -494,9 +445,8 @@ split.
 Qed.
 
 (* (2.16)' *)
-Theorem de_morgan_cap: forall A B, (A \cap B)^c = A^c \cup B^c.
+Theorem de_morgan_cap A B: (A \cap B)^c = A^c \cup B^c.
 Proof.
-move=> A B.
 apply eq_axiom => x1.
 split.
 - rewrite compset_in => HA_cap_B.
@@ -514,9 +464,8 @@ split.
     by case HA_cap_B.
 Qed.
 
-Lemma sub_fullset: forall A, A - FullSet = \emptyset.
+Lemma sub_fullset A: A - FullSet = \emptyset.
 Proof.
-move=> A.
 apply eq_axiom => x.
 rewrite sub_iff.
 rewrite -compset_in compset_fullset.
@@ -524,9 +473,8 @@ rewrite cap_and.
 by rewrite cap_comm emptyset_cap.
 Qed.
 
-Lemma fullset_sub: forall A, FullSet - A = A^c.
+Lemma fullset_sub A: FullSet - A = A^c.
 Proof.
-move=> A.
 apply eq_axiom => x.
 rewrite sub_iff.
 rewrite -compset_in.
@@ -534,9 +482,8 @@ rewrite cap_and.
 by rewrite fullset_cap.
 Qed.
 
-Lemma sub_compset: forall A, A - A^c = A.
+Lemma sub_compset A: A - A^c = A.
 Proof.
-move=> A.
 apply eq_axiom => x.
 rewrite sub_iff.
 rewrite -compset_in.
@@ -569,32 +516,35 @@ Notation "A ^ 'c'" := (ComplementarySet A) (at level 30): ensemble_scope.
 Section Section2.
 
 Variable T: Type.
+Implicit Type x: T.
+Implicit Type A B C: Ensemble T.
 
 Definition FamilyEnsemble := (Ensemble (Ensemble T)).
+Implicit Types AA BB: FamilyEnsemble.
 
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別する *)
 
-Inductive BigCup (AA: FamilyEnsemble): Ensemble T :=
+Inductive BigCup AA: Ensemble T :=
   | big_cup_intro: forall x: T, (exists A: Ensemble T, A \in AA -> x \in A) -> x \in BigCup AA.
 Notation "\bigcup AA" := (BigCup AA) (at level 50).
 
-Inductive BigCap (AA: FamilyEnsemble): Ensemble T :=
+Inductive BigCap AA: Ensemble T :=
   | big_cap_intro: forall x: T, (forall A: Ensemble T, A \in AA -> x \in A) -> x \in BigCap AA.
 Notation "\bigcap AA" := (BigCap AA) (at level 50).
 
 (* (2.17) *)
-Theorem big_cup_in: forall AA A, A \in AA -> A \subset \bigcup AA.
+Theorem big_cup_in AA A: A \in AA -> A \subset \bigcup AA.
 Proof.
-move=> AA A HA_in_AA.
+move=> HA_in_AA.
 split.
 by exists A.
 Qed.
 
 (* (2.18) *)
 (* /\になってる部分は->だと思うんだけれど、->だと証明できなかった・・・そのうち考える *)
-Theorem big_cup_subset: forall AA C, (forall A, A \in AA /\ A \subset C) -> \bigcup AA \subset C.
+Theorem big_cup_subset AA C: (forall A, A \in AA /\ A \subset C) -> \bigcup AA \subset C.
 Proof.
-move=> AA C HA_subset_C x1.
+move=> HA_subset_C x1.
 case => x2.
 case => A Hx_in_A.
 move: (HA_subset_C A).
@@ -604,17 +554,17 @@ by apply Hx_in_A.
 Qed.
 
 (* (2.17)' *)
-Theorem big_cap_in: forall AA A, A \in AA -> \bigcap AA \subset A.
+Theorem big_cap_in AA A: A \in AA -> \bigcap AA \subset A.
 Proof.
-move=> AA A HA_in_AA x1.
+move=> HA_in_AA x1.
 case => x2.
 by apply.
 Qed.
 
 (* (2.18)' *)
-Theorem big_cap_subset: forall AA C, (forall A, A \in AA -> C \subset A) -> C \subset \bigcap AA.
+Theorem big_cap_subset AA C: (forall A, A \in AA -> C \subset A) -> C \subset \bigcap AA.
 Proof.
-move=> AA C HC_subset_A x1 Hx_in_C.
+move=> HC_subset_A x1 Hx_in_C.
 split => A HA_in_AA.
 apply HC_subset_A => //.
 Qed.
@@ -622,9 +572,8 @@ Qed.
 
 (* S2 問題1についてはやろうかどうか迷ったけど、一旦置いとく *)
 
-Lemma emptyset_not_in: forall A, A = \emptyset <-> forall x: T, x \notin A.
+Lemma emptyset_not_in A: A = \emptyset <-> forall x: T, x \notin A.
 Proof.
-move=> A.
 split.
 - move=> HA x.
   by rewrite HA.
@@ -636,9 +585,8 @@ Qed.
 
 (* S2 問題2 *)
 (* 本ではAとBの入れ替わったバージョンもあるが、そちらはこちらが成り立つことから自明に求められるため、省略する *)
-Theorem cap_eq_emptyset: forall (A B: Ensemble T), A \cap B = \emptyset <-> A \subset B^c.
+Theorem cap_eq_emptyset A B: A \cap B = \emptyset <-> A \subset B^c.
 Proof.
-move=> A B.
 split.
 - move=> HA_cap_B x.
   apply or_to_imply.
@@ -658,17 +606,15 @@ Qed.
 (* S2 問題3a 本ではA=B=C=Dと4つの式を等号でつないでいるが、今回はA=D, A=B, A=Cの3つの定理として順番に証明していく *)
 
 (* S2 問題3a-1 (A=D) *)
-Theorem sub_cap_compset: forall A B: Ensemble T, A - B = A \cap B^c.
+Theorem sub_cap_compset A B: A - B = A \cap B^c.
 Proof.
-move=> A B.
 apply eq_axiom => x.
 by rewrite sub_iff -cap_and -compset_in.
 Qed.
 
 (* S2 問題3a-2 (A=B) *)
-Theorem sub_cup_sub: forall A B: Ensemble T, A - B = (A \cup B) - B.
+Theorem sub_cup_sub A B: A - B = (A \cup B) - B.
 Proof.
-move=> A B.
 apply eq_axiom => x.
 rewrite 2!sub_cap_compset.
 rewrite cup_cap_distrib.
@@ -677,9 +623,8 @@ by rewrite cup_comm emptyset_cup.
 Qed.
 
 (* S2 問題3a-3 (A=C) *)
-Theorem sub_cap_sub: forall A B: Ensemble T, A - B = A - (A \cap B).
+Theorem sub_cap_sub A B: A - B = A - (A \cap B).
 Proof.
-move=> A B.
 rewrite 2!sub_cap_compset.
 rewrite de_morgan_cap.
 rewrite [A \cap (_ \cup _)]cap_comm cup_cap_distrib.
@@ -688,9 +633,8 @@ by rewrite cap_comm.
 Qed.
 
 (* S2 問題3b *)
-Theorem sub_cap_empty: forall A B: Ensemble T, A - B = A <-> A \cap B = \emptyset.
+Theorem sub_cap_empty A B: A - B = A <-> A \cap B = \emptyset.
 Proof.
-move=> A B.
 split.
 - move=> HA; rewrite -HA.
   apply cap_eq_emptyset.
@@ -702,18 +646,16 @@ split.
 Qed.
 
 (* S2 問題3c *)
-Theorem sub_eq_emptyset: forall A B: Ensemble T, A - B = \emptyset <-> A \subset B.
+Theorem sub_eq_emptyset A B: A - B = \emptyset <-> A \subset B.
 Proof.
-move=> A B.
 rewrite sub_cap_compset.
 rewrite cap_eq_emptyset.
 by rewrite compset_twice.
 Qed.
 
 (* S2 問題4a *)
-Theorem sub_cup: forall A B C: Ensemble T, A - (B \cup C) = (A - B) \cap (A - C).
+Theorem sub_cup A B C: A - (B \cup C) = (A - B) \cap (A - C).
 Proof.
-move=> A B C.
 rewrite sub_cap_compset.
 rewrite de_morgan_cup.
 rewrite -{1}[A]cap_diag.
@@ -726,9 +668,8 @@ by rewrite -2!sub_cap_compset.
 Qed.
 
 (* S2 問題4b *)
-Theorem sub_cap: forall A B C: Ensemble T, A - (B \cap C) = (A - B) \cup (A - C).
+Theorem sub_cap A B C: A - (B \cap C) = (A - B) \cup (A - C).
 Proof.
-move=> A B C.
 rewrite sub_cap_compset.
 rewrite de_morgan_cap.
 rewrite cap_comm.
@@ -738,18 +679,16 @@ by rewrite -2!sub_cap_compset.
 Qed.
 
 (* S2 問題4c *)
-Theorem cup_sub: forall A B C: Ensemble T, (A \cup B) - C = (A - C) \cup (B - C).
+Theorem cup_sub A B C: (A \cup B) - C = (A - C) \cup (B - C).
 Proof.
-move=> A B C.
 rewrite sub_cap_compset.
 rewrite cup_cap_distrib.
 by rewrite -2!sub_cap_compset.
 Qed.
 
 (* S2 問題4d *)
-Theorem cap_sub: forall A B C: Ensemble T, (A \cap B) - C = (A - C) \cap (B - C).
+Theorem cap_sub A B C: (A \cap B) - C = (A - C) \cap (B - C).
 Proof.
-move=> A B C.
 rewrite sub_cap_compset.
 rewrite -[C^c]cap_diag.
 rewrite -cap_assoc.
@@ -761,9 +700,8 @@ by rewrite -2!sub_cap_compset.
 Qed.
 
 (* S2 問題4e *)
-Theorem cap_sub': forall A B C: Ensemble T, A \cap (B - C) = (A \cap B) - (A \cap C).
+Theorem cap_sub' A B C: A \cap (B - C) = (A \cap B) - (A \cap C).
 Proof.
-move=> A B C.
 rewrite [(A \cap B) - (A \cap C)]sub_cap_compset.
 rewrite de_morgan_cap.
 rewrite [(A \cap B) \cap _]cap_comm.
@@ -778,9 +716,8 @@ by rewrite -sub_cap_compset.
 Qed.
 
 (* S2 問題5a *)
-Theorem sub_sub_eq_sub_cup: forall A B C: Ensemble T, (A - B) - C = A - (B \cup C).
+Theorem sub_sub_eq_sub_cup A B C: (A - B) - C = A - (B \cup C).
 Proof.
-move=> A B C.
 apply eq_axiom => x.
 rewrite sub_cap_compset -cap_and.
 rewrite sub_cap_compset -cap_and.
@@ -791,9 +728,8 @@ by rewrite -sub_cap_compset.
 Qed.
 
 (* S2 問題5b *)
-Theorem sub_sub_eq_cup: forall A B C: Ensemble T, A - (B - C) = (A - B) \cup (A \cap C).
+Theorem sub_sub_eq_cup A B C: A - (B - C) = (A - B) \cup (A \cap C).
 Proof.
-move=> A B C.
 rewrite [B-C]sub_cap_compset.
 rewrite sub_cap.
 rewrite [A - C^c]sub_cap_compset.
@@ -801,9 +737,9 @@ by rewrite compset_twice.
 Qed.
 
 (* S2 問題6 *)
-Theorem cup_cap_eq_cup_cap: forall A C: Ensemble T, A \subset C -> forall B, A \cup (B \cap C) = (A \cup B) \cap C.
+Theorem cup_cap_eq_cup_cap A C: A \subset C -> forall B, A \cup (B \cap C) = (A \cup B) \cap C.
 Proof.
-move => A C HA_subset_C B.
+move=> HA_subset_C B.
 rewrite cup_comm.
 rewrite cap_cup_distrib.
 rewrite [B \cup A]cup_comm [C \cup A]cup_comm.
@@ -813,31 +749,28 @@ move=> H.
 by rewrite H.
 Qed.
 
-Definition SymmetricDifference (A B: Ensemble T) := (A - B) \cup (B - A).
+Definition SymmetricDifference A B := (A - B) \cup (B - A).
 Notation "A \triangle B" := (SymmetricDifference A B) (at level 50).
 
 (* もう一つの等式 *)
-Lemma sym_diff_compset: forall A B, A \triangle B = (A \cap B^c) \cup (A^c \cap B).
+Lemma sym_diff_compset A B: A \triangle B = (A \cap B^c) \cup (A^c \cap B).
 Proof.
-move=> A B.
 rewrite /SymmetricDifference.
 rewrite 2!sub_cap_compset.
 by rewrite [B \cap A^c]cap_comm.
 Qed.
 
 (* S2 問題7a *)
-Theorem sym_diff_comm: forall A B, A \triangle B = B \triangle A.
+Theorem sym_diff_comm A B: A \triangle B = B \triangle A.
 Proof.
-move=> A B.
 rewrite 2!sym_diff_compset.
 rewrite [B \cap A^c]cap_comm [B^c \cap A]cap_comm.
 by rewrite cup_comm.
 Qed.
 
 (* S2 問題7b *)
-Theorem sym_diff_sub: forall A B, A \triangle B = (A \cup B) - (A \cap B).
+Theorem sym_diff_sub A B: A \triangle B = (A \cup B) - (A \cap B).
 Proof.
-move=> A B.
 rewrite /SymmetricDifference.
 rewrite cup_sub.
 rewrite 2!sub_cap.
@@ -845,17 +778,15 @@ rewrite 2!sub_sim_emptyset.
 by rewrite [_ \cup \emptyset]cup_comm 2!emptyset_cup.
 Qed.
 
-Lemma sub_comm: forall A B C: Ensemble T, (A - B) - C = (A - C) - B.
+Lemma sub_comm A B C: (A - B) - C = (A - C) - B.
 Proof.
-move=> A B C.
 apply eq_axiom => x.
 by rewrite !sub_iff !and_assoc [_ \notin _ /\ _ \notin _]and_comm.
 Qed.
 
 (* きれいな解法を思いつかなかった *)
-Lemma sub_merge: forall A B C: Ensemble T, (A - C) - (B - C) = A - B - C.
+Lemma sub_merge A B C: (A - C) - (B - C) = A - B - C.
 Proof.
-move=> A B C.
 rewrite !sub_cap_compset.
 rewrite de_morgan_cap.
 rewrite compset_twice.
@@ -867,9 +798,8 @@ rewrite [_ \cup \emptyset]cup_comm emptyset_cup.
 by rewrite [B^c \cap C^c]cap_comm.
 Qed.
 
-Lemma sub_sub_cap: forall A B C: Ensemble T, A - (B - C) \cap B = A \cap B \cap C.
+Lemma sub_sub_cap A B C: A - (B - C) \cap B = A \cap B \cap C.
 Proof.
-move=> A B C.
 rewrite !sub_cap_compset.
 rewrite de_morgan_cap.
 rewrite compset_twice.
@@ -880,10 +810,9 @@ rewrite emptyset_cup.
 by rewrite [C \cap B]cap_comm cap_assoc.
 Qed.
 
-Lemma sym_diff_assoc_help: forall A B C: Ensemble T,
+Lemma sym_diff_assoc_help A B C:
   (A - ((B - C) \cup (C - B))) = ((A - B) - C) \cup (A \cap B \cap C).
 Proof.
-move=> A B C.
 rewrite -sub_sub_eq_sub_cup.
 rewrite sub_sub_eq_cup.
 rewrite sub_comm.
@@ -892,10 +821,9 @@ by rewrite sub_sub_cap.
 Qed.
 
 (* S2 問題7c *)
-Theorem sym_diff_assoc: forall A B C,
+Theorem sym_diff_assoc A B C:
   (A \triangle B) \triangle C = A \triangle (B \triangle C).
 Proof.
-move=> A B C.
 apply eq_trans_r with
   (y := (A - B - C) \cup (B - C - A) \cup (C - A - B) \cup (A \cap B \cap C)).
 - rewrite /SymmetricDifference.
@@ -913,10 +841,9 @@ apply eq_trans_r with
 Qed.
 
 (* S2 問題7d *)
-Theorem sym_diff_cap_distrib: forall A B C,
+Theorem sym_diff_cap_distrib A B C:
   A \cap (B \triangle C) = (A \cap B) \triangle (A \cap C).
 Proof.
-move=> A B C.
 apply eq_trans_r with
   (y := (A \cap B \cap C^c) \cup (A \cap C \cap B^c)).
 - rewrite sym_diff_compset.
@@ -934,59 +861,52 @@ apply eq_trans_r with
 Qed.
 
 (* S2 問題8a *)
-Theorem sym_diff_emptyset_l: forall A, A \triangle EmptySet = A.
+Theorem sym_diff_emptyset_l A: A \triangle EmptySet = A.
 Proof.
-move=> A.
 rewrite /SymmetricDifference.
 rewrite sub_emptyset emptyset_sub.
 by rewrite cup_comm emptyset_cup.
 Qed.
 
 (* S2 問題8b *)
-Theorem sym_diff_fullset: forall A, A \triangle FullSet = A^c.
+Theorem sym_diff_fullset A: A \triangle FullSet = A^c.
 Proof.
-move=> A.
 rewrite /SymmetricDifference.
 rewrite sub_fullset fullset_sub.
 by rewrite emptyset_cup.
 Qed.
 
 (* S2 問題8c *)
-Theorem sym_diff_emptyset_r: forall A, A \triangle A = EmptySet.
+Theorem sym_diff_emptyset_r A: A \triangle A = EmptySet.
 Proof.
-move=> A.
 rewrite /SymmetricDifference.
 rewrite sub_sim_emptyset.
 by rewrite cup_diag.
 Qed.
 
 (* S2 問題8d *)
-Theorem sym_diff_compset_fullset: forall A, A \triangle A^c = FullSet.
+Theorem sym_diff_compset_fullset A: A \triangle A^c = FullSet.
 Proof.
-move=> A.
 rewrite sym_diff_compset.
 rewrite compset_twice.
 rewrite 2!cap_diag.
 by rewrite compset_cup.
 Qed.
 
-Lemma sym_diff_not_in_from_in: forall A B x, x \in A -> x \in B -> x \notin A \triangle B.
+Lemma sym_diff_not_in_from_in A B x: x \in A -> x \in B -> x \notin A \triangle B.
 Proof.
-move=> A B x1 HA HB H.
+move=> HA HB H.
 move: H HA HB.
-case => x2.
-- rewrite sub_iff.
-  by case.
-- rewrite sub_iff.
+case => x';
+  rewrite sub_iff;
   by case.
 Qed.
 
-Lemma sub_sym_diff: forall A1 A2 B1 B2 x,
+Lemma sub_sym_diff A1 A2 B1 B2 x:
   x \in A1 - B1 ->
   A1 \triangle A2 = B1 \triangle B2 ->
   x \in A2 \triangle B2.
 Proof.
-move=> A1 A2 B1 B2 x1.
 case => x2 => HA1 HB1 Htriangle.
 case: (classic (x2 \in A2)).
 - move=> HA2.
@@ -1007,15 +927,14 @@ case: (classic (x2 \in A2)).
     by split.
   rewrite Htriangle => H.
   move: HB1.
-  case H => x3.
-  + by case.
-  + by case.
+  case H => x3;
+    by case.
 Qed.
 
 (* S2 問題9 *)
-Theorem sym_diff_shakeup: forall A1 A2 B1 B2, A1 \triangle A2 = B1 \triangle B2 -> A1 \triangle B1 = A2 \triangle B2.
+Theorem sym_diff_shakeup A1 A2 B1 B2: A1 \triangle A2 = B1 \triangle B2 -> A1 \triangle B1 = A2 \triangle B2.
 Proof.
-move=> A1 A2 B1 B2 Htriangle.
+move=> Htriangle.
 rewrite -eq_iff => x0.
 split.
 - rewrite {1}/SymmetricDifference.
@@ -1045,24 +964,22 @@ Notation "\bigcap AA" := (BigCap AA) (at level 50).
 
 Section Section3.
 
+Implicit Types A B: Type.
+
 (* Corr = Correspondence *)
-Definition Corr (A B: Type) := A -> Ensemble B.
+Definition Corr A B := A -> Ensemble B.
 Notation "A ->c B" := (Corr A B) (at level 99).
 
-Definition Graph {A B: Type} (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => (snd x) \in C (fst x)).
+Definition Graph {A B} (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => (snd x) \in C (fst x)).
 
 (* (3.1) *)
-Theorem corr_from_graph:
-  forall A B (C: A ->c B) (a: A), C a = ((fun b => (Graph C) (pair a b)): Ensemble B).
-Proof.
-move=> A B C a.
-by [].
-Qed.
+Theorem corr_from_graph {A B} (C: A ->c B) (a: A):
+  C a = ((fun b => (Graph C) (pair a b)): Ensemble B).
+Proof. by []. Qed.
 
 (* S3 定理1 *)
-Theorem exists_one_graph_from_pair: forall A B (X: Ensemble (A * B)), exists! (G: A ->c B), X = Graph G.
+Theorem exists_one_graph_from_pair A B (X: Ensemble (A * B)): exists! (G: A ->c B), X = Graph G.
 Proof.
-move=> A B X.
 exists (fun a b => X (pair a b)).
 split.
 - rewrite /Graph.
@@ -1072,14 +989,13 @@ split.
   by rewrite HX.
 Qed.
 
-Definition DefRange   {A B: Type} (C: A ->c B): Ensemble A := fun a: A => exists b: B, (a, b) \in Graph(C).
-Definition ValueRange {A B: Type} (C: A ->c B): Ensemble B := fun b: B => exists a: A, (a, b) \in Graph(C).
+Definition DefRange   {A B} (C: A ->c B): Ensemble A := fun a: A => exists b: B, (a, b) \in Graph(C).
+Definition ValueRange {A B} (C: A ->c B): Ensemble B := fun b: B => exists a: A, (a, b) \in Graph(C).
 
-Definition InvCorr {A B: Type} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
+Definition InvCorr {A B} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
-Theorem def_range_neq_empty_set: forall A B (C: A ->c B), DefRange C = fun a: A => C a <> \emptyset.
+Theorem def_range_neq_empty_set A B (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
 Proof.
-move=> A B C.
 apply eq_subset'.
 - move=> a.
   rewrite /In /DefRange.
@@ -1095,25 +1011,24 @@ apply eq_subset'.
 Qed.
 
 (* (3.2) *)
-Theorem in_inv_corr: forall A B (C: A ->c B) a b, b \in C a <-> a \in (InvCorr C) b.
+Theorem in_inv_corr A B (C: A ->c B) a b: b \in C a <-> a \in (InvCorr C) b.
 Proof. by []. Qed.
 
 (* (3.3) *)
-Theorem def_range_inv_corr_to_value_range: forall A B (C: A ->c B), DefRange(InvCorr C) = ValueRange C.
+Theorem def_range_inv_corr_to_value_range A B (C: A ->c B): DefRange(InvCorr C) = ValueRange C.
 Proof. by []. Qed.
 
 (* (3.3)' *)
-Theorem value_range_inv_corr_to_def_range: forall A B (C: A ->c B), DefRange(InvCorr C) = ValueRange C.
+Theorem value_range_inv_corr_to_def_range A B (C: A ->c B): DefRange(InvCorr C) = ValueRange C.
 Proof. by []. Qed.
 
 (* 3.4 *)
-Theorem inv_corr_twice: forall A B (C: A ->c B), InvCorr (InvCorr C) = C.
+Theorem inv_corr_twice A B (C: A ->c B): InvCorr (InvCorr C) = C.
 Proof. by []. Qed.
 
 (* p.27 *)
-Theorem inv_corr_is_not_empty_iff_in_value_range: forall A B b (C: A ->c B),
+Theorem inv_corr_is_not_empty_iff_in_value_range A B b (C: A ->c B):
   (InvCorr C b <> \emptyset) <-> b \in ValueRange C.
-move=> A B b C.
 split.
 - move=> Hneq.
   apply NNPP => Hnot_in.
@@ -1139,10 +1054,10 @@ Notation "A -> B" := (Corr A B) (at level 90).
 これは関数と等しいので、今回は定義しない。
  *)
 
-Definition MapAsCorr {A B: Type} (M: A -> B): A ->c B := 
+Definition MapAsCorr {A B} (M: A -> B): A ->c B := 
   fun a b => b = M a.
 
-Definition Identity {A: Type} (M: A -> A) := identity.
+Definition Identity {A} (M: A -> A) := identity.
 
 (* 分かりづらいんじゃ！ *)
 Set Implicit Arguments.
@@ -1151,10 +1066,9 @@ Definition get_proof := proj2_sig.
 Unset Implicit Arguments.
 
 (* S3 定理2 *)
-Theorem exist_one_map_equivalent_to_graphs: forall {A B} G,
+Theorem exist_one_map_equivalent_to_graphs {A B} G:
   (exists M: A -> B, G = Graph (MapAsCorr M)) <-> (forall a, exists! b, (a, b) \in G).
 Proof.
-move=> A B G.
 split.
 - case => M HG a.
   exists (M a).
@@ -1184,11 +1098,10 @@ split.
 Qed.
 
 (* S3 問題3 *)
-Theorem map_as_corr_inv_corr: forall {A B: Type} (C: A ->c B),
+Theorem map_as_corr_inv_corr {A B: Type} (C: A ->c B):
   (exists! M: A -> B, MapAsCorr M = C) <->
   (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
 Proof.
-move=> A B C.
 split.
 - move=> HM.
   have: {M: A -> B | MapAsCorr M = C}.
@@ -1220,7 +1133,6 @@ split.
 
 Restart.
 
-move=> A B C.
 split.
 - move=> Hexists.
   split.
@@ -1257,9 +1169,10 @@ End Section3.
 
 Section Section4.
 
+Implicit Types A B: Type.
 
 (* メモ: Imageが来たら先でexists *)
-Definition Image {A B: Type} (f: A -> B) (P: Ensemble A): Ensemble B :=
+Definition Image {A B} (f: A -> B) (P: Ensemble A): Ensemble B :=
   fun b: B => exists a, a \in P /\ f a = b.
 
 (* p.30 *)
@@ -1294,7 +1207,7 @@ split.
 Qed.
 
 
-Definition InvImage {A B: Type} (f: A -> B) (Q: Ensemble B): Ensemble A :=
+Definition InvImage {A B} (f: A -> B) (Q: Ensemble B): Ensemble A :=
   fun a: A => f a \in Q.
 
 (* p.31 *)
@@ -1369,7 +1282,7 @@ Qed.
 Theorem image_sub {A B} (f: A -> B) (P: Ensemble A):
   Image f FullSet - Image f P \subset Image f (FullSet - P).
 Proof.
-
+Admitted.
 
 
 
