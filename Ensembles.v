@@ -18,6 +18,7 @@ Definition Ensemble := T -> Prop.
 
 Definition In (a: T) (A: Ensemble): Prop := A a.
 Notation "a \in A" := (In a A) (at level 55).
+
 Notation "a \notin A" := (~ In a A) (at level 55).
 
 Inductive EmptySet: Ensemble := .
@@ -1266,7 +1267,7 @@ Theorem image_def_range_eq_value_range {A B} (f: A -> B):
   Image f (FullSet: Ensemble A) = ValueRange (MapAsCorr f).
 Proof.
 apply eq_subset'.
-- move=> b. 
+- move=> b.
   case => a.
   case => _ Heq.
   by exists a.
@@ -1304,7 +1305,7 @@ by apply eq_subset' => //.
 Qed.
 
 (* 4.1 *)
-Theorem image_subset {A B} (f: A -> B) (P1 P2: Ensemble A): 
+Theorem image_subset {A B} (f: A -> B) (P1 P2: Ensemble A):
   P1 \subset P2 -> Image f P1 \subset Image f P2.
 Proof.
 move=> Hsub b.
@@ -1314,6 +1315,60 @@ exists a.
 split => //.
 by apply Hsub.
 Qed.
+
+(* TODO: もっと場合分けの少ない、簡潔な証明にする *)
+(* 4.2 *)
+Theorem image_cup {A B} (f: A -> B) (P1 P2: Ensemble A):
+  Image f (P1 \cup P2) = Image f P1 \cup Image f P2.
+Proof.
+apply eq_subset'.
+- move=> b.
+  case => a'.
+  case.
+  case; clear a'.
+  + move=> a HP1 Heq.
+    left.
+    exists a.
+    by split => //.
+  + move=> a HP2 Heq.
+    right.
+    exists a.
+    by split => //.
+- move=> b'.
+  case; clear b'.
+  + move=> b.
+    case => a.
+    case => HP1 Heq.
+    rewrite -Heq.
+    exists a.
+    split => //.
+    by left.
+  + move=> b.
+    case => a.
+    case => HP2 Heq.
+    rewrite -Heq.
+    exists a.
+    split => //.
+    by right.
+Qed.
+
+(* 4.3 *)
+Theorem image_cap {A B} (f: A -> B) (P1 P2: Ensemble A):
+  Image f (P1 \cap P2) \subset Image f P1 \cap Image f P2.
+Proof.
+move=> b.
+case => a.
+case.
+rewrite -cap_and.
+case => HP1 HP2 Heq.
+rewrite -Heq.
+by [split; exists a; split].
+Qed.
+
+(* 4.4 *)
+Theorem image_sub {A B} (f: A -> B) (P: Ensemble A):
+  Image f FullSet - Image f P \subset Image f (FullSet - P).
+Proof.
 
 
 
