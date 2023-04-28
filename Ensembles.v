@@ -1229,59 +1229,42 @@ split => //.
 by apply Hsub.
 Qed.
 
-(* TODO: もっと場合分けの少ない、簡潔な証明にする *)
 (* 4.2 *)
 Theorem image_cup {A B} (f: A -> B) (P1 P2: Ensemble A):
   Image f (P1 \cup P2) = Image f P1 \cup Image f P2.
 Proof.
 apply eq_subset'.
-- move=> b.
-  case => a'.
+- move=> b H.
+  case H => a'.
   case.
-  case; clear a'.
-  + move=> a HP1 Heq.
-    left.
-    exists a.
+  case => a HP Heq;
+    [left | right];
+    exists a;
     by split => //.
-  + move=> a HP2 Heq.
-    right.
-    exists a.
-    by split => //.
-- move=> b'.
-  case; clear b'.
-  + move=> b.
-    case => a.
-    case => HP1 Heq.
-    rewrite -Heq.
-    exists a.
-    split => //.
-    by left.
-  + move=> b.
-    case => a.
-    case => HP2 Heq.
-    rewrite -Heq.
-    exists a.
-    split => //.
-    by right.
+- apply subsets_cup;
+  apply /image_subset;
+  by [apply subset_cup_l | apply subset_cup_r].
 Qed.
 
 (* 4.3 *)
 Theorem image_cap {A B} (f: A -> B) (P1 P2: Ensemble A):
   Image f (P1 \cap P2) \subset Image f P1 \cap Image f P2.
 Proof.
-move=> b.
-case => a.
-case.
-rewrite -cap_and.
-case => HP1 HP2 Heq.
-rewrite -Heq.
-by [split; exists a; split].
+apply subsets_cap.
+- apply image_subset.
+  by apply cap_subset_l.
+- apply image_subset.
+  by apply cap_subset_r.
 Qed.
 
 (* 4.4 *)
 Theorem image_sub {A B} (f: A -> B) (P: Ensemble A):
   Image f FullSet - Image f P \subset Image f (FullSet - P).
 Proof.
+move=> b.
+
+
+
 Admitted.
 
 
