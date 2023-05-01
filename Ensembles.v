@@ -1110,6 +1110,21 @@ split.
   split.
   + apply eq_subset' => // a HA.
     rewrite /In /DefRange.
+    case HM => M HMeq.
+    exists (M a).
+    rewrite /In /Graph /snd /fst.
+    by rewrite -HMeq.
+
+Restart.
+
+split.
+- move=> HM.
+  have: {M: A -> B | MapAsCorr M = C}.
+    by apply constructive_definite_description.
+  clear HM => HM.
+  split.
+  + apply eq_subset' => // a HA.
+    rewrite /In /DefRange.
     exists (get_value HM a).
     rewrite /In /Graph /snd /fst.
     rewrite /In.
