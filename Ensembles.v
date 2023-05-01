@@ -1109,11 +1109,19 @@ split.
   clear HM => HM.
   split.
   + apply eq_subset' => // a HA.
-    rewrite /In /DefRange.
     case HM => M HMeq.
     exists (M a).
-    rewrite /In /Graph /snd /fst.
     by rewrite -HMeq.
+  + move=> b b' HB.
+    rewrite cap_eq_emptyset.
+    move: HM.
+    case => M HM a.
+    rewrite -HM => Heq.
+    rewrite compset_in => Heq'.
+    move: Heq.
+    rewrite /InvCorr /MapAsCorr /In.
+    rewrite /InvCorr /MapAsCorr /In in Heq'.
+    by rewrite -Heq'.
 
 Restart.
 
