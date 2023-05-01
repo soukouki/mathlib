@@ -1019,7 +1019,7 @@ Theorem def_range_inv_corr_to_value_range A B (C: A ->c B): DefRange(InvCorr C) 
 Proof. by []. Qed.
 
 (* (3.3)' *)
-Theorem value_range_inv_corr_to_def_range A B (C: A ->c B): DefRange(InvCorr C) = ValueRange C.
+Theorem value_range_inv_corr_to_def_range A B (C: A ->c B): ValueRange(InvCorr C) = DefRange C.
 Proof. by []. Qed.
 
 (* 3.4 *)
