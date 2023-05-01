@@ -1122,69 +1122,6 @@ split.
     rewrite /InvCorr /MapAsCorr /In.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
     by rewrite -Heq'.
-
-Restart.
-
-split.
-- move=> HM.
-  have: {M: A -> B | MapAsCorr M = C}.
-    by apply constructive_definite_description.
-  clear HM => HM.
-  split.
-  + apply eq_subset' => // a HA.
-    rewrite /In /DefRange.
-    exists (get_value HM a).
-    rewrite /In /Graph /snd /fst.
-    rewrite /In.
-    rewrite /get_value.
-    move: (proj2_sig HM) => H.
-    try rewrite -H. (* Dependent type error *)
-    admit.
-  + move=> b b' HB.
-    apply (iffRL (emptyset_not_in _ (InvCorr C b \cap InvCorr C b'))) => a.
-    
-
-
-    move=> H.
-    apply HB. 
-    move: H.
-    case => a' HinB HinB'.
-    
-
-
-
-
-Restart.
-
-split.
-- move=> Hexists.
-  split.
-  + apply eq_subset' => // a _.
-    rewrite /DefRange /In.
-    have: {M: A -> B | MapAsCorr M = C}.
-      by apply constructive_definite_description.
-    move=> Hm.
-    exists ((proj1_sig Hm) a).
-    rewrite /Graph /In /=.
-    move: (proj2_sig Hm) => Hm'.
-    try rewrite -Hm'.
-    admit.
-  + move=> b b' Hbneqb'.
-    apply eq_subset' => // a.
-    have: {M: A -> B | MapAsCorr M = C}.
-      by apply constructive_definite_description.
-    move=> Hm.
-    move: (proj2_sig Hm) => Hm'.
-    rewrite -Hm'. (* こっちではできるんだ *)
-    rewrite /MapAsCorr.
-    (* bかb'のどっちかを固定しないと無理そう？ *)
-    admit.
-- case => HDefRange HInvCorr.
-  rewrite -unique_existence.
-  split.
-  + (* exists (fun a: A => C a). Aを受け取ってBを返す関数がいる。そんでそれ自体をMapAsCorrに渡すとCと等しくなる、
-    と思ったけど、Ensemble Bの中からbを取り出せる(emptysetでない)という証明もしないといけないから、そのままではいけない *)
-  admit.
 Admitted.
 
 End Section3.
