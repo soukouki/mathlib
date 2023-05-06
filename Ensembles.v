@@ -1240,11 +1240,21 @@ Theorem image_sub {A B} (f: A -> B) (P: Ensemble A):
   Image f FullSet - Image f P \subset Image f (FullSet - P).
 Proof.
 move=> b.
-
-
-
-Admitted.
-
+rewrite image_def_range_eq_value_range.
+case => b'.
+rewrite value_range_map_as_corr.
+case => a.
+move=> Heq.
+move=> Hex.
+rewrite fullset_sub.
+exists a.
+split => //.
+rewrite compset_in.
+move=> Hin.
+apply Hex.
+exists a.
+by split => //.
+Qed.
 
 
 End Section4.
