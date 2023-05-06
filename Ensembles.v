@@ -1256,9 +1256,29 @@ exists a.
 by split => //.
 Qed.
 
+(* 4.1' *)
+Theorem invimage_subset {A B} (f: A -> B) (Q1 Q2: Ensemble B):
+  Q1 \subset Q2 -> InvImage f Q1 \subset InvImage f Q2.
+Admitted.
+
+(* 4.2' *)
+Theorem invimage_cup {A B} (f: A -> B) (Q1 Q2: Ensemble B):
+  InvImage f (Q1 \cup Q2) = InvImage f Q1 \cup InvImage f Q2.
+Admitted.
+
+(* こっちのほうは=で繋がれてて綺麗 *)
+(* 4.3' *)
+Theorem invimage_cap {A B} (f: A -> B) (Q1 Q2: Ensemble B):
+  InvImage f (Q1 \cap Q2) = InvImage f Q1 \cap InvImage f Q2.
+Admitted.
+
+(* 4.4' *)
+Theorem invimage_sub {A B} (f: A -> B) (Q: Ensemble B):
+  InvImage f (FullSet - Q) = FullSet - InvImage f Q.
+Admitted.
+
 
 End Section4.
-About hoge.
 
 End Ensembles.
 
