@@ -1122,7 +1122,25 @@ split.
     rewrite /InvCorr /MapAsCorr /In.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
     by rewrite -Heq'.
+- case => Hdef H.
+  (* 定義域が全体かつ、全てのbとb'(b<>b')に対して逆対応がかぶらないなら対応する関数が存在する *)
 Admitted.
+
+Lemma def_range_map_as_corr {A B} (M: A -> B) a:
+  a \in DefRange (MapAsCorr M) <-> exists b, M a = b.
+Proof.
+split;
+  case => b H;
+  by exists b.
+Qed.
+
+Lemma value_range_map_as_corr {A B} (M: A -> B) b:
+  b \in ValueRange (MapAsCorr M) <-> exists a, M a = b.
+Proof.
+split;
+  case => a H;
+  by exists a.
+Qed.
 
 End Section3.
 
