@@ -1259,12 +1259,27 @@ Qed.
 (* 4.1' *)
 Theorem invimage_subset {A B} (f: A -> B) (Q1 Q2: Ensemble B):
   Q1 \subset Q2 -> InvImage f Q1 \subset InvImage f Q2.
-Admitted.
+Proof.
+move=> Hsubset a Hinv.
+by apply Hsubset.
+Qed.
 
 (* 4.2' *)
 Theorem invimage_cup {A B} (f: A -> B) (Q1 Q2: Ensemble B):
   InvImage f (Q1 \cup Q2) = InvImage f Q1 \cup InvImage f Q2.
+Proof.
+apply eq_subset'.
+- Search InvImage.
+  move=> a H.
+  case H => b Hb.
+  + left.
+    rewrite /In /InvImage.
+    admit.
+  + admit.
+- apply subsets_cup;
+    by [left | right].
 Admitted.
+
 
 (* こっちのほうは=で繋がれてて綺麗 *)
 (* 4.3' *)
