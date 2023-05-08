@@ -1269,22 +1269,24 @@ Theorem invimage_cup {A B} (f: A -> B) (Q1 Q2: Ensemble B):
   InvImage f (Q1 \cup Q2) = InvImage f Q1 \cup InvImage f Q2.
 Proof.
 apply eq_subset'.
-- Search InvImage.
-  move=> a H.
-  case H => b Hb.
-  + left.
-    rewrite /In /InvImage.
-    admit.
-  + admit.
+- rewrite /In /InvImage.
+  move=> a.
+  admit.
 - apply subsets_cup;
     by [left | right].
 Admitted.
-
 
 (* こっちのほうは=で繋がれてて綺麗 *)
 (* 4.3' *)
 Theorem invimage_cap {A B} (f: A -> B) (Q1 Q2: Ensemble B):
   InvImage f (Q1 \cap Q2) = InvImage f Q1 \cap InvImage f Q2.
+apply eq_subset'.
+- Search Subset Cap.
+  apply subsets_cap.
+  + move=> a.
+    case => b HQ1 HQ2.
+    rewrite /In /InvImage.
+    (* 4.2'と同じエラー *)
 Admitted.
 
 (* 4.4' *)
