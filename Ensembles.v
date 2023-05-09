@@ -1073,18 +1073,19 @@ split.
 - case => M HG a.
   exists (M a).
   rewrite HG.
-  by split => //.
+  by split.
 - move=> HinG.
   have: (forall a: A, {b: B | (a, b) \in G}).
     move=> a.
     apply constructive_definite_description.
-    by apply (HinG a).
+    by apply HinG.
   move=> Sigb.
   exists (fun a: A => get_value (Sigb a)).
   apply eq_subset'.
   + move=> x Hx.
     rewrite /Graph /MapAsCorr /In.
-    (* bからグラフ上の(a, b)は一意に求められることを示す -> _ = _ を処理するのに使える *)
+    (* bからグラフ上の(a, b)は一意に求められることを示す。
+       uniqueness = forall x y: A, P x -> P y -> x = y という定義で、_ = _ を処理するのに使える *)
     have: (uniqueness (fun b: B => (fst x, b) \in G)).
       by apply unique_existence.
     apply.
@@ -1123,6 +1124,10 @@ split.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
     by rewrite -Heq'.
 - case => Hdef H.
+  rewrite -unique_existence.
+  split.
+  + (* 仮定を崩さない限りは進めない感じがしてきた・・・ *)
+
   (* 定義域が全体かつ、全てのbとb'(b<>b')に対して逆対応がかぶらないなら対応する関数が存在する *)
 Admitted.
 
