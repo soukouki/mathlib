@@ -1250,8 +1250,7 @@ rewrite image_def_range_eq_value_range.
 case => b'.
 rewrite value_range_map_as_corr.
 case => a.
-move=> Heq.
-move=> Hex.
+move=> Heq Hex.
 rewrite fullset_sub.
 exists a.
 split => //.
@@ -1259,7 +1258,7 @@ rewrite compset_in.
 move=> Hin.
 apply Hex.
 exists a.
-by split => //.
+by split.
 Qed.
 
 (* 4.1' *)
@@ -1275,9 +1274,9 @@ Theorem invimage_cup {A B} (f: A -> B) (Q1 Q2: Ensemble B):
   InvImage f (Q1 \cup Q2) = InvImage f Q1 \cup InvImage f Q2.
 Proof.
 apply eq_subset'.
-- rewrite /In /InvImage.
-  move=> a H.
-  rewrite [a \in _]/In -cup_or in H.
+- move=> a H.
+  rewrite /InvImage [a \in _]/In in H.
+  rewrite -cup_or in H.
   case H => Ha;
     by [left | right].
 - apply subsets_cup;
