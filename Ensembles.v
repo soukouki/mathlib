@@ -1124,6 +1124,7 @@ split.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
     by rewrite -Heq'.
 - case => Hdef H.
+  Search DefRange.
   rewrite -unique_existence.
   split.
   + (* 仮定を崩さない限りは進めない感じがしてきた・・・ *)
@@ -1275,24 +1276,27 @@ Theorem invimage_cup {A B} (f: A -> B) (Q1 Q2: Ensemble B):
 Proof.
 apply eq_subset'.
 - rewrite /In /InvImage.
-  move=> a.
-  admit.
+  move=> a H.
+  rewrite [a \in _]/In -cup_or in H.
+  case H => Ha;
+    by [left | right].
 - apply subsets_cup;
     by [left | right].
-Admitted.
+Qed.
 
 (* こっちのほうは=で繋がれてて綺麗 *)
 (* 4.3' *)
 Theorem invimage_cap {A B} (f: A -> B) (Q1 Q2: Ensemble B):
   InvImage f (Q1 \cap Q2) = InvImage f Q1 \cap InvImage f Q2.
 apply eq_subset'.
-- Search Subset Cap.
-  apply subsets_cap.
-  + move=> a.
-    case => b HQ1 HQ2.
-    rewrite /In /InvImage.
-    (* 4.2'と同じエラー *)
-Admitted.
+- apply subsets_cap => a;
+    rewrite /In /InvImage;
+    rewrite -cap_and;
+    by case.
+- move=> a'.
+  case => a HQ1 HQ2.
+  by split.
+Qed.
 
 (* 4.4' *)
 Theorem invimage_sub {A B} (f: A -> B) (Q: Ensemble B):
