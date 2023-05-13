@@ -1190,7 +1190,6 @@ split.
   by rewrite HP.
 Qed.
 
-
 Definition InvImage {A B} (f: A -> B) (Q: Ensemble B): Ensemble A :=
   fun a: A => f a \in Q.
 
@@ -1287,6 +1286,7 @@ Qed.
 (* 4.3' *)
 Theorem invimage_cap {A B} (f: A -> B) (Q1 Q2: Ensemble B):
   InvImage f (Q1 \cap Q2) = InvImage f Q1 \cap InvImage f Q2.
+Proof.
 apply eq_subset'.
 - apply subsets_cap => a;
     rewrite /In /InvImage;
@@ -1300,7 +1300,16 @@ Qed.
 (* 4.4' *)
 Theorem invimage_sub {A B} (f: A -> B) (Q: Ensemble B):
   InvImage f (FullSet - Q) = FullSet - InvImage f Q.
+Proof.
+Search Sub.
+Search (FullSet - _).
+rewrite 2!fullset_sub.
+Search InvImage.
+Search (_ = _^c).
+apply eq_subset'.
+- Search InvImage.
 Admitted.
+
 
 
 End Section4.
