@@ -1151,6 +1151,9 @@ Qed.
 End Section3.
 
 
+Notation "A ->c B" := (Corr A B) (at level 99).
+
+
 Section Section4.
 
 Implicit Types A B: Type.
@@ -1311,6 +1314,26 @@ apply eq_subset'.
   by rewrite {1}/In compset_in => Hin.
 Qed.
 
+(* 4.5 *)
+Theorem invimage_image {A B} (f: A -> B) (P: Ensemble A):
+  InvImage f (Image f P) \subset P.
+Proof.
+Admitted.
+
+(* 4.5' *)
+Theorem image_invimage {A B} (f: A -> B) (Q: Ensemble B):
+  Q \subset Image f (InvImage f Q).
+Admitted.
+
+Definition Surjective {A B} (f: A -> B) := Image f FullSet = FullSet.
+
+Definition Injective {A B} (f: A -> B) := forall a a', f a = f a' -> a = a'.
+
+Definition Bijective {A B} (f: A -> B) := Surjective f \/ Injective f.
+
+(* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす *)
+
+(* S4 定理4 *)
 
 
 
