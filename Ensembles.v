@@ -1301,14 +1301,16 @@ Qed.
 Theorem invimage_sub {A B} (f: A -> B) (Q: Ensemble B):
   InvImage f (FullSet - Q) = FullSet - InvImage f Q.
 Proof.
-Search Sub.
-Search (FullSet - _).
 rewrite 2!fullset_sub.
-Search InvImage.
-Search (_ = _^c).
 apply eq_subset'.
-- Search InvImage.
-Admitted.
+- rewrite /InvImage => a Hin.
+  rewrite compset_in => Hout.
+  by rewrite {1}/In compset_in in Hin.
+- rewrite /InvImage => a.
+  rewrite compset_in => Hout.
+  by rewrite {1}/In compset_in => Hin.
+Qed.
+
 
 
 
