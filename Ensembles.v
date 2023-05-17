@@ -1316,14 +1316,21 @@ Qed.
 
 (* 4.5 *)
 Theorem invimage_image {A B} (f: A -> B) (P: Ensemble A):
-  InvImage f (Image f P) \subset P.
+  P \subset InvImage f (Image f P).
 Proof.
-Admitted.
+move=> a H.
+by exists a.
+Qed.
 
 (* 4.5' *)
 Theorem image_invimage {A B} (f: A -> B) (Q: Ensemble B):
-  Q \subset Image f (InvImage f Q).
-Admitted.
+  Image f (InvImage f Q) \subset Q.
+Proof.
+move=> b.
+case => a.
+case => H Heq.
+by rewrite -Heq.
+Qed.
 
 Definition Surjective {A B} (f: A -> B) := Image f FullSet = FullSet.
 
