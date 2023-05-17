@@ -203,7 +203,7 @@ Proof.
 apply eq_subset' => x;
   rewrite -cap_and.
 - by case.
-- by split => //.
+- by split.
 Qed.
 
 (* (2.5)' *)
@@ -308,7 +308,7 @@ Lemma sub_iff A B x: x \in A - B <-> x \in A /\ x \notin B.
 Proof.
 split.
 - case => x1.
-  by split => //.
+  by split.
 - case.
   by apply Sub_intro.
 Qed.
@@ -318,7 +318,7 @@ Proof.
 apply eq_axiom => x.
 split.
 - by case.
-- by split => //.
+- by split.
 Qed.
 
 Lemma emptyset_sub A: \emptyset - A = \emptyset.
@@ -358,7 +358,7 @@ apply eq_subset'.
   case HA => x2.
   by case.
 - split.
-  by split => //.
+  by split.
 Qed.
 
 Lemma compset_in A x: x \in A^c <-> x \notin A.
@@ -942,9 +942,10 @@ split.
   + by apply (sub_sym_diff A1 A2 B1 B2).
   + rewrite sym_diff_comm.
     by apply (sub_sym_diff B1 B2 A1 A2).
-- assert (Htriangle': A2 \triangle A1 = B2 \triangle B1).
+- have: (A2 \triangle A1 = B2 \triangle B1).
     symmetry.
     by rewrite [B2 \triangle B1]sym_diff_comm [A2 \triangle A1]sym_diff_comm.
+  move=> Htriangle'.
   rewrite {1}/SymmetricDifference.
   case => x1 Hsub.
   + by apply (sub_sym_diff A2 A1 B2 B1).
@@ -1226,7 +1227,7 @@ apply eq_subset'.
   case => a HP Heq;
     [left | right];
     exists a;
-    by split => //.
+    by split.
 - apply subsets_cup;
   apply /image_subset;
   by [apply subset_cup_l | apply subset_cup_r].
