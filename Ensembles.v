@@ -541,7 +541,8 @@ by exists A.
 Qed.
 
 (* (2.18) *)
-(* /\になってる部分は->だと思うんだけれど、->だと証明できなかった・・・そのうち考える *)
+(* /\になってる部分は->だと思うんだけれど、->だと証明できなかった・・・ *)
+(* ->の場合、A \in AA までたどり着くけどそれ自体の証明ができない *)
 Theorem big_cup_subset AA C: (forall A, A \in AA /\ A \subset C) -> \bigcup AA \subset C.
 Proof.
 move=> HA_subset_C x1.
@@ -1127,6 +1128,7 @@ split.
 - case => Hdef H.
   Search DefRange.
   rewrite -unique_existence.
+  Search InvCorr.
   split.
   + (* 仮定を崩さない限りは進めない感じがしてきた・・・ *)
 
