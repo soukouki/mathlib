@@ -1051,7 +1051,7 @@ Qed.
 (* 
 (* Map = Mapping *)
 Definition Map (A B: Type) := A -> B.
-Notation "A -> B" := (Corr A B) (at level 90).
+Notation "A -> B" := (Map A B) (at level 90).
 
 これは関数と等しいので、今回は定義しない。
  *)
@@ -1344,6 +1344,25 @@ Definition Bijective {A B} (f: A -> B) := Surjective f \/ Injective f.
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす *)
 
 (* S4 定理4 *)
+Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
+  (exists M: B -> A, InvCorr (MapAsCorr f) = MapAsCorr M) <-> Bijective f.
+Proof.
+Admitted.
+
+(* S4 定理4の一部 *)
+Theorem invcorr_bijective {A B} (f: A -> B):
+  Bijective f <-> (exists M: B -> A, Bijective M).
+Proof.
+rewrite -invcorr_is_map_iff_bijective.
+split;
+  case => M HM;
+  exists M.
+- admit.
+- admit.
+Admitted.
+
+Definition composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g(f a).
+
 
 
 
