@@ -346,6 +346,15 @@ Proof. by rewrite cap_comm -subset_cap_eq. Qed.
 Lemma fullset_cup A: FullSet \cup A = FullSet.
 Proof. by rewrite cup_comm -subset_cup_eq. Qed.
 
+Lemma eq_fullset A: (forall x, x \in A) <-> A = FullSet.
+Proof.
+split.
+- move=> H.
+  apply eq_subset.
+  by split.
+- move=> H x.
+  by rewrite H.
+Qed.
 
 Inductive ComplementarySet (A: Ensemble): Ensemble :=
   | ComplementarySet_intro: forall x, x \in FullSet - A -> x \in ComplementarySet A.
@@ -1111,7 +1120,7 @@ split.
     by apply constructive_definite_description.
   clear HM => HM.
   split.
-  + apply eq_subset' => // a HA.
+  + rewrite -eq_fullset => a.
     case HM => M HMeq.
     exists (M a).
     by rewrite -HMeq.
@@ -1125,7 +1134,8 @@ split.
     rewrite /InvCorr /MapAsCorr /In.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
     by rewrite -Heq'.
-- case => Hdef H.
+- case.
+  rewrite -eq_fullset => Hdef H.
   Search DefRange.
   rewrite -unique_existence.
   Search InvCorr.
