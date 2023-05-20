@@ -5,6 +5,7 @@ Add LoadPath "." as Local.
 From mathcomp Require Import ssreflect.
 Require Import Coq.Logic.Description.
 Require Import Local.Classical.
+Require Import Coq.Logic.FunctionalExtensionality.
 
 Module Ensembles.
 Declare Scope ensemble_scope.
@@ -1349,14 +1350,31 @@ Definition Surjective {A B} (f: A -> B) := Image f FullSet = FullSet.
 
 Definition Injective {A B} (f: A -> B) := forall a a', f a = f a' -> a = a'.
 
-Definition Bijective {A B} (f: A -> B) := Surjective f \/ Injective f.
+Definition Bijective {A B} (f: A -> B) := Surjective f /\ Injective f.
 
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす *)
 
+(* ここで関数外延性公理を使い始める *)
 (* S4 定理4 *)
 Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
   (exists M: B -> A, InvCorr (MapAsCorr f) = MapAsCorr M) <-> Bijective f.
 Proof.
+split.
+- case => M HM.
+  split.
+  + rewrite /Surjective.
+    rewrite -eq_fullset => b.
+    rewrite image_def_range_eq_value_range. (* この特徴はSurjectiveに言えることだから、Lemmaを立てたほうがいい *)
+    Search (ValueRange (MapAsCorr _)).
+    rewrite value_range_map_as_corr.
+    exists (M b).
+    Search (Corr eq).
+    (* HMを使うしか無いが、HMはCorrのeqだから分解できない。つまりどちらかを用意してeqで変換するしか無い。 *)
+    rewrite /InvCorr /MapAsCorr /In in HM.
+    (* HM : (fun (b : B) (a : A) => b = f a) = (fun (a : B) (b : A) => b = M a) *)
+    
+
+
 Admitted.
 
 (* S4 定理4の一部 *)
