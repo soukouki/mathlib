@@ -1355,11 +1355,40 @@ Definition Bijective {A B} (f: A -> B) := Surjective f /\ Injective f.
 Theorem surjective_exists {A B} (f: A -> B):
   Surjective f <-> forall b, exists a, f a = b.
 Proof.
-Admitted.
+rewrite /Surjective.
+rewrite -eq_fullset.
+rewrite image_def_range_eq_value_range.
+split;
+  move=> H b;
+  by [rewrite -value_range_map_as_corr | rewrite value_range_map_as_corr].
+Qed.
 
 Theorem injective_exists_unique {A B} (f: A -> B):
-  Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> exists! a, a \in InvCorr (MapAsCorr f) b.
+  Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> exists! a, f a = b.
 Proof.
+rewrite /Injective.
+Search ValueRange MapAsCorr.
+split.
+- move=> H b.
+  rewrite value_range_map_as_corr.
+  case => a Ha.
+  subst.
+  exists a.
+  split => // a' Heq.
+  by apply H.
+- move=> H a a' Hfeq.
+  move: (H (f a)) Hfeq; clear H.
+  rewrite value_range_map_as_corr.
+  case.
+    by exists a.
+  move=> a2.
+  rewrite /unique.
+  case => Ha2 Heq.
+  move: (Heq a').
+  move=> H H2.
+
+
+
 Admitted.
 
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす *)
