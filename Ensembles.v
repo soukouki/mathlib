@@ -1379,7 +1379,7 @@ split.
 - move=> H a a' Hfeq.
   move: (H (f a)) Hfeq; clear H.
   rewrite value_range_map_as_corr.
-  case.
+  case. (* ここでcaseするのは悪手な感じがする *)
     by exists a.
   move=> a2.
   rewrite /unique.
@@ -1413,23 +1413,14 @@ split.
     exists (g b).
     rewrite /unique.
     split.
+    * (* f (g b) = b *)
 
+      admit.
+    * move=> a Heq.
+      subst.
+      (* g (f a) = a *)
 
-
-    rewrite -def_range_inv_corr_to_value_range in Hb.
-    rewrite Hg in Hb.
-    rewrite def_range_map_as_corr in Hb.
-    case Hb.
-
-
-
-    rewrite /uniqueness => a a' Heqa Heqa'.
-    
-
-
-    exists (g b).
-    split.
-    * 
+      admit.
 - case => Hsur Hin.
   suff: B -> A.
   move=> g.
