@@ -1352,39 +1352,57 @@ Definition Injective {A B} (f: A -> B) := forall a a', f a = f a' -> a = a'.
 
 Definition Bijective {A B} (f: A -> B) := Surjective f /\ Injective f.
 
+Theorem surjective_exists {A B} (f: A -> B):
+  Surjective f <-> forall b, exists a, f a = b.
+Proof.
+Admitted.
+
+Theorem injective_exists_unique {A B} (f: A -> B):
+  Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> exists! a, a \in InvCorr (MapAsCorr f) b.
+Proof.
+Admitted.
+
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす *)
 
 (* ここで関数外延性公理を使い始める *)
 (* S4 定理4 *)
 Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
-  (exists M: B -> A, InvCorr (MapAsCorr f) = MapAsCorr M) <-> Bijective f.
+  (exists g: B -> A, InvCorr (MapAsCorr f) = MapAsCorr g) <-> Bijective f.
 Proof.
 split.
-- case => M HM.
+- case => g Hg.
+  move: Hg.
   split.
   + rewrite /Surjective.
     rewrite -eq_fullset => b.
     rewrite image_def_range_eq_value_range. (* この特徴はSurjectiveに言えることだから、Lemmaを立てたほうがいい *)
-    Search (ValueRange (MapAsCorr _)).
-    rewrite value_range_map_as_corr.
-    exists (M b).
-    Search (Corr eq).
-    (* HMを使うしか無いが、HMはCorrのeqだから分解できない。つまりどちらかを用意してeqで変換するしか無い。 *)
-    rewrite /InvCorr /MapAsCorr /In in HM.
-    (* HM : (fun (b : B) (a : A) => b = f a) = (fun (a : B) (b : A) => b = M a) *)
-    
+    rewrite -def_range_inv_corr_to_value_range.
+    rewrite Hg.
+    rewrite def_range_map_as_corr.
+    by exists (g b).
+  + rewrite injective_exists_unique => b Hb.
+    rewrite Hg.
+    exists (g b).
+    by split.
+- case => Hsur Hin.
+  suff: B -> A.
+  move=> g.
+  exists g.
+  rewrite /InvCorr /MapAsCorr /In.
+  apply functional_extensionality => b.
+  apply functional_extensionality => a.
 
 
 Admitted.
 
 (* S4 定理4の一部 *)
 Theorem invcorr_bijective {A B} (f: A -> B):
-  Bijective f <-> (exists M: B -> A, Bijective M).
+  Bijective f <-> (exists g: B -> A, Bijective g).
 Proof.
 rewrite -invcorr_is_map_iff_bijective.
 split;
-  case => M HM;
-  exists M.
+  case => g Hg;
+  exists g.
 - admit.
 - admit.
 Admitted.
