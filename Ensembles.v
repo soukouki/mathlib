@@ -1066,10 +1066,10 @@ Notation "A -> B" := (Map A B) (at level 90).
 これは関数と等しいので、今回は定義しない。
  *)
 
-Definition MapAsCorr {A B} (M: A -> B): A ->c B := 
-  fun a b => b = M a.
+Definition MapAsCorr {A B} (f: A -> B): A ->c B := 
+  fun a b => b = f a.
 
-Definition Identity {A} (M: A -> A) := identity.
+Definition Identity {A} (f: A -> A) := identity.
 
 (* 分かりづらいんじゃ！ *)
 Set Implicit Arguments.
@@ -1079,11 +1079,11 @@ Unset Implicit Arguments.
 
 (* S3 定理2 *)
 Theorem exist_one_map_equivalent_to_graphs {A B} G:
-  (exists M: A -> B, G = Graph (MapAsCorr M)) <-> (forall a, exists! b, (a, b) \in G).
+  (exists f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
 Proof.
 split.
-- case => M HG a.
-  exists (M a).
+- case => f HG a.
+  exists (f a).
   rewrite HG.
   by split.
 - move=> HinG.
@@ -1112,24 +1112,24 @@ Qed.
 
 (* S3 問題3 *)
 Theorem map_as_corr_inv_corr {A B: Type} (C: A ->c B):
-  (exists! M: A -> B, MapAsCorr M = C) <->
+  (exists! f: A -> B, MapAsCorr f = C) <->
   (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
 Proof.
 split.
-- move=> HM.
-  have: {M: A -> B | MapAsCorr M = C}.
+- move=> Hf.
+  have: {f: A -> B | MapAsCorr f = C}.
     by apply constructive_definite_description.
-  clear HM => HM.
+  clear Hf => Hf.
   split.
   + rewrite -eq_fullset => a.
-    case HM => M HMeq.
-    exists (M a).
-    by rewrite -HMeq.
+    case Hf => f Hfeq.
+    exists (f a).
+    by rewrite -Hfeq.
   + move=> b b' HB.
     rewrite cap_eq_emptyset.
-    move: HM.
-    case => M HM a.
-    rewrite -HM => Heq.
+    move: Hf.
+    case => f Hf a.
+    rewrite -Hf => Heq.
     rewrite compset_in => Heq'.
     move: Heq.
     rewrite /InvCorr /MapAsCorr /In.
@@ -1146,16 +1146,16 @@ split.
   (* 定義域が全体かつ、全てのbとb'(b<>b')に対して逆対応がかぶらないなら対応する関数が存在する *)
 Admitted.
 
-Lemma def_range_map_as_corr {A B} (M: A -> B) a:
-  a \in DefRange (MapAsCorr M) <-> exists b, M a = b.
+Lemma def_range_map_as_corr {A B} (f: A -> B) a:
+  a \in DefRange (MapAsCorr f) <-> exists b, f a = b.
 Proof.
 split;
   case => b H;
   by exists b.
 Qed.
 
-Lemma value_range_map_as_corr {A B} (M: A -> B) b:
-  b \in ValueRange (MapAsCorr M) <-> exists a, M a = b.
+Lemma value_range_map_as_corr {A B} (f: A -> B) b:
+  b \in ValueRange (MapAsCorr f) <-> exists a, f a = b.
 Proof.
 split;
   case => a H;
