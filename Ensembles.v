@@ -1410,9 +1410,26 @@ split.
     rewrite def_range_map_as_corr.
     by exists (g b).
   + rewrite injective_exists_unique => b Hb.
-    rewrite Hg.
     exists (g b).
-    by split.
+    rewrite /unique.
+    split.
+
+
+
+    rewrite -def_range_inv_corr_to_value_range in Hb.
+    rewrite Hg in Hb.
+    rewrite def_range_map_as_corr in Hb.
+    case Hb.
+
+
+
+    rewrite /uniqueness => a a' Heqa Heqa'.
+    
+
+
+    exists (g b).
+    split.
+    * 
 - case => Hsur Hin.
   suff: B -> A.
   move=> g.
