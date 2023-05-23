@@ -1006,7 +1006,7 @@ Definition ValueRange {A B} (C: A ->c B): Ensemble B := fun b: B => exists a: A,
 
 Definition InvCorr {A B} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
-Theorem def_range_neq_empty_set A B (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
+Theorem def_range_neq_empty_set {A B} (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
 Proof.
 apply eq_subset'.
 - move=> a.
@@ -1021,6 +1021,9 @@ apply eq_subset'.
   case => b Hin.
   by exists b.
 Qed.
+
+Lemma def_range_exists {A B} (C: A ->c B): DefRange C = fun a: A => exists b, b \in C a.
+Proof. by []. Qed.
 
 (* (3.2) *)
 Theorem in_inv_corr A B (C: A ->c B) a b: b \in C a <-> a \in (InvCorr C) b.
@@ -1136,12 +1139,10 @@ split.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
     by rewrite -Heq'.
 - case.
-  rewrite -eq_fullset => Hdef H.
-  Search DefRange.
-  rewrite -unique_existence.
-  Search InvCorr.
-  split.
-  + (* 仮定を崩さない限りは進めない感じがしてきた・・・ *)
+  rewrite -eq_fullset /In def_range_exists => Hdef Hinv.
+  have: forall b, exists a, a \in InvCorr C b -> C a = fun b' => b' = b.
+    move=> b.
+    (* 無理じゃないここ？ *)
 
   (* 定義域が全体かつ、全てのbとb'(b<>b')に対して逆対応がかぶらないなら対応する関数が存在する *)
 Admitted.
