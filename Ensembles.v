@@ -253,8 +253,7 @@ Proof. by apply subset_cap_eq. Qed.
 (* (2.10) *)
 Theorem cup_cap_distrib A B C: (A \cup B) \cap C = (A \cap C) \cup (B \cap C).
 Proof.
-apply eq_axiom => x1.
-split.
+apply eq_split => x1.
 - case => x2.
   by case => x3 H HC;
     [left | right];
@@ -269,8 +268,7 @@ Qed.
 (* (2.11) *)
 Theorem cap_cup_distrib A B C: (A \cap B) \cup C = (A \cup C) \cap (B \cup C).
 Proof.
-apply eq_axiom => x1.
-split.
+apply eq_split => x1.
 - case => x2.
   + case => x3 HA HB.
     split; by left.
@@ -316,23 +314,20 @@ Qed.
 
 Lemma sub_emptyset A: A - \emptyset = A.
 Proof.
-apply eq_axiom => x.
-split.
+apply eq_split => x.
 - by case.
 - by split.
 Qed.
 
 Lemma emptyset_sub A: \emptyset - A = \emptyset.
 Proof.
-apply eq_axiom => x.
-split => //.
+apply eq_split => x //.
 by case.
 Qed.
 
 Lemma sub_sim_emptyset A: A - A = \emptyset.
 Proof.
-apply eq_axiom => x.
-split => //.
+apply eq_split => x //.
 rewrite sub_iff.
 by case.
 Qed.
@@ -377,8 +372,7 @@ Proof. by rewrite __compset. Qed.
 (* (2.12.1) *)
 Theorem compset_cup A: A \cup A^c = FullSet.
 Proof.
-apply eq_axiom => x.
-split => // _.
+apply eq_split => x // _.
 rewrite -cup_or.
 rewrite compset_in.
 by apply classic. (* ここで古典論理を使い始めた *)
@@ -387,8 +381,7 @@ Qed.
 (* (2.12.2) *)
 Theorem compset_cap A: A \cap A^c = EmptySet.
 Proof.
-apply eq_axiom => x1.
-split => //.
+apply eq_split => x1 //.
 case => x2.
 by rewrite compset_in.
 Qed.
@@ -406,16 +399,14 @@ Qed.
 (* (2.14.1) *)
 Theorem compset_emptyset: EmptySet^c = FullSet.
 Proof.
-apply eq_axiom => x.
-split => // _.
+apply eq_split => x // _.
 by rewrite compset_in.
 Qed.
 
 (* (2.14.2) *)
 Theorem compset_fullset: FullSet^c = EmptySet.
 Proof.
-apply eq_axiom => x1.
-split => //.
+apply eq_split => x1 //.
 case => x2.
 by case.
 Qed.
@@ -438,8 +429,7 @@ Qed.
 (* (2.16) *)
 Theorem de_morgan_cup A B: (A \cup B)^c = A^c \cap B^c.
 Proof.
-apply eq_axiom => x1.
-split.
+apply eq_split => x1.
 - rewrite compset_in => HA_cup_B.
   split.
   + rewrite compset_in => HA.
@@ -457,8 +447,7 @@ Qed.
 (* (2.16)' *)
 Theorem de_morgan_cap A B: (A \cap B)^c = A^c \cup B^c.
 Proof.
-apply eq_axiom => x1.
-split.
+apply eq_split => x1.
 - rewrite compset_in => HA_cap_B.
   rewrite -cup_or 2!compset_in.
   apply not_and_or => HA_and_B.
@@ -589,8 +578,7 @@ split.
 - move=> HA x.
   by rewrite HA.
 - move=> Hnx.
-  apply eq_axiom => x.
-  split => //.
+  apply eq_split => x //.
   by move: (Hnx x).
 Qed.
 
