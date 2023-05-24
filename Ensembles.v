@@ -58,7 +58,7 @@ split.
   + by apply HB_subset_A.
 Qed.
 
-Lemma eq_subset' A B: A \subset B -> B \subset A -> A = B.
+Lemma eq_split A B: A \subset B -> B \subset A -> A = B.
 Proof.
 move=> HAB HBA.
 apply eq_subset => //.
@@ -116,7 +116,7 @@ Qed.
 (* (2.4) *)
 Theorem cup_diag A: A \cup A = A.
 Proof.
-apply eq_subset'.
+apply eq_split.
 - by apply subsets_cup => //.
 - by apply subset_cup_l.
 Qed.
@@ -124,7 +124,7 @@ Qed.
 (* (2.5) *)
 Theorem cup_comm A B: A \cup B = B \cup A.
 Proof.
-apply eq_subset' => x;
+apply eq_split => x;
   rewrite -2!cup_or;
   by rewrite or_comm.
 Qed.
@@ -132,7 +132,7 @@ Qed.
 (* (2.6) *)
 Theorem cup_assoc A B C: (A \cup B) \cup C = A \cup (B \cup C).
 Proof.
-apply eq_subset' => x;
+apply eq_split => x;
   rewrite -4!cup_or;
   by rewrite or_assoc.
 Qed.
@@ -142,7 +142,7 @@ Theorem subset_cup_eq A B: A \subset B <-> A \cup B = B.
 Proof.
 split.
 - move=> HA_subset_B.
-  apply eq_subset'.
+  apply eq_split.
   + by apply subsets_cup => //.
   + by apply subset_cup_r.
 - move=> H; rewrite -H.
@@ -201,7 +201,7 @@ Qed.
 (* (2.4)' *)
 Theorem cap_diag A: A \cap A = A.
 Proof.
-apply eq_subset' => x;
+apply eq_split => x;
   rewrite -cap_and.
 - by case.
 - by split.
@@ -210,7 +210,7 @@ Qed.
 (* (2.5)' *)
 Theorem cap_comm A B: A \cap B = B \cap A.
 Proof.
-apply eq_subset' => x;
+apply eq_split => x;
   rewrite -2!cap_and.
 - by rewrite and_comm.
 - by case.
@@ -219,7 +219,7 @@ Qed.
 (* (2.6)' *)
 Theorem cap_assoc A B C: (A \cap B) \cap C = A \cap (B \cap C).
 Proof.
-apply eq_subset' => x;
+apply eq_split => x;
   rewrite -4!cap_and;
   by rewrite and_assoc.
 Qed.
@@ -229,7 +229,7 @@ Theorem subset_cap_eq A B: A \subset B <-> A \cap B = A.
 Proof.
 split.
 - move=> HA_subset_B.
-  apply eq_subset'.
+  apply eq_split.
   + by apply cap_subset_l.
   + by apply subsets_cap => //.
 - move=> H; rewrite -H.
@@ -363,7 +363,7 @@ Notation "A ^ 'c'" := (ComplementarySet A) (at level 30).
 
 Lemma __compset A: A^c = fun x => x \notin A.
 Proof.
-apply eq_subset'.
+apply eq_split.
 - move=> x1 HA.
   case HA => x2.
   by case.
@@ -1008,7 +1008,7 @@ Definition InvCorr {A B} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
 Theorem def_range_neq_empty_set {A B} (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
 Proof.
-apply eq_subset'.
+apply eq_split.
 - move=> a.
   rewrite /In /DefRange.
   case => b HinG.
@@ -1048,7 +1048,7 @@ split.
 - move=> Hneq.
   apply NNPP => Hnot_in.
   apply Hneq.
-  apply eq_subset' => // x Hin_inv.
+  apply eq_split => // x Hin_inv.
   apply False_ind.
   apply Hnot_in.
   rewrite /ValueRange.
@@ -1096,7 +1096,7 @@ split.
     by apply HinG.
   move=> Sigb.
   exists (fun a: A => get_value (Sigb a)).
-  apply eq_subset'.
+  apply eq_split.
   + move=> x Hx.
     rewrite /Graph /MapAsCorr /In.
     (* bからグラフ上の(a, b)は一意に求められることを示す。
@@ -1181,7 +1181,7 @@ Definition Image {A B} (f: A -> B) (P: Ensemble A): Ensemble B :=
 Theorem image_def_range_eq_value_range {A B} (f: A -> B):
   Image f (FullSet: Ensemble A) = ValueRange (MapAsCorr f).
 Proof.
-apply eq_subset'.
+apply eq_split.
 - move=> b.
   case => a.
   case => _ Heq.
@@ -1215,7 +1215,7 @@ Definition InvImage {A B} (f: A -> B) (Q: Ensemble B): Ensemble A :=
 Theorem invimage_fullset {A B} (f: A -> B):
   InvImage f (FullSet: Ensemble B) = (FullSet: Ensemble A).
 Proof.
-by apply eq_subset' => //.
+by apply eq_split => //.
 Qed.
 
 (* 4.1 *)
@@ -1234,7 +1234,7 @@ Qed.
 Theorem image_cup {A B} (f: A -> B) (P1 P2: Ensemble A):
   Image f (P1 \cup P2) = Image f P1 \cup Image f P2.
 Proof.
-apply eq_subset'.
+apply eq_split.
 - move=> b H.
   case H => a'.
   case.
@@ -1290,7 +1290,7 @@ Qed.
 Theorem invimage_cup {A B} (f: A -> B) (Q1 Q2: Ensemble B):
   InvImage f (Q1 \cup Q2) = InvImage f Q1 \cup InvImage f Q2.
 Proof.
-apply eq_subset'.
+apply eq_split.
 - move=> a H.
   rewrite /InvImage [a \in _]/In in H.
   rewrite -cup_or in H.
@@ -1305,7 +1305,7 @@ Qed.
 Theorem invimage_cap {A B} (f: A -> B) (Q1 Q2: Ensemble B):
   InvImage f (Q1 \cap Q2) = InvImage f Q1 \cap InvImage f Q2.
 Proof.
-apply eq_subset'.
+apply eq_split.
 - apply subsets_cap => a;
     rewrite /In /InvImage;
     rewrite -cap_and;
@@ -1320,7 +1320,7 @@ Theorem invimage_sub {A B} (f: A -> B) (Q: Ensemble B):
   InvImage f (FullSet - Q) = FullSet - InvImage f Q.
 Proof.
 rewrite 2!fullset_sub.
-apply eq_subset'.
+apply eq_split.
 - rewrite /InvImage => a Hin.
   rewrite compset_in => Hout.
   by rewrite {1}/In compset_in in Hin.
