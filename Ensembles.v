@@ -1127,7 +1127,10 @@ split.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
     by rewrite -Heq'.
 - case.
-  rewrite -eq_fullset /In def_range_exists => Hdef Hinv.
+  rewrite -eq_fullset.
+  rewrite /In def_range_exists => Hdef.
+  rewrite /InvCorr => Hinv.
+
   have: forall b, exists a, a \in InvCorr C b -> C a = fun b' => b' = b.
     move=> b.
     (* 無理じゃないここ？ *)
@@ -1365,20 +1368,19 @@ split.
   exists a.
   split => // a' Heq.
   by apply H.
-- move=> H a a' Hfeq.
-  move: (H (f a)) Hfeq; clear H.
+- move=> Hexi a a' Hfeq.
+  move: (Hexi (f a)).
   rewrite value_range_map_as_corr.
-  case. (* ここでcaseするのは悪手な感じがする *)
+  case.
     by exists a.
   move=> a2.
   rewrite /unique.
-  case => Ha2 Heq.
-  move: (Heq a').
-  move=> H H2.
-
-
-
-Admitted.
+  case => Heq H.
+  apply eq_trans with (y := a2).
+  + by move: (H a eq_refl).
+  + symmetry in Hfeq.
+    by move: (H a' Hfeq).
+Qed.
 
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす *)
 
