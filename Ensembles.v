@@ -1401,16 +1401,20 @@ split.
     rewrite def_range_map_as_corr.
     by exists (g b).
   + rewrite injective_exists_unique => b Hb.
+    rewrite -def_range_inv_corr_to_value_range in Hb. (* やらないよりは残る式が綺麗になった *)
+    rewrite Hg in Hb.
+    rewrite def_range_map_as_corr in Hb.
     exists (g b).
     rewrite /unique.
     split.
     * (* f (g b) = b *)
-
+      move: Hb.
+      case => a Heq.
+      rewrite Heq.
       admit.
     * move=> a Heq.
-      subst.
+      rewrite -Heq.
       (* g (f a) = a *)
-
       admit.
 - case => Hsur Hin.
   suff: B -> A.
