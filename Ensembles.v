@@ -1439,10 +1439,84 @@ split;
 - admit.
 Admitted.
 
-Definition composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g(f a).
+Definition Composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g(f a).
+Notation "f \circle g" := (Composite f g) (at level 50).
 
+(* S4 定理5a *)
+Theorem composite_surjective {A B C} (f: A -> B) (g: B -> C):
+  Surjective f -> Surjective g -> Surjective (f \circle g).
+Proof.
+rewrite !surjective_exists => Hf Hg c.
+move: (Hg c).
+case => b Heqc.
+move: (Hf b).
+case => a Heqb.
+exists a.
+rewrite /Composite.
+by rewrite Heqb.
+Qed.
 
+(* TODO 綺麗にする *)
+(* S4 定理5b *)
+Theorem composite_injective {A B C} (f: A -> B) (g: B -> C):
+  Injective f -> Injective g -> Injective (f \circle g).
+Proof.
+rewrite !injective_exists_unique => Hf Hg c Hc.
+rewrite value_range_map_as_corr in Hc.
+move: (Hg c).
+case.
+  Search ValueRange MapAsCorr.
+  rewrite value_range_map_as_corr.
+  case Hc => a Heqa.
+  by exists (f a).
+move=> b Huniqb.
+move: (Hf b).
+case.
+  rewrite value_range_map_as_corr.
+  case Hc => a Heqa.
+  exists a.
+  move: Huniqb.
+  rewrite /unique.
+  case => Heqc H.
+  move: (H (f a)).
+  symmetry.
+  by apply H0.
+move=> a Huniqa.
+exists a.
+rewrite /unique.
+split.
+- rewrite /Composite.
+  move: Huniqb.
+  rewrite /unique.
+  case => Heqb _.
+  rewrite -Heqb.
+  move: Huniqa.
+  rewrite /unique.
+  case => Heqa _.
+  by rewrite -Heqa.
+- rewrite /Composite.
+  move=> a' Heqa'.
+  move: Huniqb.
+  rewrite /unique.
+  case => Hgeq Heqb.
+  move: Huniqa.
+  rewrite /unique.
+  case => Hfeq Heqa.
+  rewrite (Heqa a') => //.
+  rewrite (Heqb (f a')) => //.
+Qed.
 
+(* S4 定理5c *)
+Theorem composite_bijective {A B C} (f: A -> B) (g: B -> C):
+  Bijective f -> Bijective g -> Bijective (f \circle g).
+Proof.
+rewrite /Bijective.
+case => Hsurf Hinf.
+case => Hsurg Hing.
+split.
+- by apply composite_surjective.
+- by apply composite_injective.
+Qed.
 
 End Section4.
 
