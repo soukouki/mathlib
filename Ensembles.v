@@ -1456,7 +1456,6 @@ rewrite /Composite.
 by rewrite Heqb.
 Qed.
 
-(* TODO 綺麗にする *)
 (* S4 定理5b *)
 Theorem composite_injective {A B C} (f: A -> B) (g: B -> C):
   Injective f -> Injective g -> Injective (f \circle g).
@@ -1465,7 +1464,6 @@ rewrite !injective_exists_unique => Hf Hg c Hc.
 rewrite value_range_map_as_corr in Hc.
 move: (Hg c).
 case.
-  Search ValueRange MapAsCorr.
   rewrite value_range_map_as_corr.
   case Hc => a Heqa.
   by exists (f a).
@@ -1475,33 +1473,26 @@ case.
   rewrite value_range_map_as_corr.
   case Hc => a Heqa.
   exists a.
-  move: Huniqb.
-  rewrite /unique.
-  case => Heqc H.
+  rewrite /unique in Huniqb.
+  case Huniqb => Heqc H.
   move: (H (f a)).
   symmetry.
   by apply H0.
 move=> a Huniqa.
 exists a.
+rewrite /unique in Huniqb.
+rewrite /unique in Huniqa.
 rewrite /unique.
 split.
 - rewrite /Composite.
-  move: Huniqb.
-  rewrite /unique.
-  case => Heqb _.
+  case Huniqb => Heqb _.
   rewrite -Heqb.
-  move: Huniqa.
-  rewrite /unique.
-  case => Heqa _.
+  case Huniqa => Heqa _.
   by rewrite -Heqa.
 - rewrite /Composite.
   move=> a' Heqa'.
-  move: Huniqb.
-  rewrite /unique.
-  case => Hgeq Heqb.
-  move: Huniqa.
-  rewrite /unique.
-  case => Hfeq Heqa.
+  case Huniqb => Hgeq Heqb.
+  case Huniqa => Hfeq Heqa.
   rewrite (Heqa a') => //.
   rewrite (Heqb (f a')) => //.
 Qed.
