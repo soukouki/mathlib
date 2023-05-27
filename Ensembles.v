@@ -1439,12 +1439,12 @@ split;
 - admit.
 Admitted.
 
-Definition Composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g(f a).
-Notation "f \circle g" := (Composite f g) (at level 50).
+Definition Composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
+Notation "f \circle g" := (Composite g f) (at level 50).
 
 (* S4 定理5a *)
 Theorem composite_surjective {A B C} (f: A -> B) (g: B -> C):
-  Surjective f -> Surjective g -> Surjective (f \circle g).
+  Surjective f -> Surjective g -> Surjective (g \circle f).
 Proof.
 rewrite !surjective_exists => Hf Hg c.
 move: (Hg c).
@@ -1458,7 +1458,7 @@ Qed.
 
 (* S4 定理5b *)
 Theorem composite_injective {A B C} (f: A -> B) (g: B -> C):
-  Injective f -> Injective g -> Injective (f \circle g).
+  Injective f -> Injective g -> Injective (g \circle f).
 Proof.
 rewrite !injective_exists_unique => Hf Hg c Hc.
 rewrite value_range_map_as_corr in Hc.
@@ -1499,7 +1499,7 @@ Qed.
 
 (* S4 定理5c *)
 Theorem composite_bijective {A B C} (f: A -> B) (g: B -> C):
-  Bijective f -> Bijective g -> Bijective (f \circle g).
+  Bijective f -> Bijective g -> Bijective (g \circle f).
 Proof.
 rewrite /Bijective.
 case => Hsurf Hinf.
@@ -1508,6 +1508,11 @@ split.
 - by apply composite_surjective.
 - by apply composite_injective.
 Qed.
+
+(* S4 定理6(1) *)
+Theorem composite_assoc {A B C D} (f: A -> B) (g: B -> C) (h: C -> D):
+  (h \circle g) \circle f = h \circle (g \circle f).
+Proof. by []. Qed.
 
 End Section4.
 
