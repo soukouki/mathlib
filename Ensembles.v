@@ -958,8 +958,8 @@ End Section2.
 Arguments BigCup {_} _ _.
 Arguments BigCap {_} _ _.
 
-Notation "\bigcup AA" := (BigCup AA) (at level 50).
-Notation "\bigcap AA" := (BigCap AA) (at level 50).
+Notation "\bigcup AA" := (BigCup AA) (at level 50): ensemble_scope.
+Notation "\bigcap AA" := (BigCap AA) (at level 50): ensemble_scope.
 
 
 Section Section3.
@@ -1060,7 +1060,9 @@ Notation "A -> B" := (Map A B) (at level 90).
 Definition MapAsCorr {A B} (f: A -> B): A ->c B := 
   fun a b => b = f a.
 
-Definition Identity {A} (f: A -> A) := identity.
+Definition Identity {A}: A -> A := fun a: A => a.
+Notation "\I A" := (Identity: A -> A) (at level 30).
+
 
 (* 分かりづらいんじゃ！ *)
 Set Implicit Arguments.
@@ -1157,8 +1159,8 @@ Qed.
 End Section3.
 
 
-Notation "A ->c B" := (Corr A B) (at level 99).
-
+Notation "A ->c B" := (Corr A B) (at level 99): ensemble_scope.
+Notation "\I A" := (Identity: A -> A) (at level 30): ensemble_scope.
 
 Section Section4.
 
