@@ -1134,8 +1134,9 @@ split.
 - case.
   rewrite -eq_fullset.
   rewrite /In def_range_exists => Hdef Hinv.
-
+  
   have: {f: A -> B | forall a, exists! b, f a = b}.
+    apply constructive_definite_description.
     admit.
   move=> Hf.
   exists (get_value Hf).
@@ -1145,6 +1146,13 @@ split.
     move: (get_proof Hf) => H1.
     apply functional_extensionality => a.
     apply functional_extensionality => b.
+    move: (H1 a).
+    case.
+    move=> b2.
+    rewrite /unique.
+    case => H2 H3.
+    move: (H3 b).
+    そもそも(b = proj1_sig Hf a) = C a bってなんだ？？
     admit.
   + move=> f H1.
     rewrite /get_value.
