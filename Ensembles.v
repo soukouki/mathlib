@@ -1516,6 +1516,20 @@ Theorem composite_assoc {A B C D} (f: A -> B) (g: B -> C) (h: C -> D):
   (h \circle g) \circle f = h \circle (g \circle f).
 Proof. by []. Qed.
 
+(* S4 定理6(2)-1 *)
+Theorem composite_idendity {A B} (f: A -> B):
+  f \circle \I A = f.
+Proof. by []. Qed.
+
+(* S4 定理6(2)-2 *)
+Theorem identity_composite {A B} (f: A -> B):
+  \I B \circle f = f.
+Proof. by []. Qed.
+
+(* TODO fは全単射であることを依存型で示すんじゃなくて、sigを使って書いたほうがいい感じがする。要検討 *)
+(* TODO 逆写像をかんたんに作り出せるようなDefinitionなりが必要(多分これもsigをつかって書くことになる感じがする) *)
+
+
 End Section4.
 
 End Ensembles.
