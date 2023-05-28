@@ -1134,33 +1134,35 @@ split.
 - case.
   rewrite -eq_fullset.
   rewrite /In def_range_exists => Hdef Hinv.
-  
-  have: {f: A -> B | forall a, exists! b, f a = b}.
-    apply constructive_definite_description.
-    admit.
-  move=> Hf.
-  exists (get_value Hf).
+  have: A -> B. (* 試しに入れてみる *)
+    move=> a.
+    move: (Hdef a) => H.
+    move: (constructive_indefinite_description _ H) => H2.
+    by apply (get_value H2).
+    (* ！？！？！？！？ *)
+  move=> f.
+  exists f.
+  rewrite /unique.
   split.
   + rewrite /MapAsCorr.
-    rewrite /get_value.
-    move: (get_proof Hf) => H1.
     apply functional_extensionality => a.
     apply functional_extensionality => b.
-    move: (H1 a).
-    case.
-    move=> b2.
-    rewrite /unique.
-    case => H2 H3.
-    move: (H3 b).
-    そもそも(b = proj1_sig Hf a) = C a bってなんだ？？
+    (* (b = f a) = C a bってなんだよ・・・・・・ *)
+    (* 関数fはHdefのexistsから値を取り出す方式で定義してたので、それがCと等しくなるとかの性質をどこから引っ張ればいいのかわからない *)
     admit.
-  + move=> f H1.
-    rewrite /get_value.
-    move: (get_proof Hf) => H2.
-    apply functional_extensionality => a.
-    case (H2 a) => b.
-    Search unique.
-    
+  + move=> f' f'eq.
+    have: A. (* これも試し。Aが空集合のときにどうなるかを考えてみればわかるか？わからん気がする *)
+      admit.
+      (* なんかここに(exists a, a \in A)とか書けないの違和感あるな *)
+    move=> a.
+    move: (Hinv (f a) (f' a)).
+    move=> H1.
+    (* このH1は多分Falseになるはず *)
+    admit.
+  (* もっとGraphとかを活用して解いていくのがいいのか・・・？ *)
+
+
+
 
 Admitted.
 
