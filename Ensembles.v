@@ -1133,14 +1133,27 @@ split.
     by rewrite -Heq'.
 - case.
   rewrite -eq_fullset.
-  rewrite /In def_range_exists => Hdef.
-  rewrite /InvCorr => Hinv.
+  rewrite /In def_range_exists => Hdef Hinv.
 
-  have: forall b, exists a, a \in InvCorr C b -> C a = fun b' => b' = b.
-    move=> b.
-    (* 無理じゃないここ？ *)
+  have: {f: A -> B | forall a, exists! b, f a = b}.
+    admit.
+  move=> Hf.
+  exists (get_value Hf).
+  split.
+  + rewrite /MapAsCorr.
+    rewrite /get_value.
+    move: (get_proof Hf) => H1.
+    apply functional_extensionality => a.
+    apply functional_extensionality => b.
+    admit.
+  + move=> f H1.
+    rewrite /get_value.
+    move: (get_proof Hf) => H2.
+    apply functional_extensionality => a.
+    case (H2 a) => b.
+    Search unique.
+    
 
-  (* 定義域が全体かつ、全てのbとb'(b<>b')に対して逆対応がかぶらないなら対応する関数が存在する *)
 Admitted.
 
 Lemma def_range_map_as_corr {A B} (f: A -> B) a:
@@ -1405,16 +1418,17 @@ split.
     rewrite def_range_map_as_corr.
     by exists (g b).
   + rewrite injective_exists_unique => b Hb.
-    rewrite -def_range_inv_corr_to_value_range in Hb. (* やらないよりは残る式が綺麗になった *)
+(*     rewrite -def_range_inv_corr_to_value_range in Hb. (* やらないよりは残る式が綺麗になった *)
     rewrite Hg in Hb.
-    rewrite def_range_map_as_corr in Hb.
+    rewrite def_range_map_as_corr in Hb. *)
+    rewrite value_range_map_as_corr in Hb.
     exists (g b).
     rewrite /unique.
     split.
     * (* f (g b) = b *)
       move: Hb.
       case => a Heq.
-      rewrite Heq.
+
       admit.
     * move=> a Heq.
       rewrite -Heq.
