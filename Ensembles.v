@@ -1141,12 +1141,30 @@ split.
     by apply (get_value H2).
   move=> f.
   exists f.
-  + rewrite /MapAsCorr.
-    apply functional_extensionality => a.
-    apply functional_extensionality => b.
-    apply propositional_extensionality.
-    suff: b = f a <-> b \in C a => //.
-    
+  rewrite /MapAsCorr.
+  apply functional_extensionality => a.
+  apply functional_extensionality => b.
+  apply propositional_extensionality.
+  suff: b = f a <-> b \in C a => //.
+  have: forall a, exists b, b = f a /\ b \in C a.
+    move=> a'. (* なんかこんなことがわかれば楽！ *)
+    admit.
+  move=> Hexi.
+  split.
+  + move=> Heq.
+    move: (Hexi a).
+    case => b' Hb'.
+    subst.
+    case Hb' => H1 H2.
+    by rewrite -H1.
+  + move=> Hin.
+    move: (Hexi a).
+    case => b' Hb'.
+    case Hb' => H1 H2.
+    rewrite -H1.
+    (* ?????? *)
+    admit.
+
 
     (* 正直さっぱり・・・ *)
     (* この命題が証明できるなら一意性も同じように証明できそうだし、弱めた条件をまた強くしても良さそう *)
