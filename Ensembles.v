@@ -1108,13 +1108,13 @@ Qed.
 
 (* S3 問題3 *)
 Theorem map_as_corr_inv_corr {A B: Type} (C: A ->c B):
-  (exists! f: A -> B, MapAsCorr f = C) <->
+  (exists f: A -> B, MapAsCorr f = C) <->
   (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
 Proof.
 split.
 - move=> Hf.
   have: {f: A -> B | MapAsCorr f = C}.
-    by apply constructive_definite_description.
+    by apply constructive_indefinite_description.
   clear Hf => Hf.
   split.
   + rewrite -eq_fullset => a.
@@ -1134,33 +1134,22 @@ split.
 - case.
   rewrite -eq_fullset.
   rewrite /In def_range_exists => Hdef Hinv.
-  have: A -> B. (* 試しに入れてみる *)
+  have: A -> B.
     move=> a.
     move: (Hdef a) => H.
     move: (constructive_indefinite_description _ H) => H2.
     by apply (get_value H2).
-    (* ！？！？！？！？ *)
   move=> f.
   exists f.
-  rewrite /unique.
-  split.
   + rewrite /MapAsCorr.
     apply functional_extensionality => a.
     apply functional_extensionality => b.
-    (* (b = f a) = C a bってなんだよ・・・・・・ *)
-    (* 関数fはHdefのexistsから値を取り出す方式で定義してたので、それがCと等しくなるとかの性質をどこから引っ張ればいいのかわからない *)
-    admit.
-  + move=> f' f'eq.
-    have: A. (* これも試し。Aが空集合のときにどうなるかを考えてみればわかるか？わからん気がする *)
-      admit.
-      (* なんかここに(exists a, a \in A)とか書けないの違和感あるな *)
-    move=> a.
-    move: (Hinv (f a) (f' a)).
-    move=> H1.
-    (* このH1は多分Falseになるはず *)
-    admit.
-  (* もっとGraphとかを活用して解いていくのがいいのか・・・？ *)
+    apply propositional_extensionality.
+    suff: b = f a <-> b \in C a => //.
+    
 
+    (* 正直さっぱり・・・ *)
+    (* この命題が証明できるなら一意性も同じように証明できそうだし、弱めた条件をまた強くしても良さそう *)
 
 
 
