@@ -3,7 +3,7 @@
 Add LoadPath "." as Local.
 
 From mathcomp Require Import ssreflect.
-Require Import Coq.Logic.Description.
+Require Import Coq.Logic.IndefiniteDescription.
 Require Import Local.Classical.
 Require Import Coq.Logic.FunctionalExtensionality.
 
@@ -1440,6 +1440,18 @@ split;
 - admit.
 - admit.
 Admitted.
+
+Definition InvMap {A B}:
+  { f: A -> B | Bijective f } ->
+  { g: B -> A | Bijective g }.
+Proof.
+move=> HA.
+move: (invcorr_bijective (get_value HA)) => Heq.
+move: (get_proof HA) => Hbi.
+rewrite /get_value in Heq.
+move: (iffLR Heq Hbi) => Hexi.
+by move: (constructive_indefinite_description _ Hexi).
+Qed.
 
 Definition Composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
 Notation "f \circle g" := (Composite g f) (at level 50).
