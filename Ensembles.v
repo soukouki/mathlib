@@ -3,8 +3,9 @@
 Add LoadPath "." as Local.
 
 From mathcomp Require Import ssreflect.
-Require Import Coq.Logic.IndefiniteDescription.
 Require Import Local.Classical.
+Require Import Coq.Logic.FunctionalExtensionality.
+Require Import Coq.Logic.IndefiniteDescription.
 Require Import Coq.Logic.FunctionalExtensionality.
 
 Module Ensembles.
@@ -1538,8 +1539,19 @@ Theorem identity_composite {A B} (f: A -> B):
   \I B \circle f = f.
 Proof. by []. Qed.
 
-(* TODO fは全単射であることを依存型で示すんじゃなくて、sigを使って書いたほうがいい感じがする。要検討 *)
-(* TODO 逆写像をかんたんに作り出せるようなDefinitionなりが必要(多分これもsigをつかって書くことになる感じがする) *)
+(* S4 定理6(3)-1 *)
+Theorem invmap_composite_identity {A B} (f: { f: A -> B | Bijective f } ):
+  get_value (InvMap f) \circle (get_value f) = \I A.
+Proof.
+rewrite /Composite.
+rewrite /Identity.
+apply functional_extensionality => a.
+move: (InvMap f) => g.
+(* get_value g (get_value f a) = a *)
+(* sigの扱いの問題・・・うぅ *)
+
+
+Admitted.
 
 
 End Section4.
