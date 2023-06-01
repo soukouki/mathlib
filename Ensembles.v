@@ -1547,11 +1547,31 @@ rewrite /Composite.
 rewrite /Identity.
 apply functional_extensionality => a.
 move: (InvMap f) => g.
-(* get_value g (get_value f a) = a *)
-(* sigの扱いの問題・・・うぅ *)
+have: exists b, b = get_value f a.
+  by exists (get_value f a).
+case => b Heqb.
+rewrite -Heqb.
+have: exists a, a = get_value g b.
+  by exists (get_value g b).
+case => a' Heqa.
+rewrite -Heqa.
+(* 苦手な形に入っちゃった・・・ *)
 
 
 Admitted.
+
+(* S4 定理6(3)-2 *)
+Theorem composite_invmap_identity {A B} (f: { f: A -> B | Bijective f } ):
+  get_value f \circle get_value (InvMap f) = \I B.
+Admitted.
+
+(* 写像の拡大と縮小についてはいまいちイメージがわかないので後回し *)
+
+Definition IndicatorFunction {X} (A: Ensemble X) :=
+  fun x: X => 
+    match classic (x \in A) with
+    | _ => 1 (* パターンマッチのやり方がわからん *)
+    end.
 
 
 End Section4.
