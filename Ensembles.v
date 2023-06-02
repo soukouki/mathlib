@@ -6,8 +6,8 @@ From mathcomp Require Import ssreflect.
 Require Import Local.Classical.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Coq.Logic.IndefiniteDescription.
-Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Coq.Logic.ClassicalDescription.
+Require Import Coq.Logic.PropExtensionality.
 
 Module Ensembles.
 Declare Scope ensemble_scope.
@@ -1146,6 +1146,22 @@ split.
   apply functional_extensionality => b.
   apply propositional_extensionality.
   suff: b = f a <-> b \in C a => //.
+  have: uniqueness (fun b => b \in C a).
+    rewrite /uniqueness => b1 b2 Hb1 Hb2.
+    move: (Hinv b1 b2).
+    move=> H.
+    apply NNPP => H2.
+    move: (H H2).
+    rewrite cap_eq_emptyset.
+    rewrite /Subset => H3.
+    move: (H3 a).
+    rewrite {1}/In /InvCorr => H4.
+    move: (H4 Hb1).
+    rewrite compset_in.
+    by rewrite {1}/In.
+  move=> Huniq.
+  Search uniqueness.
+  rewrite /uniqueness in Huniq.
   have: forall a, exists b, b = f a /\ b \in C a.
     move=> a'. (* なんかこんなことがわかれば楽！ *)
     admit.
@@ -1162,14 +1178,12 @@ split.
     case => b' Hb'.
     case Hb' => H1 H2.
     rewrite -H1.
-    (* ?????? *)
-    admit.
+    by apply Huniq.
 
 
-    (* 正直さっぱり・・・ *)
-    (* この命題が証明できるなら一意性も同じように証明できそうだし、弱めた条件をまた強くしても良さそう *)
 
 
+(* TODO 命題のexistsをexists!にしても証明できないか考える *)
 
 Admitted.
 
