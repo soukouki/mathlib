@@ -1377,7 +1377,6 @@ split.
   case.
     by exists a.
   move=> a2.
-  rewrite /unique.
   case => Heq H.
   apply eq_trans with (y := a2).
   + by move: (H a eq_refl).
@@ -1449,9 +1448,8 @@ Proof.
 move=> HA.
 move: (invcorr_bijective (get_value HA)) => Heq.
 move: (get_proof HA) => Hbi.
-rewrite /get_value in Heq.
 move: (iffLR Heq Hbi) => Hexi.
-by move: (constructive_indefinite_description _ Hexi).
+by apply (constructive_indefinite_description _ Hexi).
 Qed.
 
 Definition Composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
@@ -1462,10 +1460,8 @@ Theorem composite_surjective {A B C} (f: A -> B) (g: B -> C):
   Surjective f -> Surjective g -> Surjective (g \circle f).
 Proof.
 rewrite !surjective_exists => Hf Hg c.
-move: (Hg c).
-case => b Heqc.
-move: (Hf b).
-case => a Heqb.
+case (Hg c) => b Heqc.
+case (Hf b) => a Heqb.
 exists a.
 rewrite /Composite.
 by rewrite Heqb.
@@ -1477,39 +1473,30 @@ Theorem composite_injective {A B C} (f: A -> B) (g: B -> C):
 Proof.
 rewrite !injective_exists_unique => Hf Hg c Hc.
 rewrite value_range_map_as_corr in Hc.
-move: (Hg c).
-case.
+case (Hg c).
   rewrite value_range_map_as_corr.
   case Hc => a Heqa.
   by exists (f a).
 move=> b Huniqb.
-move: (Hf b).
-case.
+case (Hf b).
   rewrite value_range_map_as_corr.
   case Hc => a Heqa.
   exists a.
-  rewrite /unique in Huniqb.
   case Huniqb => Heqc H.
-  move: (H (f a)).
   symmetry.
-  by apply H0.
+  by apply (H (f a)).
 move=> a Huniqa.
 exists a.
-rewrite /unique in Huniqb.
-rewrite /unique in Huniqa.
-rewrite /unique.
 split.
-- rewrite /Composite.
-  case Huniqb => Heqb _.
+- case Huniqb => Heqb _.
   rewrite -Heqb.
   case Huniqa => Heqa _.
   by rewrite -Heqa.
-- rewrite /Composite.
-  move=> a' Heqa'.
+- move=> a' Heqa'.
   case Huniqb => Hgeq Heqb.
   case Huniqa => Hfeq Heqa.
   rewrite (Heqa a') => //.
-  rewrite (Heqb (f a')) => //.
+  by rewrite (Heqb (f a')).
 Qed.
 
 (* S4 定理5c *)
