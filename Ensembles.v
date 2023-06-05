@@ -913,7 +913,7 @@ case: (classic (x2 \in A2)).
   left.
   split => //.
   have: x2 \notin A1 \triangle A2.
-    by apply sym_diff_not_in_from_in => //.
+    by apply sym_diff_not_in_from_in.
   rewrite Htriangle => HBnotin HB2.
   apply /HBnotin.
   rewrite sym_diff_comm.
@@ -997,14 +997,12 @@ Definition InvCorr {A B} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
 Theorem def_range_neq_empty_set {A B} (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
 Proof.
-apply eq_split.
-- move=> a.
-  rewrite /In /DefRange.
+apply eq_split => a.
+- rewrite /In /DefRange.
   case => b HinG.
   rewrite emptyset_not_in => H.
   by apply (H b).
-- move=> a.
-  rewrite /In /DefRange.
+- rewrite /In /DefRange.
   rewrite emptyset_not_in.
   rewrite -exists_iff_not_forall_not.
   case => b Hin.
@@ -1030,6 +1028,9 @@ Proof. by []. Qed.
 Theorem inv_corr_twice A B (C: A ->c B): InvCorr (InvCorr C) = C.
 Proof. by []. Qed.
 
+Lemma in_emptyset A (x: A): x \in \emptyset <-> False.
+Proof. by []. Qed.
+
 (* p.27 *)
 Theorem inv_corr_is_not_empty_iff_in_value_range A B b (C: A ->c B):
   (InvCorr C b <> \emptyset) <-> b \in ValueRange C.
@@ -1038,7 +1039,7 @@ split.
   apply NNPP => Hnot_in.
   apply Hneq.
   apply eq_split => // x Hin_inv.
-  apply False_ind.
+  rewrite in_emptyset.
   apply Hnot_in.
   rewrite /ValueRange.
   exists x.
