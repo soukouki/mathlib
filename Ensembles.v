@@ -1556,13 +1556,11 @@ Admitted.
 
 (* 写像の拡大と縮小についてはいまいちイメージがわかないので後回し *)
 
-Definition IndicatorFunction {X} (A: Ensemble X) (x: X): nat.
-case (excluded_middle_informative (x \in A)).
-- move=> Hin.
-  apply 1.
-- move=> Hnotin.
-  apply 0.
-Qed.
+Definition IndicatorFunction {X} (A: Ensemble X) (x: X) :=
+  match excluded_middle_informative (x \in A) with
+  | left a => 1
+  | right b => 0
+  end.
 
 
 
