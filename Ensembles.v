@@ -7,6 +7,7 @@ Require Import Local.Classical.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Coq.Logic.IndefiniteDescription.
 Require Import Coq.Logic.FunctionalExtensionality.
+Require Import Coq.Logic.ClassicalDescription.
 
 Module Ensembles.
 Declare Scope ensemble_scope.
@@ -1555,11 +1556,16 @@ Admitted.
 
 (* 写像の拡大と縮小についてはいまいちイメージがわかないので後回し *)
 
-Definition IndicatorFunction {X} (A: Ensemble X) :=
-  fun x: X => 
-    match classic (x \in A) with
-    | _ => 1 (* パターンマッチのやり方がわからん *)
-    end.
+Definition IndicatorFunction {X} (A: Ensemble X) (x: X): nat.
+case (excluded_middle_informative (x \in A)).
+- move=> Hin.
+  apply 1.
+- move=> Hnotin.
+  apply 0.
+Qed.
+
+
+
 
 
 End Section4.
