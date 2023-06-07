@@ -1393,15 +1393,22 @@ Definition Injective {A B} (f: A -> B) := forall a a', f a = f a' -> a = a'.
 
 Definition Bijective {A B} (f: A -> B) := Surjective f /\ Injective f.
 
-Theorem surjective_exists {A B} (f: A -> B):
-  Surjective f <-> forall b, exists a, f a = b.
+Lemma surjective_value_range {A B} (f: A -> B):
+  Surjective f <-> forall b, b \in ValueRange (MapAsCorr f).
 Proof.
 rewrite /Surjective.
 rewrite -eq_fullset.
-rewrite image_def_range_eq_value_range.
+by rewrite image_def_range_eq_value_range.
+Qed.
+
+Theorem surjective_exists {A B} (f: A -> B):
+  Surjective f <-> forall b, exists a, f a = b.
+Proof.
+rewrite surjective_value_range.
 split;
   move=> H b;
   by [rewrite -value_range_map_as_corr | rewrite value_range_map_as_corr].
+    (* 方向が違うだけ *)
 Qed.
 
 Theorem injective_exists_unique {A B} (f: A -> B):
@@ -1441,9 +1448,7 @@ split.
 - case => g Hg.
   move: Hg.
   split.
-  + rewrite /Surjective.
-    rewrite -eq_fullset => b.
-    rewrite image_def_range_eq_value_range. (* この特徴はSurjectiveに言えることだから、Lemmaを立てたほうがいい *)
+  + rewrite surjective_value_range => b.
     rewrite -def_range_inv_corr_to_value_range.
     rewrite Hg.
     rewrite def_range_map_as_corr.
