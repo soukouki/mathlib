@@ -1448,7 +1448,7 @@ Qed.
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす *)
 
 (* ここで関数外延性公理を使い始める *)
-(* S4 定理4 *)
+(* S4 定理4 前半 *)
 Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
   (exists g: B -> A, InvCorr (MapAsCorr f) = MapAsCorr g) <-> Bijective f.
 Proof.
@@ -1462,17 +1462,16 @@ split.
     rewrite def_range_map_as_corr.
     by exists (g b).
   + rewrite injective_uniqueness => b Hb.
+    suff: forall a, a = g (f a).
+      move=> H a1 a2 Heqa1 Heqa2.
+      apply eq_trans_r with (y := g b);
+        by [rewrite -Heqa1 | rewrite -Heqa2 ].
+    (* この命題ならHgからなんか出せそうな感じがする *)
     rewrite -[MapAsCorr f]inv_corr_twice in Hb.
     rewrite Hg in Hb.
     rewrite value_range_inv_corr_to_def_range in Hb.
     rewrite def_range_map_as_corr in Hb.
-    move=> a a' Heqa Heqa'.
-    apply eq_trans_r with (y := g b).
-    * rewrite -Heqa.
-      admit.
-    * rewrite -Heqa'.
-      admit.
-    (* Hgをうまく使えてない・・・ *)
+    admit.
 - case => Hsur Hin.
   suff: B -> A.
   move=> g.
@@ -1484,7 +1483,7 @@ split.
 
 Admitted.
 
-(* S4 定理4の一部 *)
+(* S4 定理4 後半 *)
 Theorem invcorr_bijective {A B} (f: A -> B):
   Bijective f <-> (exists g: B -> A, Bijective g).
 Proof.
