@@ -1411,30 +1411,38 @@ split;
     (* 方向が違うだけ *)
 Qed.
 
+Theorem injective_uniqueness {A B} (f: A -> B):
+  Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> uniqueness (fun a => f a = b).
+Proof.
+split.
+- move=> Hinj b Hb.
+  rewrite value_range_map_as_corr in Hb.
+  rewrite /uniqueness => a a' Heqa Heqa'.
+  apply Hinj.
+  by rewrite Heqa Heqa'.
+- move=> Hb a a' Heq.
+  rewrite /uniqueness in Hb.
+  apply (Hb (f a)) => //.
+  rewrite value_range_map_as_corr.
+  by exists a.
+Qed.
+
 Theorem injective_exists_unique {A B} (f: A -> B):
   Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> exists! a, f a = b.
 Proof.
-rewrite /Injective.
-Search ValueRange MapAsCorr.
 split.
-- move=> H b.
-  rewrite value_range_map_as_corr.
-  case => a Ha.
-  subst.
-  exists a.
-  split => // a' Heq.
-  by apply H.
-- move=> Hexi a a' Hfeq.
-  move: (Hexi (f a)).
-  rewrite value_range_map_as_corr.
-  case.
-    by exists a.
-  move=> a2.
-  case => Heq H.
-  apply eq_trans with (y := a2).
-  + by move: (H a eq_refl).
-  + symmetry in Hfeq.
-    by move: (H a' Hfeq).
+- move=> Hinj b Hexi.
+  rewrite -unique_existence.
+  split.
+  + by rewrite value_range_map_as_corr in Hexi.
+  + apply injective_uniqueness => //.
+- rewrite injective_uniqueness.
+  move=> H1 b H2.
+  case (H1 b H2) => a Huniq.
+  case Huniq => Heq H.
+  move=> a1 a2 Ha1 Ha2.
+  apply eq_stepl with (x := a);
+    by apply H.
 Qed.
 
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす *)
@@ -1453,23 +1461,18 @@ split.
     rewrite Hg.
     rewrite def_range_map_as_corr.
     by exists (g b).
-  + rewrite injective_exists_unique => b Hb.
-(*     rewrite -def_range_inv_corr_to_value_range in Hb. (* やらないよりは残る式が綺麗になった *)
+  + rewrite injective_uniqueness => b Hb.
+    rewrite -[MapAsCorr f]inv_corr_twice in Hb.
     rewrite Hg in Hb.
-    rewrite def_range_map_as_corr in Hb. *)
-    rewrite value_range_map_as_corr in Hb.
-    exists (g b).
-    rewrite /unique.
-    split.
-    * (* f (g b) = b *)
-      move: Hb.
-      case => a Heq.
-
+    rewrite value_range_inv_corr_to_def_range in Hb.
+    rewrite def_range_map_as_corr in Hb.
+    move=> a a' Heqa Heqa'.
+    apply eq_trans_r with (y := g b).
+    * rewrite -Heqa.
       admit.
-    * move=> a Heq.
-      rewrite -Heq.
-      (* g (f a) = a *)
+    * rewrite -Heqa'.
       admit.
+    (* Hgをうまく使えてない・・・ *)
 - case => Hsur Hin.
   suff: B -> A.
   move=> g.
