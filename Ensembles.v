@@ -1466,11 +1466,16 @@ split.
       move=> H a1 a2 Heqa1 Heqa2.
       apply eq_trans_r with (y := g b);
         by [rewrite -Heqa1 | rewrite -Heqa2 ].
-    (* この命題ならHgからなんか出せそうな感じがする *)
-    rewrite -[MapAsCorr f]inv_corr_twice in Hb.
-    rewrite Hg in Hb.
-    rewrite value_range_inv_corr_to_def_range in Hb.
-    rewrite def_range_map_as_corr in Hb.
+    (* f a = bとかもないから、aとbは独立してる。それだとHbが使えなくなってしまう。 *)
+    rewrite forall_iff_not_exists_not.
+    move=> Hexi.
+    move: (Hg) => Hg'.
+    rewrite -[MapAsCorr g]inv_corr_twice in Hg.
+    rewrite Hg' in Hg.
+    rewrite value_range_map_as_corr in Hb.
+    case Hb => a Heq.
+    case Hexi => a' H.
+    apply H.
     admit.
 - case => Hsur Hin.
   suff: B -> A.
