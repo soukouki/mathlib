@@ -1447,6 +1447,11 @@ Qed.
 
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす *)
 
+(* こんなのが示せたら楽だなというだけで、これが正しいかは自信がない *)
+Lemma inv_corr_map_as_corr {A B} (f: A -> B) (g: B -> A) (a: A):
+  InvCorr (MapAsCorr f) = MapAsCorr g -> g (f a) = a.
+Admitted.
+
 (* ここで関数外延性公理を使い始める *)
 (* S4 定理4 前半 *)
 Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
@@ -1466,17 +1471,9 @@ split.
       move=> H a1 a2 Heqa1 Heqa2.
       apply eq_trans_r with (y := g b);
         by [rewrite -Heqa1 | rewrite -Heqa2 ].
-    (* f a = bとかもないから、aとbは独立してる。それだとHbが使えなくなってしまう。 *)
-    rewrite forall_iff_not_exists_not.
-    move=> Hexi.
-    move: (Hg) => Hg'.
-    rewrite -[MapAsCorr g]inv_corr_twice in Hg.
-    rewrite Hg' in Hg.
-    rewrite value_range_map_as_corr in Hb.
-    case Hb => a Heq.
-    case Hexi => a' H.
-    apply H.
-    admit.
+    move=> a.
+    symmetry.
+    by apply inv_corr_map_as_corr.
 - case => Hsur Hin.
   suff: B -> A.
   move=> g.
@@ -1496,7 +1493,11 @@ rewrite -invcorr_is_map_iff_bijective.
 split;
   case => g Hg;
   exists g.
-- admit.
+- split.
+  + rewrite surjective_exists.
+    move=> a.
+    exists (f a).
+    by apply inv_corr_map_as_corr.
 - admit.
 Admitted.
 
