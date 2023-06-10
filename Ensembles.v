@@ -1134,20 +1134,8 @@ split.
 - case.
   rewrite -eq_fullset.
   rewrite /In def_range_exists => Hdef Hinv.
-  have: A -> B.
-    move=> a.
-    move: (Hdef a) => H.
-    move: (constructive_indefinite_description _ H) => H2.
-    by apply (get_value H2).
-  move=> f.
-  exists f.
-  rewrite /MapAsCorr.
-  apply functional_extensionality => a.
-  apply functional_extensionality => b.
-  apply propositional_extensionality.
-  suff: b = f a <-> b \in C a => //.
-  have: uniqueness (fun b => b \in C a).
-    rewrite /uniqueness => b1 b2 Hb1 Hb2.
+  have: forall a, uniqueness (fun b => b \in C a).
+    rewrite /uniqueness => a b1 b2 Hb1 Hb2.
     move: (Hinv b1 b2).
     move=> H.
     apply NNPP => H2.
@@ -1160,9 +1148,34 @@ split.
     rewrite compset_in.
     by rewrite {1}/In.
   move=> Huniq.
-  Search uniqueness.
+  have: { f: A -> B | forall a b, f a = b -> b \in C a }.
+    apply constructive_indefinite_description.
+    have: A -> B.
+      move=> a.
+      move: (Hdef a) => H1.
+      by apply (constructive_indefinite_description _ H1).
+    move=> f.
+    exists f.
+    move=> a b Heq.
+    move: (Hdef a) => H1.
+    case H1 => b' Hb'.
+    suff: b = b'.
+      move=> H.
+      by rewrite H.
+    apply (Huniq a) => //.
+    (* Huinqを使っても結局変わらない *)
+
+    admit.
+
+  move=> f.
+  exists (get_value f).
+  rewrite /MapAsCorr.
+  apply functional_extensionality => a.
+  apply functional_extensionality => b.
+  apply propositional_extensionality.
+  suff: b = (get_value f) a <-> b \in C a => //.
   rewrite /uniqueness in Huniq.
-  have: forall a, exists b, b = f a /\ b \in C a.
+  have: forall a, exists b, b = (get_value f) a /\ b \in C a.
     move=> a'. (* なんかこんなことがわかれば楽！ *)
     admit.
   move=> Hexi.
@@ -1178,7 +1191,7 @@ split.
     case => b' Hb'.
     case Hb' => H1 H2.
     rewrite -H1.
-    by apply Huniq.
+    by apply (Huniq a).
 
 
 
