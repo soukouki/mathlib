@@ -1600,22 +1600,41 @@ Theorem identity_composite {A B} (f: A -> B):
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
-Theorem invmap_composite_identity {A B} (f: { f: A -> B | Bijective f } ):
-  get_value (InvMap f) \circle (get_value f) = \I A.
+Theorem invmap_composite_identity {A B} (F: { f: A -> B | Bijective f } ):
+  get_value (InvMap F) \circle (get_value F) = \I A.
 Proof.
 rewrite /Composite.
 rewrite /Identity.
 apply functional_extensionality => a.
-move: (InvMap f) => g.
-have: exists b, b = get_value f a.
-  by exists (get_value f a).
+move: (InvMap F) => G.
+move: (get_proof G).
+rewrite /Bijective.
+case => Hgsur Hginj.
+move: (iffLR (injective_uniqueness _) Hginj a) => Hguniq.
+move: (get_proof F).
+rewrite /Bijective.
+case => Hfsur Hfinj.
+move: (iffLR (injective_uniqueness _) Hfinj (get_value F a)) => Hfuniq.
+apply Hfuniq => //.
+  admit.
+apply Hguniq.
+(* injective_uniquenessを使っていい感じにできないかと思って色々やってみたけど、GとFの適用が入れ子になっただけだった。 *)
+
+
+Restart.
+rewrite /Composite.
+rewrite /Identity.
+apply functional_extensionality => a.
+move: (InvMap F) => G.
+have: exists b, b = get_value F a.
+  by exists (get_value F a).
 case => b Heqb.
 rewrite -Heqb.
-have: exists a, a = get_value g b.
-  by exists (get_value g b).
+have: exists a, a = get_value G b.
+  by exists (get_value G b).
 case => a' Heqa.
 rewrite -Heqa.
-(* 苦手な形に入っちゃった・・・ *)
+case F => f Hf.
 
 
 Admitted.
