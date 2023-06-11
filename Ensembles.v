@@ -1610,16 +1610,23 @@ move: (InvMap F) => G.
 move: (get_proof G).
 rewrite /Bijective.
 case => Hgsur Hginj.
-move: (iffLR (injective_uniqueness _) Hginj a) => Hguniq.
 move: (get_proof F).
 rewrite /Bijective.
 case => Hfsur Hfinj.
-move: (iffLR (injective_uniqueness _) Hfinj (get_value F a)) => Hfuniq.
-apply Hfuniq => //.
+Search Surjective.
+move: (composite_surjective _ _ Hfsur Hgsur).
+rewrite surjective_exists => Hsur.
+case (Hsur a) => a'.
+rewrite /Composite.
+suff: a = a'.
+  move=> H.
+  by rewrite H.
+Search Injective.
+move: (composite_injective _ _ Hfinj Hginj).
+rewrite injective_exists_unique => Hinj.
+case (Hinj a).
   admit.
-apply Hguniq.
-(* injective_uniquenessを使っていい感じにできないかと思って色々やってみたけど、GとFの適用が入れ子になっただけだった。 *)
-
+move=> a''.
 
 Restart.
 rewrite /Composite.
