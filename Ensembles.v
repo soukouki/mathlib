@@ -744,9 +744,8 @@ move=> HA_subset_C B.
 rewrite cup_comm.
 rewrite cap_cup_distrib.
 rewrite [B \cup A]cup_comm [C \cup A]cup_comm.
-have: A \cup C = C.
+have: A \cup C = C => [| H ].
   by rewrite -subset_cup_eq.
-move=> H.
 by rewrite H.
 Qed.
 
@@ -943,10 +942,9 @@ split.
   + by apply (sub_sym_diff A1 A2 B1 B2).
   + rewrite sym_diff_comm.
     by apply (sub_sym_diff B1 B2 A1 A2).
-- have: (A2 \triangle A1 = B2 \triangle B1).
+- have: (A2 \triangle A1 = B2 \triangle B1) => [| Htriangle' ].
     symmetry.
     by rewrite [B2 \triangle B1]sym_diff_comm [A2 \triangle A1]sym_diff_comm.
-  move=> Htriangle'.
   rewrite {1}/SymmetricDifference.
   case => x1 Hsub.
   + by apply (sub_sym_diff A2 A1 B2 B1).
@@ -1083,11 +1081,10 @@ split.
   rewrite HG.
   by split.
 - move=> HinG.
-  have: (forall a: A, {b: B | (a, b) \in G}).
+  have: (forall a: A, {b: B | (a, b) \in G}) => [| Sigb ].
     move=> a.
     apply constructive_definite_description.
     by apply HinG.
-  move=> Sigb.
   exists (fun a: A => get_value (Sigb a)).
   apply eq_split.
   + move=> x Hx.
@@ -1134,7 +1131,7 @@ split.
 - case.
   rewrite -eq_fullset.
   rewrite /In def_range_exists => Hdef Hinv.
-  have: forall a, uniqueness (fun b => b \in C a).
+  have: forall a, uniqueness (fun b => b \in C a) => [| Huniq ].
     rewrite /uniqueness => a b1 b2 Hb1 Hb2.
     move: (Hinv b1 b2).
     move=> H.
@@ -1147,8 +1144,7 @@ split.
     move: (H4 Hb1).
     rewrite compset_in.
     by rewrite {1}/In.
-  move=> Huniq.
-  have: { f: A -> B | forall a b, f a = b -> b \in C a }.
+  have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| f ].
     apply constructive_indefinite_description.
     have: A -> B.
       move=> a.
@@ -1167,7 +1163,6 @@ split.
 
     admit.
 
-  move=> f.
   exists (get_value f).
   rewrite /MapAsCorr.
   apply functional_extensionality => a.
@@ -1175,10 +1170,9 @@ split.
   apply propositional_extensionality.
   suff: b = (get_value f) a <-> b \in C a => //.
   rewrite /uniqueness in Huniq.
-  have: forall a, exists b, b = (get_value f) a /\ b \in C a.
+  have: forall a, exists b, b = (get_value f) a /\ b \in C a => [| Hexi ].
     move=> a'. (* なんかこんなことがわかれば楽！ *)
     admit.
-  move=> Hexi.
   split.
   + move=> Heq.
     move: (Hexi a).
