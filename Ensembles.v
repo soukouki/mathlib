@@ -568,7 +568,7 @@ Theorem big_cap_subset AA C: (forall A, A \in AA -> C \subset A) -> C \subset \b
 Proof.
 move=> HC_subset_A x1 Hx_in_C.
 split => A HA_in_AA.
-apply HC_subset_A => //.
+by apply HC_subset_A.
 Qed.
 
 
