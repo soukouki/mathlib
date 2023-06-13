@@ -1144,25 +1144,16 @@ split.
     move: (H4 Hb1).
     rewrite compset_in.
     by rewrite {1}/In.
-  have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| f ].
+  have: { f: A -> B | forall a, exists b, f a = b -> b \in C a } => [| f ].
     apply constructive_indefinite_description.
-    have: A -> B.
+    have: A -> B => [| f ].
       move=> a.
       move: (Hdef a) => H1.
       by apply (constructive_indefinite_description _ H1).
-    move=> f.
-    exists f.
-    move=> a b Heq.
-    move: (Hdef a) => H1.
-    case H1 => b' Hb'.
-    suff: b = b'.
-      move=> H.
-      by rewrite H.
-    apply (Huniq a) => //.
-    (* Huinqを使っても結局変わらない *)
-
-    admit.
-
+    exists f => a.
+    move: (Hdef a).
+    case => b Hb.
+    by exists b.
   exists (get_value f).
   rewrite /MapAsCorr.
   apply functional_extensionality => a.
