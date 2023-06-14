@@ -1144,32 +1144,29 @@ split.
     move: (H4 Hb1).
     rewrite compset_in.
     by rewrite {1}/In.
-  have: { f: A -> B | forall a, exists b, f a = b -> b \in C a } => [| F ].
+  have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| F ].
     apply constructive_indefinite_description.
     have: A -> B => [| f ].
       move=> a.
       move: (Hdef a) => H1.
       by apply (constructive_indefinite_description _ H1).
-    exists f => a.
+    exists f => a b.
     move: (Hdef a).
-    case => b Hb.
-    by exists b.
+    case => b' Hb' Heq.
+    admit.
   exists (get_value F).
   rewrite /MapAsCorr.
   apply functional_extensionality => a.
-  apply functional_extensionality => b.
-  apply propositional_extensionality.
-  suff: b = (get_value F) a <-> b \in C a => //.
-  rewrite /uniqueness in Huniq.
-  have: forall a, (get_value F) a \in C a => [| Hin ].
-    admit.
-  split.
-  + move=> Heq.
+  have: get_value F a \in C a => [| Hin ].
+    move: (get_proof F a (get_value F a)).
+    by apply.
+  apply eq_split.
+  + move=> b.
+    rewrite {1}/In => Heq.
     by rewrite Heq.
-  + move=> Hb.
+  + move=> b Hb.
+    rewrite /In.
     by apply (Huniq a).
-
-
 
 
 (* TODO 命題のexistsをexists!にしても証明できないか考える *)
