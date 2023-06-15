@@ -1150,10 +1150,11 @@ split.
       move=> a.
       move: (Hdef a) => H1.
       by apply (constructive_indefinite_description _ H1).
-    exists f => a b.
-    move: (Hdef a).
-    case => b' Hb' Heq.
+    exists f => a b Heq.
+    subst.
+    (* 仮定が足りない感じがする。前のhaveの条件をもっと考えたほうが良さそう *)
     admit.
+
   exists (get_value F).
   rewrite /MapAsCorr.
   apply functional_extensionality => a.
