@@ -1146,13 +1146,15 @@ split.
     by rewrite {1}/In.
   have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| F ].
     apply constructive_indefinite_description.
-    have: A -> B => [| f ].
+    have: A -> { b: B | exists a, b \in C a } => [| f ].
       move=> a.
-      move: (Hdef a) => H1.
-      by apply (constructive_indefinite_description _ H1).
-    exists f => a b Heq.
+      apply constructive_indefinite_description.
+      case (Hdef a) => b Hb.
+      exists b.
+      by exists a.
+    exists (fun a => get_value (f a)) => a b Heq.
     subst.
-    (* 仮定が足りない感じがする。前のhaveの条件をもっと考えたほうが良さそう *)
+    move: (get_proof (f a)) => H.
     admit.
 
   exists (get_value F).
