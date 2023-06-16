@@ -1146,17 +1146,11 @@ split.
     by rewrite {1}/In.
   have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| F ].
     apply constructive_indefinite_description.
-    have: A -> { b: B | exists a, b \in C a } => [| f ].
-      move=> a.
-      apply constructive_indefinite_description.
-      case (Hdef a) => b Hb.
-      exists b.
-      by exists a.
-    exists (fun a => get_value (f a)) => a b Heq.
+    move: (fun a => constructive_indefinite_description _ (Hdef a)) => sigB.
+    exists (fun a => get_value (sigB a)) => a b Heq.
     subst.
-    move: (get_proof (f a)) => H.
-    admit.
-
+    move: (fun a => get_proof (sigB a)) => H.
+    by apply H.
   exists (get_value F).
   rewrite /MapAsCorr.
   apply functional_extensionality => a.
@@ -1174,7 +1168,7 @@ split.
 
 (* TODO 命題のexistsをexists!にしても証明できないか考える *)
 
-Admitted.
+Qed.
 
 Lemma def_range_map_as_corr {A B} (f: A -> B) a:
   a \in DefRange (MapAsCorr f) <-> exists b, f a = b.
