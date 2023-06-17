@@ -1105,13 +1105,13 @@ Qed.
 
 (* S3 問題3 *)
 Theorem map_as_corr_inv_corr {A B: Type} (C: A ->c B):
-  (exists f: A -> B, MapAsCorr f = C) <->
+  (exists! f: A -> B, MapAsCorr f = C) <->
   (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
 Proof.
 split.
 - move=> Hf.
   have: {f: A -> B | MapAsCorr f = C}.
-    by apply constructive_indefinite_description.
+    by apply constructive_definite_description.
   clear Hf => Hf.
   split.
   + rewrite -eq_fullset => a.
@@ -1120,50 +1120,52 @@ split.
     by rewrite -Hfeq.
   + move=> b b' HB.
     rewrite cap_eq_emptyset.
-    move: Hf.
-    case => f Hf a.
-    rewrite -Hf => Heq.
+    case Hf => f Hf' a.
+    rewrite -Hf' => Heq.
     rewrite compset_in => Heq'.
-    move: Heq.
-    rewrite /InvCorr /MapAsCorr /In.
+    rewrite /InvCorr /MapAsCorr /In in Heq.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
-    by rewrite -Heq'.
+    by rewrite Heq' in HB.
 - case.
   rewrite -eq_fullset.
   rewrite /In def_range_exists => Hdef Hinv.
   have: forall a, uniqueness (fun b => b \in C a) => [| Huniq ].
     rewrite /uniqueness => a b1 b2 Hb1 Hb2.
-    move: (Hinv b1 b2).
-    move=> H.
-    apply NNPP => H2.
-    move: (H H2).
+    apply NNPP => H1.
+    move: (Hinv b1 b2 H1).
     rewrite cap_eq_emptyset.
-    rewrite /Subset => H3.
-    move: (H3 a).
-    rewrite {1}/In /InvCorr => H4.
-    move: (H4 Hb1).
-    rewrite compset_in.
-    by rewrite {1}/In.
+    rewrite /Subset => H2.
+    move: (H2 a).
+    rewrite {1}/In /InvCorr => H3.
+    move: (H3 Hb1).
+    by rewrite compset_in.
   have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| F ].
     apply constructive_indefinite_description.
     move: (fun a => constructive_indefinite_description _ (Hdef a)) => sigB.
     exists (fun a => get_value (sigB a)) => a b Heq.
-    subst.
-    move: (fun a => get_proof (sigB a)) => H.
-    by apply H.
+    rewrite -Heq.
+    by apply (fun a => get_proof (sigB a)).
   exists (get_value F).
-  rewrite /MapAsCorr.
-  apply functional_extensionality => a.
-  have: get_value F a \in C a => [| Hin ].
-    move: (get_proof F a (get_value F a)).
-    by apply.
-  apply eq_split.
-  + move=> b.
-    rewrite {1}/In => Heq.
-    by rewrite Heq.
-  + move=> b Hb.
-    rewrite /In.
-    by apply (Huniq a).
+  rewrite /unique.
+  split.
+  + rewrite /MapAsCorr.
+    apply functional_extensionality => a.
+    have: get_value F a \in C a => [| Hin ].
+      move: (get_proof F a (get_value F a)).
+      by apply.
+    apply eq_split.
+    + move=> b.
+      rewrite {1}/In => Heq.
+      by rewrite Heq.
+    + move=> b Hb.
+      rewrite /In.
+      by apply (Huniq a).
+  + move=> f Heq.
+    apply functional_extensionality => a.
+    apply (Huniq a).
+    * move: (get_proof F a (f a)) => H.
+      admit.
+    * by rewrite -Heq.
 
 
 (* TODO 命題のexistsをexists!にしても証明できないか考える *)
