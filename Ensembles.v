@@ -1145,9 +1145,9 @@ split.
     exists (fun a => get_value (sigB a)) => a b Heq.
     rewrite -Heq.
     by apply (fun a => get_proof (sigB a)).
-  exists (get_value F).
+  rewrite -unique_existence.
   split.
-  + rewrite /MapAsCorr.
+  + exists (get_value F).
     apply functional_extensionality => a.
     have: get_value F a \in C a => [| Hin ].
       move: (get_proof F a (get_value F a)).
@@ -1159,33 +1159,10 @@ split.
     + move=> b Hb.
       rewrite /In.
       by apply (Huniq a).
-  + move=> f Heq.
-    suff: MapAsCorr (get_value F) = MapAsCorr f.
-      move=> HMapAsCorr.
-      have: exists f, Graph C = Graph (MapAsCorr f).
-        exists f.
-        by rewrite Heq.
-      rewrite (exist_one_map_equivalent_to_graphs (Graph C)) => H1.
-      apply functional_extensionality => a.
-      case (H1 a) => b.
-      case => HinGraph HuniqGraph.
-      apply eq_trans with (y := b).
-      * symmetry.
-        apply HuniqGraph.
-        by apply (get_proof F).
-      * apply HuniqGraph.
-        by rewrite -Heq.
-    rewrite Heq.
+  + move=> f1 f2 Heq1 Heq2.
     apply functional_extensionality => a.
-    apply eq_split.
-    * move=> b H.
-      by apply (get_proof F a b).
-    * move=> b H.
-      rewrite -Heq in H.
-      rewrite H.
-      apply (Huniq a) => //.
-      - by rewrite -Heq.
-      - by apply (get_proof F a).
+    apply (Huniq a);
+      by [ rewrite -Heq1 | rewrite -Heq2 ].
 Qed.
 
 Lemma def_range_map_as_corr {A B} (f: A -> B) a:
