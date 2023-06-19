@@ -1136,28 +1136,25 @@ split.
     rewrite cap_eq_emptyset.
     rewrite /Subset => H2.
     move: (H2 a).
-    rewrite {1}/In /InvCorr => H3.
-    move: (H3 Hb1).
-    by rewrite compset_in.
-  have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| F ].
-    apply constructive_indefinite_description.
-    move: (fun a => constructive_indefinite_description _ (Hdef a)) => sigB.
-    exists (fun a => get_value (sigB a)) => a b Heq.
-    rewrite -Heq.
-    by apply (fun a => get_proof (sigB a)).
+    rewrite compset_in.
+    rewrite -2!in_inv_corr.
+    by apply.
   rewrite -unique_existence.
   split.
-  + exists (get_value F).
+  + have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| F ].
+      apply constructive_indefinite_description.
+      move: (fun a => constructive_indefinite_description _ (Hdef a)) => sigB.
+      exists (fun a => get_value (sigB a)) => a b Heq.
+      rewrite -Heq.
+      by apply (get_proof (sigB a)).
+    exists (get_value F).
     apply functional_extensionality => a.
     have: get_value F a \in C a => [| Hin ].
-      move: (get_proof F a (get_value F a)).
-      by apply.
+      by apply (get_proof F a (get_value F a)).
     apply eq_split.
-    + move=> b.
-      rewrite {1}/In => Heq.
-      by rewrite Heq.
+    + move=> b H.
+      by rewrite H.
     + move=> b Hb.
-      rewrite /In.
       by apply (Huniq a).
   + move=> f1 f2 Heq1 Heq2.
     apply functional_extensionality => a.
