@@ -1450,12 +1450,21 @@ split.
     symmetry.
     by apply inv_corr_map_as_corr.
 - case => Hsur Hin.
-  suff: B -> A.
-  move=> g.
-  exists g.
-  rewrite /InvCorr /MapAsCorr /In.
+  have: { g: B -> A | forall a b, b = f a -> a = g b } => [| G ].
+    admit.
+  exists (get_value G).
   apply functional_extensionality => b.
   apply functional_extensionality => a.
+  move: (get_proof G a b) => HG.
+  rewrite /InvCorr /MapAsCorr /In.
+  apply propositional_extensionality.
+  split => //.
+  move=> Heq.
+  move: (iffLR (injective_uniqueness _) Hin (f a)) => H.
+  Search Surjective ValueRange.
+  move: (iffLR (surjective_value_range _) Hsur) => H2.
+  move: (H (H2 (f a))).
+  rewrite /uniqueness.
 
 
 Admitted.
