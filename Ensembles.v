@@ -26,6 +26,9 @@ Notation "a \in A" := (In a A) (at level 55).
 
 Notation "a \notin A" := (~ In a A) (at level 55).
 
+Definition Singleton (a: T): Ensemble := fun a' => a = a'.
+Notation "\{ a }" := (Singleton a).
+
 Inductive EmptySet: Ensemble := .
 Notation "\emptyset" := EmptySet.
 
@@ -79,6 +82,24 @@ Qed.
 (* (1.5) *)
 Theorem emptyset_subset A: \emptyset \subset A.
 Proof. by []. Qed.
+
+Lemma singleton_eq a a': a \in \{a'} <-> a = a'.
+Proof. by []. Qed.
+
+(* S1 問題1 *)
+Theorem singleton_subset a A: a \in A <-> \{a} = A.
+Proof.
+split.
+- move=> HA.
+  apply eq_split.
+  + move=> a' HA'.
+    by rewrite -HA'.
+  + move=> a' HA'.
+    rewrite /In /Singleton.
+    admit.
+- move=> HA.
+  by rewrite -HA.
+Admitted.
 
 
 Inductive Cup A B: Ensemble :=
