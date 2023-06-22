@@ -1446,7 +1446,15 @@ Qed.
 (* こんなのが示せたら楽だなというだけで、これが正しいかは自信がない *)
 Lemma inv_corr_map_as_corr {A B} (f: A -> B) (g: B -> A) (a: A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> g (f a) = a.
+Proof.
+move=> Heq.
+suff: forall b, f a = b -> g b = a.
+  by apply.
+move=> b H.
 Admitted.
+
+
+
 
 (* ここで関数外延性公理を使い始める *)
 (* S4 定理4 前半 *)
