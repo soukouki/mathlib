@@ -87,19 +87,14 @@ Lemma singleton_eq a a': a \in \{a'} <-> a = a'.
 Proof. by []. Qed.
 
 (* S1 問題1 *)
-Theorem singleton_subset a A: a \in A <-> \{a} = A.
+Theorem singleton_subset a A: a \in A <-> \{a} \subset A.
 Proof.
 split.
+- move=> HA a' Heq.
+  by rewrite -Heq.
 - move=> HA.
-  apply eq_split.
-  + move=> a' HA'.
-    by rewrite -HA'.
-  + move=> a' HA'.
-    rewrite /In /Singleton.
-    admit.
-- move=> HA.
-  by rewrite -HA.
-Admitted.
+  by apply HA.
+Qed.
 
 
 Inductive Cup A B: Ensemble :=
