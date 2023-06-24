@@ -512,6 +512,7 @@ End Section1.
 
 
 Arguments In {_} _ _.
+Arguments Singleton {_} _.
 Arguments EmptySet {_}.
 Arguments FullSet {_}.
 Arguments Subset {_} _ _.
@@ -521,6 +522,7 @@ Arguments Sub {_} _ _.
 Arguments ComplementarySet {_} _.
 
 Notation "a \in A" := (In a A) (at level 55): ensemble_scope.
+Notation "\{ a }" := (Singleton a).
 Notation "a \notin A" := (~ In a A) (at level 55): ensemble_scope.
 Notation "\emptyset" := (EmptySet): ensemble_scope.
 Notation "A \subset B" := (Subset A B) (at level 55): ensemble_scope.
@@ -1121,6 +1123,57 @@ Qed.
 
 (* S3 問題3 *)
 Theorem map_as_corr_inv_corr {A B: Type} (C: A ->c B):
+  (exists! f: A -> B, MapAsCorr f = C) <->
+  (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
+Proof.
+rewrite -eq_fullset.
+apply iff_stepl with (A := forall a: A, exists b, \{b} = C a).
+- split.
+  + move=> Hsing.
+    split.
+    * move=> a.
+      rewrite def_range_exists.
+      move: (constructive_indefinite_description _ (Hsing a)) => b.
+      exists (get_value b).
+      move: (get_proof b) => Heq.
+      rewrite -eq_iff in Heq.
+      by rewrite -Heq.
+    * move=> b b' Hneq.
+      rewrite cap_eq_emptyset => a HA.
+      rewrite compset_in => HA'.
+      rewrite -in_inv_corr in HA.
+      rewrite -in_inv_corr in HA'.
+      apply Hneq.
+      case (Hsing a) => b'' HB.
+      rewrite -HB singleton_eq in HA.
+      rewrite -HB singleton_eq in HA'.
+      by subst.
+  + case => Hdef Hinv.
+    move=> a.
+    rewrite def_range_exists in Hdef.
+    case (Hdef a) => b HB.
+    exists b.
+    apply eq_split.
+    * move=> b'.
+      rewrite singleton_eq => H.
+      by rewrite H.
+    * move=> b' HB'.
+      rewrite singleton_eq.
+      move: (Hinv b' b) => H.
+      apply NNPP => Hneq.
+      rewrite emptyset_not_in in H.
+      apply (H Hneq a).
+      split;
+        by rewrite -in_inv_corr.
+- split.
+  
+
+
+
+Admitted.
+
+(* 別証明 *)
+Goal forall (A B: Type) (C: A ->c B),
   (exists! f: A -> B, MapAsCorr f = C) <->
   (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
 Proof.
