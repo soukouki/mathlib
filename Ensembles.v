@@ -1127,50 +1127,76 @@ Theorem map_as_corr_inv_corr {A B: Type} (C: A ->c B):
   (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
 Proof.
 rewrite -eq_fullset.
-apply iff_stepl with (A := forall a: A, exists b, \{b} = C a).
-- split.
-  + move=> Hsing.
-    split.
-    * move=> a.
-      rewrite def_range_exists.
-      move: (constructive_indefinite_description _ (Hsing a)) => b.
-      exists (get_value b).
-      move: (get_proof b) => Heq.
-      rewrite -eq_iff in Heq.
-      by rewrite -Heq.
-    * move=> b b' Hneq.
-      rewrite cap_eq_emptyset => a HA.
-      rewrite compset_in => HA'.
-      rewrite -in_inv_corr in HA.
-      rewrite -in_inv_corr in HA'.
-      apply Hneq.
-      case (Hsing a) => b'' HB.
-      rewrite -HB singleton_eq in HA.
-      rewrite -HB singleton_eq in HA'.
-      by subst.
-  + case => Hdef Hinv.
-    move=> a.
-    rewrite def_range_exists in Hdef.
-    case (Hdef a) => b HB.
-    exists b.
+split.
+- move=> Hf.
+  have: {f: A -> B | MapAsCorr f = C}.
+    by apply constructive_definite_description.
+  clear Hf => Hf.
+  split.
+  + move => a.
+    case Hf => f Hfeq.
+    exists (f a).
+    by rewrite -Hfeq.
+  + move=> b b' HB.
+    rewrite cap_eq_emptyset.
+    case Hf => f Hf' a.
+    rewrite -Hf' => Heq.
+    rewrite compset_in => Heq'.
+    rewrite /InvCorr /MapAsCorr /In in Heq.
+    rewrite /InvCorr /MapAsCorr /In in Heq'.
+    by rewrite Heq' in HB. (* ここまでは古い証明と同じ *)
+- case => Hdef Hinv.
+  have: forall a, uniqueness (fun b => b \in C a) => [| Huniq ].
+    rewrite /uniqueness => a b1 b2 Hb1 Hb2.
+    apply NNPP => H1.
+    move: (Hinv b1 b2 H1).
+    rewrite cap_eq_emptyset.
+    rewrite /Subset => H2.
+    move: (H2 a).
+    rewrite compset_in.
+    rewrite -2!in_inv_corr.
+    by apply.
+  have: forall a: A, exists b, \{b} = C a => [ a | Hsing ].
+    rewrite /In def_range_exists in Hdef.
+    move: (constructive_indefinite_description _ (Hdef a)) => Bsig.
+    exists (get_value Bsig).
     apply eq_split.
-    * move=> b'.
-      rewrite singleton_eq => H.
-      by rewrite H.
-    * move=> b' HB'.
+    + move=> b HB.
+      rewrite singleton_eq in HB.
+      rewrite HB.
+      by apply (get_proof Bsig).
+    + move=> b HB.
       rewrite singleton_eq.
-      move: (Hinv b' b) => H.
-      apply NNPP => Hneq.
-      rewrite emptyset_not_in in H.
-      apply (H Hneq a).
-      split;
-        by rewrite -in_inv_corr.
-- split.
-  
-
-
-
-Admitted.
+      apply (Huniq a) => //.
+      by apply (get_proof Bsig).
+  move: (fun a => constructive_indefinite_description _ (Hsing a)) => fsig.
+  rewrite -unique_existence.
+  split.
+  + exists (fun a => get_value (fsig a)).
+    apply functional_extensionality => a.
+    case (Hsing a) => b HB.
+    rewrite -HB /MapAsCorr.
+    apply eq_split.
+    * move=> b' HB'.
+      apply (Huniq a).
+      - by rewrite -HB.
+      - rewrite /In in HB'.
+        rewrite HB'.
+        move: (get_proof (fsig a)) => H.
+        by rewrite -(iffRL (eq_iff _ _ _) H).
+    * move=> b' HB'.
+      rewrite singleton_eq in HB'.
+      subst.
+      rewrite /In.
+      apply (Huniq a).
+      - by rewrite -HB.
+      - move: (get_proof (fsig a)) => H.
+        by rewrite -(iffRL (eq_iff _ _ _) H).
+  + move=> f f' Hfeq Hfeq'.
+    apply functional_extensionality => a.
+    apply (Huniq a);
+      by [ rewrite -Hfeq | rewrite -Hfeq' ].
+Qed.
 
 (* 別証明 *)
 Goal forall (A B: Type) (C: A ->c B),
