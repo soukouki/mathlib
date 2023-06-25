@@ -1121,6 +1121,19 @@ split.
     by apply get_proof.
 Qed.
 
+Lemma singleton_unique_eq {A} (a: A) (P: Ensemble A):
+  a \in P -> uniqueness (fun a' => a' \in P) -> \{a} = P.
+Proof.
+move=> Hin Huniq.
+apply eq_split.
+- move=> a' HA'.
+  rewrite singleton_eq in HA'.
+  by rewrite HA'.
+- move=> a' HA'.
+  rewrite singleton_eq.
+  by apply Huniq.
+Qed.
+
 (* S3 問題3 *)
 Theorem map_as_corr_inv_corr {A B: Type} (C: A ->c B):
   (exists! f: A -> B, MapAsCorr f = C) <->
@@ -1160,38 +1173,26 @@ split.
     rewrite /In def_range_exists in Hdef.
     move: (constructive_indefinite_description _ (Hdef a)) => Bsig.
     exists (get_value Bsig).
-    apply eq_split.
-    + move=> b HB.
-      rewrite singleton_eq in HB.
-      rewrite HB.
-      by apply (get_proof Bsig).
-    + move=> b HB.
-      rewrite singleton_eq.
-      apply (Huniq a) => //.
-      by apply (get_proof Bsig).
+    apply singleton_unique_eq => //.
+    by apply (get_proof Bsig).
   move: (fun a => constructive_indefinite_description _ (Hsing a)) => fsig.
   rewrite -unique_existence.
   split.
   + exists (fun a => get_value (fsig a)).
     apply functional_extensionality => a.
     case (Hsing a) => b HB.
-    rewrite -HB /MapAsCorr.
-    apply eq_split.
-    * move=> b' HB'.
-      apply (Huniq a).
-      - by rewrite -HB.
-      - rewrite /In in HB'.
-        rewrite HB'.
-        move: (get_proof (fsig a)) => H.
-        by rewrite -(iffRL (eq_iff _ _ _) H).
-    * move=> b' HB'.
-      rewrite singleton_eq in HB'.
-      subst.
-      rewrite /In.
+    rewrite -HB.
+    symmetry.
+    apply singleton_unique_eq.
+    * rewrite /MapAsCorr /In.
       apply (Huniq a).
       - by rewrite -HB.
       - move: (get_proof (fsig a)) => H.
-        by rewrite -(iffRL (eq_iff _ _ _) H).
+        rewrite -eq_iff in H.
+        by rewrite -H.
+    * rewrite /MapAsCorr /In.
+      move=> b1 b2 HB1 HB2.
+      by subst.
   + move=> f f' Hfeq Hfeq'.
     apply functional_extensionality => a.
     apply (Huniq a);
