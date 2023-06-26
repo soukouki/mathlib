@@ -1134,6 +1134,21 @@ apply eq_split.
   by apply Huniq.
 Qed.
 
+Lemma inv_corr_cap_emptyset_unique {A B} (C: A ->c B):
+  (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)
+  -> forall a, uniqueness (fun b => b \in C a).
+Proof.
+move=> Hinv a b1 b2 HB HB'.
+apply NNPP => H1.
+move: (Hinv b1 b2 H1).
+rewrite cap_eq_emptyset.
+rewrite /Subset => H2.
+move: (H2 a).
+rewrite compset_in.
+rewrite -2!in_inv_corr.
+by apply.
+Qed.
+
 (* S3 問題3 *)
 Theorem map_as_corr_inv_corr {A B: Type} (C: A ->c B):
   (exists! f: A -> B, MapAsCorr f = C) <->
@@ -1159,16 +1174,7 @@ split.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
     by rewrite Heq' in HB. (* ここまでは古い証明と同じ *)
 - case => Hdef Hinv.
-  have: forall a, uniqueness (fun b => b \in C a) => [| Huniq ].
-    rewrite /uniqueness => a b1 b2 Hb1 Hb2.
-    apply NNPP => H1.
-    move: (Hinv b1 b2 H1).
-    rewrite cap_eq_emptyset.
-    rewrite /Subset => H2.
-    move: (H2 a).
-    rewrite compset_in.
-    rewrite -2!in_inv_corr.
-    by apply.
+  move: (inv_corr_cap_emptyset_unique C Hinv) => Huniq.
   have: forall a: A, exists b, \{b} = C a => [ a | Hsing ].
     rewrite /In def_range_exists in Hdef.
     move: (constructive_indefinite_description _ (Hdef a)) => Bsig.
@@ -1190,8 +1196,7 @@ split.
       - move: (get_proof (fsig a)) => H.
         rewrite -eq_iff in H.
         by rewrite -H.
-    * rewrite /MapAsCorr /In.
-      move=> b1 b2 HB1 HB2.
+    * rewrite /MapAsCorr /In => b1 b2 HB1 HB2.
       by subst.
   + move=> f f' Hfeq Hfeq'.
     apply functional_extensionality => a.
@@ -1225,16 +1230,7 @@ split.
 - case.
   rewrite -eq_fullset.
   rewrite /In def_range_exists => Hdef Hinv.
-  have: forall a, uniqueness (fun b => b \in C a) => [| Huniq ].
-    rewrite /uniqueness => a b1 b2 Hb1 Hb2.
-    apply NNPP => H1.
-    move: (Hinv b1 b2 H1).
-    rewrite cap_eq_emptyset.
-    rewrite /Subset => H2.
-    move: (H2 a).
-    rewrite compset_in.
-    rewrite -2!in_inv_corr.
-    by apply.
+  move: (inv_corr_cap_emptyset_unique C Hinv) => Huniq.
   rewrite -unique_existence.
   split.
   + have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| F ].
