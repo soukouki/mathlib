@@ -1519,11 +1519,9 @@ Lemma inv_corr_map_as_corr {A B} (f: A -> B) (g: B -> A) (a: A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> g (f a) = a.
 Proof.
 move=> Heq.
-suff: forall b, b \in \{f a} -> a \in \{g b}.
+suff: forall b, b \in \{f a} -> a \in \{g b} => [| b Hbeq ].
   by apply.
-move=> b Hbeq.
-suff: a \in MapAsCorr g b.
-  move=> H.
+suff: a \in MapAsCorr g b => [ H |].
   rewrite /MapAsCorr /In in H.
   by rewrite H.
 by rewrite -Heq.
