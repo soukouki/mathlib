@@ -1519,23 +1519,15 @@ Lemma inv_corr_map_as_corr {A B} (f: A -> B) (g: B -> A) (a: A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> g (f a) = a.
 Proof.
 move=> Heq.
-move: a.
-suff: exists! ff, MapAsCorr ff = InvCorr (MapAsCorr f).
-  move=> H a.
-  admit.
-rewrite map_as_corr_inv_corr.
-rewrite Heq.
-split.
-- rewrite -eq_fullset => b.
-  rewrite def_range_map_as_corr.
-  by exists (g b).
-- move=> b b' Hneq.
-  rewrite cap_eq_emptyset => b'' Hinv.
-  rewrite compset_in => Hinv'.
-  apply Hneq.
-  rewrite /InvCorr /MapAsCorr /In in Hinv Hinv'.
-  by subst.
-Admitted.
+suff: forall b, b \in \{f a} -> a \in \{g b}.
+  by apply.
+move=> b Hbeq.
+suff: a \in MapAsCorr g b.
+  move=> H.
+  rewrite /MapAsCorr /In in H.
+  by rewrite H.
+by rewrite -Heq.
+Qed.
 
 (* ここで関数外延性公理を使い始める *)
 (* S4 定理4 前半 *)
