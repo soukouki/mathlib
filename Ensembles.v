@@ -1175,18 +1175,18 @@ split.
     by rewrite Heq' in HB. (* ここまでは古い証明と同じ *)
 - case => Hdef Hinv.
   move: (inv_corr_cap_emptyset_unique C Hinv) => Huniq.
-  have: forall a: A, exists b, \{b} = C a => [ a | Hsing ].
+  have: forall a: A, exists b, \{b} = C a => [ a | Hsig ].
     rewrite /In def_range_exists in Hdef.
     move: (constructive_indefinite_description _ (Hdef a)) => Bsig.
     exists (get_value Bsig).
     apply singleton_unique_eq => //.
     by apply (get_proof Bsig).
-  move: (fun a => constructive_indefinite_description _ (Hsing a)) => fsig.
+  move: (fun a => constructive_indefinite_description _ (Hsig a)) => fsig.
   rewrite -unique_existence.
   split.
   + exists (fun a => get_value (fsig a)).
     apply functional_extensionality => a.
-    case (Hsing a) => b HB.
+    case (Hsig a) => b HB.
     rewrite -HB.
     symmetry.
     apply singleton_unique_eq.
