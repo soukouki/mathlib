@@ -1512,7 +1512,7 @@ split.
     by apply H.
 Qed.
 
-(* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす *)
+(* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす。p33に書いてある。 *)
 
 (* こんなのが示せたら楽だなというだけで、これが正しいかは自信がない *)
 Lemma inv_corr_map_as_corr {A B} (f: A -> B) (g: B -> A) (a: A):
@@ -1527,45 +1527,10 @@ suff: a \in MapAsCorr g b => [ H |].
 by rewrite -Heq.
 Qed.
 
-(* ここで関数外延性公理を使い始める *)
 (* S4 定理4 前半 *)
 Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
-  (exists g: B -> A, InvCorr (MapAsCorr f) = MapAsCorr g) <-> Bijective f.
+  (exists g: B ->c A, g = InvCorr (MapAsCorr f) -> exists g', g = MapAsCorr g') <-> Bijective f.
 Proof.
-split.
-- case => g Hg.
-  move: Hg.
-  split.
-  + rewrite surjective_value_range => b.
-    rewrite -def_range_inv_corr_to_value_range.
-    rewrite Hg.
-    rewrite def_range_map_as_corr.
-    by exists (g b).
-  + rewrite injective_uniqueness => b Hb.
-    suff: forall a, a = g (f a).
-      move=> H a1 a2 Heqa1 Heqa2.
-      apply eq_trans_r with (y := g b);
-        by [rewrite -Heqa1 | rewrite -Heqa2 ].
-    move=> a.
-    symmetry.
-    by apply inv_corr_map_as_corr.
-- case => Hsur Hin.
-  have: { g: B -> A | forall a b, b = f a -> a = g b } => [| G ].
-    admit.
-  exists (get_value G).
-  apply functional_extensionality => b.
-  apply functional_extensionality => a.
-  move: (get_proof G a b) => HG.
-  rewrite /InvCorr /MapAsCorr /In.
-  apply propositional_extensionality.
-  split => //.
-  move=> Heq.
-  move: (iffLR (injective_uniqueness _) Hin (f a)) => H.
-  Search Surjective ValueRange.
-  move: (iffLR (surjective_value_range _) Hsur) => H2.
-  move: (H (H2 (f a))).
-  rewrite /uniqueness.
-
 
 Admitted.
 
