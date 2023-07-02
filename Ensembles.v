@@ -1514,11 +1514,10 @@ Qed.
 
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす。p33に書いてある。 *)
 
-(* こんなのが示せたら楽だなというだけで、これが正しいかは自信がない *)
-Lemma inv_corr_map_as_corr {A B} (f: A -> B) (g: B -> A) (a: A):
-  InvCorr (MapAsCorr f) = MapAsCorr g -> g (f a) = a.
+Lemma inv_corr_map_as_corr {A B} (f: A -> B) (g: B -> A):
+  InvCorr (MapAsCorr f) = MapAsCorr g -> forall a, g (f a) = a.
 Proof.
-move=> Heq.
+move=> Heq a.
 suff: forall b, b \in \{f a} -> a \in \{g b} => [| b Hbeq ].
   by apply.
 suff: a \in MapAsCorr g b => [ H |].
@@ -1527,11 +1526,47 @@ suff: a \in MapAsCorr g b => [ H |].
 by rewrite -Heq.
 Qed.
 
+Lemma inv_corr_map_as_corr' {A B} (f: A -> B) (g: B -> A):
+  InvCorr (MapAsCorr f) = MapAsCorr g -> forall b, f (g b) = b.
+Proof.
+move=> Heq b.
+suff: forall a, a \in \{g b} -> b \in \{f a} => [| a Haeq ].
+  by apply.
+suff: b \in MapAsCorr f a => [ H |].
+  rewrite /MapAsCorr /In in H.
+  by rewrite H.
+rewrite -[MapAsCorr f]inv_corr_twice.
+by rewrite Heq.
+Qed.
+
 (* S4 定理4 前半 *)
 Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
-  (exists g: B ->c A, g = InvCorr (MapAsCorr f) -> exists g', g = MapAsCorr g') <-> Bijective f.
+  (forall g: B ->c A, g = InvCorr (MapAsCorr f) -> exists g', g = MapAsCorr g') <-> Bijective f.
 Proof.
-
+split.
+- move=> Hg.
+  move: (Hg (InvCorr (MapAsCorr f))).
+  case => // g Hinveq.
+  move: (inv_corr_map_as_corr  _ _ Hinveq) => Hforall.
+  move: (inv_corr_map_as_corr' _ _ Hinveq) => Hforall'.
+  split.
+  + rewrite surjective_exists => b.
+    by exists (g b).
+  + rewrite injective_exists_unique => b Hval.
+    exists (g b).
+    split => // a Haeq.
+    by rewrite -Haeq.
+- case => Hsur Hinj g Hgeq.
+  have: forall b : B, {x : A | f x = b} => [ b | Hsig ].
+    move: (iffLR (surjective_value_range _) Hsur b) => H1.
+    move: (iffLR (injective_exists_unique _) Hinj b H1) => H2.
+    apply (constructive_definite_description _ H2).
+  exists (fun b => get_value (Hsig b)).
+  subst.
+  apply functional_extensionality => b.
+  apply functional_extensionality => a.
+  apply propositional_extensionality.
+  
 Admitted.
 
 (* S4 定理4 後半 *)
