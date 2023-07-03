@@ -1566,7 +1566,19 @@ split.
   apply functional_extensionality => b.
   apply functional_extensionality => a.
   apply propositional_extensionality.
-  
+  split.
+  + move=> Hinv.
+    rewrite /InvCorr /MapAsCorr /In in Hinv.
+    rewrite /MapAsCorr.
+    move: (get_proof (Hsig b)) => H.
+    
+
+    admit.
+  + move=> Hmap.
+    rewrite /MapAsCorr in Hmap.
+    rewrite /InvCorr /MapAsCorr /In.
+    rewrite Hmap.
+    by rewrite (get_proof (Hsig b)).
 Admitted.
 
 (* S4 定理4 後半 *)
