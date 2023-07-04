@@ -1571,15 +1571,17 @@ split.
     rewrite /InvCorr /MapAsCorr /In in Hinv.
     rewrite /MapAsCorr.
     move: (get_proof (Hsig b)) => H.
-    
-
-    admit.
+    suff: uniqueness (fun a: A => f a = b).
+      by apply.
+    apply injective_uniqueness => //.
+    rewrite value_range_map_as_corr.
+    by exists a.
   + move=> Hmap.
     rewrite /MapAsCorr in Hmap.
     rewrite /InvCorr /MapAsCorr /In.
     rewrite Hmap.
     by rewrite (get_proof (Hsig b)).
-Admitted.
+Qed.
 
 (* S4 定理4 後半 *)
 Theorem invcorr_bijective {A B} (f: A -> B):
