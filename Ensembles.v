@@ -1543,9 +1543,8 @@ Qed.
 Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
   (forall g: B ->c A, g = InvCorr (MapAsCorr f) -> exists g', g = MapAsCorr g') <-> Bijective f.
 Proof.
-split.
-- move=> Hg.
-  move: (Hg (InvCorr (MapAsCorr f))).
+split => [ Hg |].
+- move: (Hg (InvCorr (MapAsCorr f))).
   case => // g Hinveq.
   move: (inv_corr_map_as_corr  _ _ Hinveq) => Hforall.
   move: (inv_corr_map_as_corr' _ _ Hinveq) => Hforall'.
@@ -1566,18 +1565,16 @@ split.
   apply functional_extensionality => b.
   apply functional_extensionality => a.
   apply propositional_extensionality.
-  split.
-  + move=> Hinv.
-    rewrite /InvCorr /MapAsCorr /In in Hinv.
+  split => [ Hinv | Hmap ].
+  + rewrite /InvCorr /MapAsCorr /In in Hinv.
     rewrite /MapAsCorr.
-    move: (get_proof (Hsig b)) => H.
     suff: uniqueness (fun a: A => f a = b).
+      move: (get_proof (Hsig b)) => H.
       by apply.
     apply injective_uniqueness => //.
     rewrite value_range_map_as_corr.
     by exists a.
-  + move=> Hmap.
-    rewrite /MapAsCorr in Hmap.
+  + rewrite /MapAsCorr in Hmap.
     rewrite /InvCorr /MapAsCorr /In.
     rewrite Hmap.
     by rewrite (get_proof (Hsig b)).
