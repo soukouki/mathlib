@@ -1541,7 +1541,7 @@ Qed.
 
 (* S4 定理4 前半 *)
 Theorem inv_corr_is_map_iff_bijective {A B} (f: A -> B):
-  (forall g: B ->c A, g = InvCorr (MapAsCorr f) -> exists g', g = MapAsCorr g') <-> Bijective f.
+  (forall gcorr: B ->c A, gcorr = InvCorr (MapAsCorr f) -> exists g, gcorr = MapAsCorr g) <-> Bijective f.
 Proof.
 split => [ Hg |].
 - move: (Hg (InvCorr (MapAsCorr f))).
@@ -1584,25 +1584,22 @@ Qed.
 Theorem inv_corr_bijective {A B} (f: A -> B):
   Bijective f <-> (exists g: B -> A, Bijective g).
 Proof.
-rewrite -inv_corr_is_map_iff_bijective.
-split => [ Hgcorr | Hbij ].
-- case (Hgcorr (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
+split => [ Hbij | Hexi ].
+- rewrite -inv_corr_is_map_iff_bijective in Hbij.
+  case (Hbij (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
   exists g.
-  rewrite -inv_corr_is_map_iff_bijective => fcorr Hfcorr.
+  rewrite -inv_corr_is_map_iff_bijective => fcorr Hf.
   exists f.
+  by rewrite -Hg inv_corr_twice in Hf.
+- rewrite -inv_corr_is_map_iff_bijective => gcorr Hgcorr.
   subst.
-  by rewrite -Hg inv_corr_twice.
-- move=> gcorr Hgcorr.
-  case Hbij => g Hgbij.
+  case Hexi => g Hbij.
   exists g.
-  subst.
-  Search InvCorr MapAsCorr.
-  Search Bijective.
-  move: (iffRL (inv_corr_is_map_iff_bijective _) Hgbij (MapAsCorr f)).
-  case.
-  + admit.
-  + move=> f' Hfeq.
-    
+  
+
+  (* gcorr = MapAsCorr g'となるようなg'を定めればいい。つまり、gcorrからそれに当てはまるような関数g'を作る *)
+  (* でも、それならHbijはどう使えばいい？ *)
+
 
 
 
