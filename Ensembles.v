@@ -1539,6 +1539,16 @@ rewrite -[MapAsCorr f]inv_corr_twice.
 by rewrite Heq.
 Qed.
 
+Lemma corr_eq {A B} (f g: A ->c B):
+  (forall a b, b \in f a <-> b \in g a) -> f = g.
+Proof.
+move=> H.
+apply functional_extensionality => a.
+apply functional_extensionality => b.
+apply propositional_extensionality.
+by suff: b \in f a <-> b \in g a.
+Qed.
+
 (* S4 定理4 前半 *)
 Theorem inv_corr_is_map_iff_bijective {A B} (f: A -> B):
   (forall gcorr: B ->c A, gcorr = InvCorr (MapAsCorr f) -> exists g, gcorr = MapAsCorr g) <-> Bijective f.
@@ -1562,19 +1572,17 @@ split => [ Hg |].
     apply (constructive_definite_description _ H2).
   exists (fun b => get_value (Hsig b)).
   subst.
-  apply functional_extensionality => b.
-  apply functional_extensionality => a.
-  apply propositional_extensionality.
+  apply corr_eq => b a.
   split => [ Hinv | Hmap ].
   + rewrite /InvCorr /MapAsCorr /In in Hinv.
-    rewrite /MapAsCorr.
+    rewrite /MapAsCorr /In.
     suff: uniqueness (fun a: A => f a = b).
       move: (get_proof (Hsig b)) => H.
       by apply.
     apply injective_uniqueness => //.
     rewrite value_range_map_as_corr.
     by exists a.
-  + rewrite /MapAsCorr in Hmap.
+  + rewrite /MapAsCorr /In in Hmap.
     rewrite /InvCorr /MapAsCorr /In.
     rewrite Hmap.
     by rewrite (get_proof (Hsig b)).
@@ -1595,7 +1603,13 @@ split => [ Hbij | Hexi ].
   subst.
   case Hexi => g Hbij.
   exists g.
-  
+  apply corr_eq => b a.
+  split => [ Hinv | Hmap ].
+  + rewrite /InvCorr /MapAsCorr /In in Hinv.
+    rewrite Hinv /MapAsCorr /In.
+    Search (forall a, _ (_ a) = a).
+    symmetry.
+    apply inv_corr_map_as_corr.
 
   (* gcorr = MapAsCorr g'となるようなg'を定めればいい。つまり、gcorrからそれに当てはまるような関数g'を作る *)
   (* でも、それならHbijはどう使えばいい？ *)
