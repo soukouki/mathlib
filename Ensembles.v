@@ -1590,34 +1590,16 @@ Qed.
 
 (* S4 定理4 後半 *)
 Theorem inv_corr_bijective {A B} (f: A -> B):
-  Bijective f <-> (exists g: B -> A, Bijective g).
+  Bijective f -> (exists g: B -> A, Bijective g).
 Proof.
-split => [ Hbij | Hexi ].
-- rewrite -inv_corr_is_map_iff_bijective in Hbij.
-  case (Hbij (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
-  exists g.
-  rewrite -inv_corr_is_map_iff_bijective => fcorr Hf.
-  exists f.
-  by rewrite -Hg inv_corr_twice in Hf.
-- rewrite -inv_corr_is_map_iff_bijective => gcorr Hgcorr.
-  subst.
-  case Hexi => g Hbij.
-  exists g.
-  apply corr_eq => b a.
-  split => [ Hinv | Hmap ].
-  + rewrite /InvCorr /MapAsCorr /In in Hinv.
-    rewrite Hinv /MapAsCorr /In.
-    Search (forall a, _ (_ a) = a).
-    symmetry.
-    apply inv_corr_map_as_corr.
-
-  (* gcorr = MapAsCorr g'となるようなg'を定めればいい。つまり、gcorrからそれに当てはまるような関数g'を作る *)
-  (* でも、それならHbijはどう使えばいい？ *)
-
-
-
-
-Admitted.
+move=> Hbij.
+rewrite -inv_corr_is_map_iff_bijective in Hbij.
+case (Hbij (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
+exists g.
+rewrite -inv_corr_is_map_iff_bijective => fcorr Hf.
+exists f.
+by rewrite -Hg inv_corr_twice in Hf.
+Qed.
 
 Definition InvMap {A B}:
   { f: A -> B | Bijective f } ->
