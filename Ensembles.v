@@ -1606,10 +1606,9 @@ Definition InvMap {A B}:
   { g: B -> A | Bijective g }.
 Proof.
 move=> HA.
-move: (inv_corr_bijective (get_value HA)) => Heq.
-move: (get_proof HA) => Hbi.
-move: (iffLR Heq Hbi) => Hexi.
-by apply (constructive_indefinite_description _ Hexi).
+apply constructive_indefinite_description.
+apply (inv_corr_bijective (get_value HA)).
+by apply (get_proof HA).
 Qed.
 
 Definition Composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
