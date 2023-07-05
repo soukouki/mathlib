@@ -1540,7 +1540,7 @@ by rewrite Heq.
 Qed.
 
 (* S4 定理4 前半 *)
-Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
+Theorem inv_corr_is_map_iff_bijective {A B} (f: A -> B):
   (forall g: B ->c A, g = InvCorr (MapAsCorr f) -> exists g', g = MapAsCorr g') <-> Bijective f.
 Proof.
 split => [ Hg |].
@@ -1581,19 +1581,31 @@ split => [ Hg |].
 Qed.
 
 (* S4 定理4 後半 *)
-Theorem invcorr_bijective {A B} (f: A -> B):
+Theorem inv_corr_bijective {A B} (f: A -> B):
   Bijective f <-> (exists g: B -> A, Bijective g).
 Proof.
-rewrite -invcorr_is_map_iff_bijective.
-split;
-  case => g Hg;
+rewrite -inv_corr_is_map_iff_bijective.
+split => [ Hgcorr | Hbij ].
+- case (Hgcorr (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
   exists g.
-- split.
-  + rewrite surjective_exists.
-    move=> a.
-    exists (f a).
-    by apply inv_corr_map_as_corr.
-- admit.
+  rewrite -inv_corr_is_map_iff_bijective => fcorr Hfcorr.
+  exists f.
+  subst.
+  by rewrite -Hg inv_corr_twice.
+- move=> gcorr Hgcorr.
+  case Hbij => g Hgbij.
+  exists g.
+  subst.
+  Search InvCorr MapAsCorr.
+  Search Bijective.
+  move: (iffRL (inv_corr_is_map_iff_bijective _) Hgbij (MapAsCorr f)).
+  case.
+  + admit.
+  + move=> f' Hfeq.
+    
+
+
+
 Admitted.
 
 Definition InvMap {A B}:
@@ -1601,7 +1613,7 @@ Definition InvMap {A B}:
   { g: B -> A | Bijective g }.
 Proof.
 move=> HA.
-move: (invcorr_bijective (get_value HA)) => Heq.
+move: (inv_corr_bijective (get_value HA)) => Heq.
 move: (get_proof HA) => Hbi.
 move: (iffLR Heq Hbi) => Hexi.
 by apply (constructive_indefinite_description _ Hexi).
