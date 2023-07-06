@@ -538,8 +538,12 @@ Variable T: Type.
 Implicit Type x: T.
 Implicit Type A B C: Ensemble T.
 
-Definition FamilyEnsemble := (Ensemble (Ensemble T)).
-Implicit Types AA BB: FamilyEnsemble.
+Definition FamilyEnsemble T := (Ensemble (Ensemble T)).
+Implicit Types AA BB: FamilyEnsemble T.
+
+Definition PowerSet {T} (X: Ensemble T): FamilyEnsemble T := fun A: Ensemble T => A \subset X.
+
+(* p.18にPowerSetの個数を問う問題があるので、余裕があったらやりたい *)
 
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別する *)
 
