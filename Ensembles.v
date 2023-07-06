@@ -1760,12 +1760,27 @@ Admitted.
 
 (* 写像の拡大と縮小についてはいまいちイメージがわかないので後回し *)
 
-Definition IndicatorFunction {X} (A: Ensemble X) (x: X) :=
+(* 特徴関数(CharacteristicFunction)あるいは定義関数(IndicatorFunction)、略してCharにする *)
+Definition Char {X} (A: Ensemble X) (x: X): nat :=
   match excluded_middle_informative (x \in A) with
   | left a => 1
   | right b => 0
   end.
 
+Notation "\X A" := (Char A) (at level 30).
+
+Fact char_fullset {X} (x: X):
+  x \in FullSet -> (\X FullSet) x = 1.
+Admitted.
+
+Fact char_emptyset {X} (x: X):
+  x \in FullSet -> (\X EmptySet) x = 0.
+Admitted.
+
+Fact char_neq {X} {A A': Ensemble X}:
+  A \in PowerSet FullSet -> A' \in PowerSet FullSet -> A <> A'
+ -> \X A <> \X A'.
+Admitted.
 
 
 
