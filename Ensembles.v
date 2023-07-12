@@ -1697,15 +1697,17 @@ rewrite /Composite.
 rewrite /Identity.
 apply functional_extensionality => a.
 move: (InvMap F) => G.
-move: (composite_bijective _ _ (get_proof G) (get_proof F)).
-case => Hcsur Hcinj.
+move: (composite_bijective _ _ (get_proof G) (get_proof F)) => Hbij.
 apply inv_corr_map_as_corr.
-rewrite /InvCorr /MapAsCorr /In.
-apply functional_extensionality => b'.
-apply functional_extensionality => a'.
-apply propositional_extensionality.
-split => H.
-- rewrite H.
+case (iffRL (inv_corr_is_map_iff_bijective _) Hbij (MapAsCorr (\I B))).
+  rewrite /MapAsCorr /Identity /InvCorr /Composite /In.
+  Search eq MapAsCorr.
+  apply functional_extensionality => b.
+  apply functional_extensionality => b'.
+  apply propositional_extensionality.
+  split => [ Heq | Hb ].
+  - subst.
+
 
 
 move: (iffLR (injective_exists_unique _) Hcinj (get_value F a)).
