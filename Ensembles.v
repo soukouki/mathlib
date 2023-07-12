@@ -1634,23 +1634,6 @@ Qed.
 Theorem composite_injective {A B C} (f: A -> B) (g: B -> C):
   Injective f -> Injective g -> Injective (g \circle f).
 Proof.
-(* さすがに汚いのでなんとかする *)
-move=> Hfinj Hginj.
-rewrite injective_exists_unique => c Hc.
-rewrite value_range_map_as_corr in Hc.
-rewrite -unique_existence.
-split.
-- case Hc => a Heq.
-  by exists a.
-- move=> a a' Heqa Heqa'.
-  have: uniqueness (fun b: B => g b = c) => [| Hguniq ].
-    apply (iffLR (injective_uniqueness _) Hginj c).
-    rewrite value_range_map_as_corr.
-    by exists (f a).
-  have: uniqueness (fun a: A => g (f a) = c) => [| Huniq ].
-
-
-Restart.
 rewrite 3!injective_exists_unique => Hf Hg c Hc.
 rewrite value_range_map_as_corr in Hc.
 case (Hg c).
