@@ -1699,42 +1699,9 @@ apply functional_extensionality => a.
 move: (InvMap F) => G.
 move: (composite_bijective _ _ (get_proof G) (get_proof F)) => Hbij.
 apply inv_corr_map_as_corr.
-case (iffRL (inv_corr_is_map_iff_bijective _) Hbij (MapAsCorr (\I B))).
-  rewrite /MapAsCorr /Identity /InvCorr /Composite /In.
-  Search eq MapAsCorr.
-  apply functional_extensionality => b.
-  apply functional_extensionality => b'.
-  apply propositional_extensionality.
-  split => [ Heq | Hb ].
-  - subst.
+move: (iffRL (inv_corr_is_map_iff_bijective (get_value F)) (get_proof F)).
 
 
-
-move: (iffLR (injective_exists_unique _) Hcinj (get_value F a)).
-case.
-  rewrite surjective_value_range in Hcsur.
-  by apply Hcsur.
-move=> b Huniq.
-case Huniq => H1 H2.
-move: (H2 (get_value F a)) => H3.
-rewrite -H3.
-- 
-
-
-Restart.
-rewrite /Composite.
-rewrite /Identity.
-apply functional_extensionality => a.
-move: (InvMap F) => G.
-have: exists b, b = get_value F a.
-  by exists (get_value F a).
-case => b Heqb.
-rewrite -Heqb.
-have: exists a, a = get_value G b.
-  by exists (get_value G b).
-case => a' Heqa.
-rewrite -Heqa.
-case F => f Hf.
 
 
 Admitted.
