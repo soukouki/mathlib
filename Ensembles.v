@@ -1700,21 +1700,26 @@ Theorem identity_composite {A B} (f: A -> B):
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
-Theorem invmap_composite_identity {A B} (f: { f: A -> B | Bijective f } ):
+Theorem inv_map_composite_identity {A B} (f: { f: A -> B | Bijective f } ):
   get_value (InvMap f) \circle (get_value f) = \I A.
 Proof.
-rewrite /Composite.
-rewrite /Identity.
+rewrite /Composite /Identity.
 apply functional_extensionality => a.
 apply inv_corr_map_as_corr.
 move: (InvMap f) => g.
-by case (get_proof g) => Hgbij Hgeq.
+by case (get_proof g).
 Qed.
 
 (* S4 定理6(3)-2 *)
-Theorem composite_invmap_identity {A B} (f: { f: A -> B | Bijective f } ):
+Theorem composite_inv_map_identity {A B} (f: { f: A -> B | Bijective f } ):
   get_value f \circle get_value (InvMap f) = \I B.
-Admitted.
+Proof.
+rewrite /Composite /Identity.
+apply functional_extensionality => b.
+apply inv_corr_map_as_corr'.
+move: (InvMap f) => g.
+by case (get_proof g).
+Qed.
 
 (* 写像の拡大と縮小についてはいまいちイメージがわかないので後回し *)
 
