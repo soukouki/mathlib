@@ -1633,11 +1633,11 @@ split => Heq;
 Qed.
 
 Definition Composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
-Notation "f \circle g" := (Composite g f) (at level 50).
+Notation "f \comp g" := (Composite g f) (at level 50).
 
 (* S4 定理5a *)
 Theorem composite_surjective {A B C} (f: A -> B) (g: B -> C):
-  Surjective f -> Surjective g -> Surjective (g \circle f).
+  Surjective f -> Surjective g -> Surjective (g \comp f).
 Proof.
 rewrite !surjective_exists => Hf Hg c.
 case (Hg c) => b Heqc.
@@ -1649,7 +1649,7 @@ Qed.
 
 (* S4 定理5b *)
 Theorem composite_injective {A B C} (f: A -> B) (g: B -> C):
-  Injective f -> Injective g -> Injective (g \circle f).
+  Injective f -> Injective g -> Injective (g \comp f).
 Proof.
 rewrite 3!injective_exists_unique => Hf Hg c Hc.
 rewrite valuerange_map_as_corr in Hc.
@@ -1681,7 +1681,7 @@ Qed.
 
 (* S4 定理5c *)
 Theorem composite_bijective {A B C} (f: A -> B) (g: B -> C):
-  Bijective f -> Bijective g -> Bijective (g \circle f).
+  Bijective f -> Bijective g -> Bijective (g \comp f).
 Proof.
 rewrite /Bijective.
 case => Hsurf Hinf.
@@ -1695,30 +1695,32 @@ Lemma composite_bijective_sig {A B C} (f: A -> B | Bijective f) (g: B -> C | Bij
   {c: A -> C | Bijective c}.
 Proof.
 apply constructive_indefinite_description.
-exists (get_value g \circle get_value f).
+exists (get_value g \comp get_value f).
 apply composite_bijective.
 - by apply (get_proof f).
 - by apply (get_proof g).
 Qed.
+Notation "f \compb g" := (composite_bijective_sig g f) (at level 50).
+
 
 (* S4 定理6(1) *)
 Theorem composite_assoc {A B C D} (f: A -> B) (g: B -> C) (h: C -> D):
-  (h \circle g) \circle f = h \circle (g \circle f).
+  (h \comp g) \comp f = h \comp (g \comp f).
 Proof. by []. Qed.
 
 (* S4 定理6(2)-1 *)
 Theorem composite_idendity {A B} (f: A -> B):
-  f \circle \I A = f.
+  f \comp \I A = f.
 Proof. by []. Qed.
 
 (* S4 定理6(2)-2 *)
 Theorem identity_composite {A B} (f: A -> B):
-  \I B \circle f = f.
+  \I B \comp f = f.
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
 Theorem invmap_composite_identity {A B} (f: A -> B | Bijective f):
-  get_value (InvMap f) \circle (get_value f) = \I A.
+  get_value (InvMap f) \comp (get_value f) = \I A.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => a.
@@ -1729,7 +1731,7 @@ Qed.
 
 (* S4 定理6(3)-2 *)
 Theorem composite_invmap_identity {A B} (f: A -> B | Bijective f):
-  get_value f \circle get_value (InvMap f) = \I B.
+  get_value f \comp get_value (InvMap f) = \I B.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => b.
@@ -1817,9 +1819,31 @@ Theorem image_cap_injective {A B} (f: A -> B) (P1 P2: Ensemble A):
   Injective f -> Image f (P1 \cap P2) = Image f P1 \cap Image f P2.
 Admitted.
 
+Lemma InvMapL {A B}:
+  {f: A -> B | Bijective f} -> {g: B -> A | Bijective g}.
+Proof.
+move=> f.
+move: (InvMap f) => H.
+case H => g.
+case => Hg _.
+by exists g.
+Qed.
+
 (* S4 問題8 *)
 Theorem inv_composite_bijective {A B C} (f: A -> B | Bijective f) (g: B -> C | Bijective g):
-  InvMap (composite_bijective_sig f g) = composite_bijective_sig (InvMap f) (InvMap g).
+  InvMapL (composite_bijective_sig f g) =
+  composite_bijective_sig (InvMapL g) (InvMapL f).
+Admitted.
+
+(* S4 問題9(a) *)
+Theorem composite_image {A B C} (f: A -> B) (g: B -> C) (P: Ensemble A):
+  Image (g \comp f) P = Image g (Image f P).
+Admitted.
+
+(* S4 問題9(b) *)
+Theorem composite_inv_image {A B C} (f: A -> B | Bijective f) (g: B -> C | Bijective g) (R: Ensemble C):
+  Image (get_value (InvMap (g \compb f))) R = Image (get_value (InvMap f)) (Image (get_value (InvMap g)) R).
+Admitted.
 
 
 
