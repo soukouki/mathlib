@@ -1146,8 +1146,8 @@ apply eq_split.
 Qed.
 
 Lemma invcorr_cap_emptyset_unique {A B} (C: A ->c B):
-  (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)
-  -> forall a, uniqueness (fun b => b \in C a).
+  (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset) ->
+  forall a, uniqueness (fun b => b \in C a).
 Proof.
 move=> Hinv a b1 b2 HB HB'.
 apply NNPP => H1.
@@ -1691,6 +1691,16 @@ split.
 - by apply composite_injective.
 Qed.
 
+Lemma composite_bijective_sig {A B C} (f: A -> B | Bijective f) (g: B -> C | Bijective g):
+  {c: A -> C | Bijective c}.
+Proof.
+apply constructive_indefinite_description.
+exists (get_value g \circle get_value f).
+apply composite_bijective.
+- by apply (get_proof f).
+- by apply (get_proof g).
+Qed.
+
 (* S4 定理6(1) *)
 Theorem composite_assoc {A B C D} (f: A -> B) (g: B -> C) (h: C -> D):
   (h \circle g) \circle f = h \circle (g \circle f).
@@ -1707,7 +1717,7 @@ Theorem identity_composite {A B} (f: A -> B):
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
-Theorem invmap_composite_identity {A B} (f: { f: A -> B | Bijective f } ):
+Theorem invmap_composite_identity {A B} (f: A -> B | Bijective f):
   get_value (InvMap f) \circle (get_value f) = \I A.
 Proof.
 rewrite /Composite /Identity.
@@ -1718,7 +1728,7 @@ by case (get_proof g).
 Qed.
 
 (* S4 定理6(3)-2 *)
-Theorem composite_invmap_identity {A B} (f: { f: A -> B | Bijective f } ):
+Theorem composite_invmap_identity {A B} (f: A -> B | Bijective f):
   get_value f \circle get_value (InvMap f) = \I B.
 Proof.
 rewrite /Composite /Identity.
@@ -1777,24 +1787,44 @@ split;
   by rewrite -in_char in H.
 Qed.
 
+Fact char_eq_func {X} (f: X -> nat):
+  (forall x, f x = 0 \/ f x = 1) ->
+  forall A: Ensemble X, A = (fun x => f x = 1) -> (\X A) = f.
+Proof.
+move=> Hfor A HAeq.
+apply functional_extensionality => x.
+case (Hfor x) => H;
+  rewrite H;
+  [ rewrite -not_in_char | rewrite -in_char ];
+  rewrite HAeq.
+- rewrite /In => H1.
+  by rewrite H1 in H.
+- by rewrite /In.
+Qed.
+
+(* S4 問題3-1 *)
+Theorem invimage_image_injective {A B} (f: A -> B):
+  Injective f -> forall P, P = InvImage f (Image f P).
+Admitted.
+
+(* S4 問題3-2 *)
+Theorem image_invimage_surjective {A B} (f: A -> B):
+  Surjective f -> forall Q, Image f (InvImage f Q) = Q.
+Admitted.
+
+(* S4 問題4 *)
+Theorem image_cap_injective {A B} (f: A -> B) (P1 P2: Ensemble A):
+  Injective f -> Image f (P1 \cap P2) = Image f P1 \cap Image f P2.
+Admitted.
+
+(* S4 問題8 *)
+Theorem inv_composite_bijective {A B C} (f: A -> B | Bijective f) (g: B -> C | Bijective g):
+  InvMap (composite_bijective_sig f g) = composite_bijective_sig (InvMap f) (InvMap g).
+
+
 
 
 
 End Section4.
 
 End Ensembles.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
