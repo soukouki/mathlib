@@ -370,6 +370,13 @@ split.
   by rewrite H.
 Qed.
 
+Lemma not_emptyset x: x \notin \emptyset <-> x \in FullSet.
+Proof.
+split => // Hf.
+case.
+Qed.
+
+
 Inductive ComplementarySet (A: Ensemble): Ensemble :=
   | ComplementarySet_intro: forall x, x \in FullSet - A -> x \in ComplementarySet A.
 Notation "A ^ 'c'" := (ComplementarySet A) (at level 30).
@@ -1732,18 +1739,43 @@ Definition Char {X} (A: Ensemble X) (x: X): nat :=
 
 Notation "\X A" := (Char A) (at level 30).
 
+Lemma in_char {X} (A: Ensemble X) (a: X):
+  a \in A <-> (\X A) a = 1.
+Proof.
+split;
+  rewrite /Char;
+  by case excluded_middle_informative.
+Qed.
+
+Lemma not_in_char {X} (A: Ensemble X) (a: X):
+  a \notin A <-> (\X A) a = 0.
+Proof.
+split;
+  rewrite /Char;
+  by case excluded_middle_informative.
+Qed.
+
 Fact char_fullset {X} (x: X):
   x \in FullSet -> (\X FullSet) x = 1.
-Admitted.
+Proof. by rewrite -in_char. Qed.
 
 Fact char_emptyset {X} (x: X):
   x \in FullSet -> (\X EmptySet) x = 0.
-Admitted.
+Proof. by rewrite -not_in_char not_emptyset. Qed.
 
 Fact char_neq {X} {A A': Ensemble X}:
   A \in PowerSet FullSet -> A' \in PowerSet FullSet -> A <> A'
  -> \X A <> \X A'.
-Admitted.
+Proof.
+move=> HP HP' Hneq Hceq.
+apply Hneq.
+rewrite -eq_iff => x.
+split;
+  move=> H;
+  rewrite in_char in H;
+  [ rewrite Hceq in H | rewrite -Hceq in H ];
+  by rewrite -in_char in H.
+Qed.
 
 
 
