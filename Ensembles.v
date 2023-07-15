@@ -1845,6 +1845,58 @@ Theorem composite_inv_image {A B C} (f: A -> B | Bijective f) (g: B -> C | Bijec
   Image (get_value (InvMap (g \compb f))) R = Image (get_value (InvMap f)) (Image (get_value (InvMap g)) R).
 Admitted.
 
+(* S4 問題10(a) *)
+Theorem surjective_composite_surjective {A B C} (f: A -> B) (g: B -> C):
+  Surjective (g \comp f) -> Surjective g.
+Admitted.
+
+(* S4 問題10(b) *)
+Theorem injective_composite_injective {A B C} (f: A -> B) (g: B -> C):
+  Injective (g \comp f) -> Injective f.
+Admitted.
+
+(* S4 問題11 *)
+Theorem surjective_composite_eq {A B C} (f: A -> B | Surjective f) (g g': B -> C):
+  g \comp (get_value f) = g' \comp (get_value f) -> g = g'.
+Admitted.
+
+(* S4 問題12 *)
+Theorem injective_composite_eq {A B C} (f f': A -> B) (g: B -> C | Injective g):
+  (get_value g) \comp f = (get_value g) \comp f' -> f = f'.
+Admitted.
+
+(* S4 問題13(a) *)
+Theorem composite_surjective_to_surjective {A B C} (f: A -> B) (g: B -> C):
+  Surjective (g \comp f) -> Injective g -> Surjective f.
+Admitted.
+
+(* S4 問題13(b) *)
+Theorem composite_injective_to_injective {A B C} (f: A -> B) (g: B -> C):
+  Injective (g \comp f) -> Surjective f -> Injective g.
+Admitted.
+
+(* S4 問題14-1 *)
+Theorem identity_to_bijective {A B} (f: A -> B) (g g': B -> A):
+  g \comp f = \I A -> f \comp g' = \I B -> Bijective f.
+Admitted.
+
+(* S4 問題14-2 *)
+Theorem identity_to_eq {A B} (f: A -> B) (g g': B -> A):
+  g \comp f = \I A -> f \comp g' = \I B -> g = g'.
+Admitted.
+
+Lemma bijective_sig {A B} (f: A -> B) (H: Bijective f): {f: A -> B | Bijective f}.
+apply constructive_indefinite_description.
+by exists f.
+Qed.
+
+(* S4 問題14-3 *)
+Theorem identity_to_invmap {A B} (f: A -> B) (g g': B -> A)
+  (H1: g \comp f = \I A) (H2: f \comp g' = \I B):
+  g = get_value (InvMap (bijective_sig f (identity_to_bijective _ _ _ H1 H2))).
+Admitted.
+
+
 
 
 
