@@ -1555,20 +1555,9 @@ Qed.
 
 (* S4 定理4 前半 *)
 Theorem inv_corr_is_map_iff_bijective {A B} (f: A -> B):
-  (forall gcorr: B ->c A, gcorr = InvCorr (MapAsCorr f) -> exists g, gcorr = MapAsCorr g) <-> Bijective f.
+  Bijective f <-> (forall gcorr: B ->c A, gcorr = InvCorr (MapAsCorr f) -> exists g, gcorr = MapAsCorr g).
 Proof.
-split => [ Hg |].
-- move: (Hg (InvCorr (MapAsCorr f))).
-  case => // g Hinveq.
-  move: (inv_corr_map_as_corr  _ _ Hinveq) => Hforall.
-  move: (inv_corr_map_as_corr' _ _ Hinveq) => Hforall'.
-  split.
-  + rewrite surjective_exists => b.
-    by exists (g b).
-  + rewrite injective_exists_unique => b Hval.
-    exists (g b).
-    split => // a Haeq.
-    by rewrite -Haeq.
+split => [| Hg ].
 - case => Hsur Hinj g Hgeq.
   have: forall b : B, {x : A | f x = b} => [ b | Hsig ].
     move: (iffLR (surjective_value_range _) Hsur b) => H1.
@@ -1590,6 +1579,17 @@ split => [ Hg |].
     rewrite /InvCorr /MapAsCorr /In.
     rewrite Hmap.
     by rewrite (get_proof (Hsig b)).
+- move: (Hg (InvCorr (MapAsCorr f))).
+  case => // g Hinveq.
+  move: (inv_corr_map_as_corr  _ _ Hinveq) => Hforall.
+  move: (inv_corr_map_as_corr' _ _ Hinveq) => Hforall'.
+  split.
+  + rewrite surjective_exists => b.
+    by exists (g b).
+  + rewrite injective_exists_unique => b Hval.
+    exists (g b).
+    split => // a Haeq.
+    by rewrite -Haeq.
 Qed.
 
 (* S4 定理4 後半 *)
@@ -1597,22 +1597,24 @@ Theorem inv_corr_bijective {A B} (f: A -> B):
   Bijective f -> (exists g: B -> A, Bijective g).
 Proof.
 move=> Hbij.
-rewrite -inv_corr_is_map_iff_bijective in Hbij.
+rewrite inv_corr_is_map_iff_bijective in Hbij.
 case (Hbij (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
 exists g.
-rewrite -inv_corr_is_map_iff_bijective => fcorr Hf.
+rewrite inv_corr_is_map_iff_bijective => fcorr Hf.
 exists f.
 by rewrite -Hg inv_corr_twice in Hf.
 Qed.
 
-Definition InvMap {A B}:
-  { f: A -> B | Bijective f } ->
-  { g: B -> A | Bijective g }.
+Definition InvMap {A B} (f: {f: A -> B | Bijective f}):
+  { g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f)) }.
 Proof.
-move=> HA.
 apply constructive_indefinite_description.
-apply (inv_corr_bijective (get_value HA)).
-by apply (get_proof HA).
+case (iffLR (inv_corr_is_map_iff_bijective _) (get_proof f) _ eq_refl) => g Hg.
+exists g.
+split => //.
+rewrite inv_corr_is_map_iff_bijective => fcorr Hf.
+exists (get_value f).
+by rewrite Hf -Hg inv_corr_twice.
 Qed.
 
 Theorem inv_map_eq {A B} (f: {f: A -> B | Bijective f}):
