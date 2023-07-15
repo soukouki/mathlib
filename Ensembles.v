@@ -1,5 +1,7 @@
 (* 集合・位相入門(松坂)1 をCoqで証明しつつ読んでいく *)
 
+Set Implicit Arguments.
+
 Add LoadPath "." as Local.
 
 From mathcomp Require Import ssreflect.
@@ -13,15 +15,14 @@ Module Ensembles.
 Declare Scope ensemble_scope.
 Open Scope ensemble_scope.
 
+
 Section Section1.
 
 Variable T: Type.
-Implicit Type x: T.
 
 Definition Ensemble := T -> Prop.
-Implicit Types A B C: Ensemble.
 
-Definition In (a: T) (A: Ensemble): Prop := A a.
+Definition In a (A: Ensemble): Prop := A a.
 Notation "a \in A" := (In a A) (at level 55).
 
 Notation "a \notin A" := (~ In a A) (at level 55).
@@ -96,8 +97,22 @@ split.
   by apply HA.
 Qed.
 
+End Section1.
 
-Inductive Cup A B: Ensemble :=
+
+Notation "a \in A" := (In a A) (at level 55): ensemble_scope.
+Notation "\{ a }" := (Singleton a).
+Notation "a \notin A" := (~ In a A) (at level 55): ensemble_scope.
+Notation "\emptyset" := (EmptySet): ensemble_scope.
+Arguments EmptySet {_}.
+Notation "A \subset B" := (Subset A B) (at level 55): ensemble_scope.
+
+
+Section Section2.
+
+Variable T: Type.
+
+Inductive Cup A B: Ensemble T :=
   | Cup_introl: forall x: T, x \in A -> x \in Cup A B
   | Cup_intror: forall x: T, x \in B -> x \in Cup A B.
 Notation "A \cup B" := (Cup A B) (at level 50).
@@ -182,7 +197,7 @@ Theorem emptyset_cup A: \emptyset \cup A = A.
 Proof. by apply subset_cup_eq. Qed.
 
 
-Inductive Cap A B: Ensemble :=
+Inductive Cap A B: Ensemble T :=
   Cap_intro: forall x: T, x \in A -> x \in B -> x \in (Cap A B).
 Notation "A \cap B" := (Cap A B) (at level 50).
 
@@ -317,7 +332,7 @@ by apply cap_subset_l.
 Qed.
 
 
-Inductive Sub A B: Ensemble :=
+Inductive Sub A B: Ensemble T :=
   | Sub_intro: forall x: T, x \in A -> x \notin B -> x \in Sub A B.
 Notation "A - B" := (Sub A B). (* at level 50 *)
 
@@ -351,8 +366,8 @@ by case.
 Qed.
 
 
-Inductive FullSet: Ensemble :=
-  | FullSet_intro: forall x, x \in FullSet.
+Inductive FullSet: Ensemble T :=
+  | FullSet_intro: forall x: T, x \in FullSet.
 
 Lemma fullset_cap A: FullSet \cap A = A.
 Proof. by rewrite cap_comm -subset_cap_eq. Qed.
@@ -376,8 +391,7 @@ split => // Hf.
 case.
 Qed.
 
-
-Inductive ComplementarySet (A: Ensemble): Ensemble :=
+Inductive ComplementarySet (A: Ensemble T): Ensemble T :=
   | ComplementarySet_intro: forall x, x \in FullSet - A -> x \in ComplementarySet A.
 Notation "A ^ 'c'" := (ComplementarySet A) (at level 30).
 
@@ -514,36 +528,6 @@ rewrite -compset_in.
 rewrite compset_twice.
 by split => //; case.
 Qed.
-
-End Section1.
-
-
-Arguments In {_} _ _.
-Arguments Singleton {_} _.
-Arguments EmptySet {_}.
-Arguments FullSet {_}.
-Arguments Subset {_} _ _.
-Arguments Cup {_} _ _.
-Arguments Cap {_} _ _.
-Arguments Sub {_} _ _.
-Arguments ComplementarySet {_} _.
-
-Notation "a \in A" := (In a A) (at level 55): ensemble_scope.
-Notation "\{ a }" := (Singleton a).
-Notation "a \notin A" := (~ In a A) (at level 55): ensemble_scope.
-Notation "\emptyset" := (EmptySet): ensemble_scope.
-Notation "A \subset B" := (Subset A B) (at level 55): ensemble_scope.
-Notation "A \cup B" := (Cup A B) (at level 50): ensemble_scope.
-Notation "A \cap B" := (Cap A B) (at level 50): ensemble_scope.
-Notation "A - B" := (Sub A B) (* at level 50 *): ensemble_scope.
-Notation "A ^ 'c'" := (ComplementarySet A) (at level 30): ensemble_scope.
-
-
-Section Section2.
-
-Variable T: Type.
-Implicit Type x: T.
-Implicit Type A B C: Ensemble T.
 
 Definition FamilyEnsemble T := (Ensemble (Ensemble T)).
 Implicit Types AA BB: FamilyEnsemble T.
@@ -968,22 +952,28 @@ rewrite -eq_iff => x0.
 split.
 - rewrite {1}/SymmetricDifference.
   case => x1 Hsub.
-  + by apply (sub_sym_diff A1 A2 B1 B2).
+  + by apply (sub_sym_diff Hsub).
   + rewrite sym_diff_comm.
-    by apply (sub_sym_diff B1 B2 A1 A2).
+    by apply (sub_sym_diff Hsub).
 - have: (A2 \triangle A1 = B2 \triangle B1) => [| Htriangle' ].
     symmetry.
     by rewrite [B2 \triangle B1]sym_diff_comm [A2 \triangle A1]sym_diff_comm.
   rewrite {1}/SymmetricDifference.
   case => x1 Hsub.
-  + by apply (sub_sym_diff A2 A1 B2 B1).
+  + by apply (sub_sym_diff Hsub).
   + rewrite sym_diff_comm.
-    by apply (sub_sym_diff B2 B1 A2 A1).
+    by apply (sub_sym_diff Hsub).
 Qed.
 
 End Section2.
 
 
+Notation "A \cup B" := (Cup A B) (at level 50): ensemble_scope.
+Notation "A \cap B" := (Cap A B) (at level 50): ensemble_scope.
+Notation "A - B" := (Sub A B) (* at level 50 *): ensemble_scope.
+Notation "A ^ 'c'" := (ComplementarySet A) (at level 30): ensemble_scope.
+
+Arguments FullSet {_}.
 Arguments BigCup {_} _ _.
 Arguments BigCap {_} _ _.
 
@@ -999,10 +989,10 @@ Implicit Types A B: Type.
 Definition Corr A B := A -> Ensemble B.
 Notation "A ->c B" := (Corr A B) (at level 99).
 
-Definition Graph {A B} (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => (snd x) \in C (fst x)).
+Definition Graph A B (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => (snd x) \in C (fst x)).
 
 (* (3.1) *)
-Theorem corr_from_graph {A B} (C: A ->c B) (a: A):
+Theorem corr_from_graph A B C (a: A):
   C a = ((fun b => (Graph C) (pair a b)): Ensemble B).
 Proof. by []. Qed.
 
@@ -1018,12 +1008,12 @@ split.
   by rewrite HX.
 Qed.
 
-Definition DefRange   {A B} (C: A ->c B): Ensemble A := fun a: A => exists b: B, (a, b) \in Graph(C).
-Definition ValueRange {A B} (C: A ->c B): Ensemble B := fun b: B => exists a: A, (a, b) \in Graph(C).
+Definition DefRange   A B (C: A ->c B): Ensemble A := fun a: A => exists b: B, (a, b) \in Graph(C).
+Definition ValueRange A B (C: A ->c B): Ensemble B := fun b: B => exists a: A, (a, b) \in Graph(C).
 
-Definition InvCorr {A B} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
+Definition InvCorr A B (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
-Theorem defrange_neq_empty_set {A B} (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
+Theorem defrange_neq_empty_set A B (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
 Proof.
 apply eq_split => a.
 - rewrite /In /DefRange.
@@ -1037,7 +1027,7 @@ apply eq_split => a.
   by exists b.
 Qed.
 
-Lemma defrange_exists {A B} (C: A ->c B): DefRange C = fun a: A => exists b, b \in C a.
+Lemma defrange_exists A B (C: A ->c B): DefRange C = fun a: A => exists b, b \in C a.
 Proof. by []. Qed.
 
 (* (3.2) *)
@@ -1087,7 +1077,7 @@ Notation "A -> B" := (Map A B) (at level 90).
 これは関数と等しいので、今回は定義しない。
  *)
 
-Definition MapAsCorr {A B} (f: A -> B): A ->c B := 
+Definition MapAsCorr A B (f: A -> B): A ->c B := 
   fun a b => b = f a.
 
 Definition Identity {A}: A -> A := fun a: A => a.
@@ -1095,13 +1085,11 @@ Notation "\I A" := (Identity: A -> A) (at level 30).
 
 
 (* 分かりづらいんじゃ！ *)
-Set Implicit Arguments.
 Definition get_value := proj1_sig.
 Definition get_proof := proj2_sig.
-Unset Implicit Arguments.
 
 (* S3 定理2 *)
-Theorem exist_one_map_equivalent_to_graphs {A B} G:
+Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
   (exists f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
 Proof.
 split.
@@ -1132,7 +1120,7 @@ split.
     by apply get_proof.
 Qed.
 
-Lemma singleton_unique_eq {A} (a: A) (P: Ensemble A):
+Lemma singleton_unique_eq A a (P: Ensemble A):
   a \in P -> uniqueness (fun a' => a' \in P) -> \{a} = P.
 Proof.
 move=> Hin Huniq.
@@ -1145,7 +1133,7 @@ apply eq_split.
   by apply Huniq.
 Qed.
 
-Lemma invcorr_cap_emptyset_unique {A B} (C: A ->c B):
+Lemma invcorr_cap_emptyset_unique A B (C: A ->c B):
   (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset) ->
   forall a, uniqueness (fun b => b \in C a).
 Proof.
@@ -1161,7 +1149,7 @@ by apply.
 Qed.
 
 (* S3 問題3 *)
-Theorem map_as_corr_invcorr {A B: Type} (C: A ->c B):
+Theorem map_as_corr_invcorr A B (C: A ->c B):
   (exists! f: A -> B, MapAsCorr f = C) <->
   (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
 Proof.
@@ -1185,7 +1173,7 @@ split.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
     by rewrite Heq' in HB. (* ここまでは古い証明と同じ *)
 - case => Hdef Hinv.
-  move: (invcorr_cap_emptyset_unique C Hinv) => Huniq.
+  move: (invcorr_cap_emptyset_unique Hinv) => Huniq.
   have: forall a: A, exists b, \{b} = C a => [ a | Hsig ].
     rewrite /In defrange_exists in Hdef.
     move: (constructive_indefinite_description _ (Hdef a)) => Bsig.
@@ -1216,7 +1204,7 @@ split.
 Qed.
 
 (* 別証明 *)
-Goal forall (A B: Type) (C: A ->c B),
+Goal forall A B (C: A ->c B),
   (exists! f: A -> B, MapAsCorr f = C) <->
   (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
 Proof.
@@ -1241,7 +1229,7 @@ split.
 - case.
   rewrite -eq_fullset.
   rewrite /In defrange_exists => Hdef Hinv.
-  move: (invcorr_cap_emptyset_unique C Hinv) => Huniq.
+  move: (invcorr_cap_emptyset_unique Hinv) => Huniq.
   rewrite -unique_existence.
   split.
   + have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| F ].
@@ -1265,7 +1253,7 @@ split.
       by [ rewrite -Heq1 | rewrite -Heq2 ].
 Qed.
 
-Lemma defrange_map_as_corr {A B} (f: A -> B) a:
+Lemma defrange_map_as_corr A B (f: A -> B) a:
   a \in DefRange (MapAsCorr f) <-> exists b, f a = b.
 Proof.
 split;
@@ -1273,7 +1261,7 @@ split;
   by exists b.
 Qed.
 
-Lemma valuerange_map_as_corr {A B} (f: A -> B) b:
+Lemma valuerange_map_as_corr A B (f: A -> B) b:
   b \in ValueRange (MapAsCorr f) <-> exists a, f a = b.
 Proof.
 split;
@@ -1287,16 +1275,17 @@ End Section3.
 Notation "A ->c B" := (Corr A B) (at level 99): ensemble_scope.
 Notation "\I A" := (Identity: A -> A) (at level 30): ensemble_scope.
 
+
 Section Section4.
 
 Implicit Types A B: Type.
 
 (* メモ: Imageが来たら先でexists *)
-Definition Image {A B} (f: A -> B) (P: Ensemble A): Ensemble B :=
+Definition Image A B (f: A -> B) (P: Ensemble A): Ensemble B :=
   fun b: B => exists a, a \in P /\ f a = b.
 
 (* p.30 *)
-Theorem image_defrange_eq_valuerange {A B} (f: A -> B):
+Theorem image_defrange_eq_valuerange A B (f: A -> B):
   Image f (FullSet: Ensemble A) = ValueRange (MapAsCorr f).
 Proof.
 apply eq_split.
@@ -1310,7 +1299,7 @@ apply eq_split.
 Qed.
 
 (* p.30 *)
-Theorem image_emptyset_iff {A B} (f: A -> B) {P}:
+Theorem image_emptyset_iff A B (f: A -> B) P:
   Image f P = \emptyset <-> P = \emptyset.
 Proof.
 split.
@@ -1326,18 +1315,18 @@ split.
   by rewrite HP.
 Qed.
 
-Definition InvImage {A B} (f: A -> B) (Q: Ensemble B): Ensemble A :=
+Definition InvImage A B (f: A -> B) (Q: Ensemble B): Ensemble A :=
   fun a: A => f a \in Q.
 
 (* p.31 *)
-Theorem invimage_fullset {A B} (f: A -> B):
+Theorem invimage_fullset A B f:
   InvImage f (FullSet: Ensemble B) = (FullSet: Ensemble A).
 Proof.
 by apply eq_split => //.
 Qed.
 
 (* 4.1 *)
-Theorem image_subset {A B} (f: A -> B) (P1 P2: Ensemble A):
+Theorem image_subset A B (f: A -> B) P1 P2:
   P1 \subset P2 -> Image f P1 \subset Image f P2.
 Proof.
 move=> Hsub b.
@@ -1349,7 +1338,7 @@ by apply Hsub.
 Qed.
 
 (* 4.2 *)
-Theorem image_cup {A B} (f: A -> B) (P1 P2: Ensemble A):
+Theorem image_cup A B (f: A -> B) P1 P2:
   Image f (P1 \cup P2) = Image f P1 \cup Image f P2.
 Proof.
 apply eq_split.
@@ -1366,7 +1355,7 @@ apply eq_split.
 Qed.
 
 (* 4.3 *)
-Theorem image_cap {A B} (f: A -> B) (P1 P2: Ensemble A):
+Theorem image_cap A B (f: A -> B) P1 P2:
   Image f (P1 \cap P2) \subset Image f P1 \cap Image f P2.
 Proof.
 apply subsets_cap.
@@ -1377,7 +1366,7 @@ apply subsets_cap.
 Qed.
 
 (* 4.4 *)
-Theorem image_sub {A B} (f: A -> B) (P: Ensemble A):
+Theorem image_sub A B (f: A -> B) P:
   Image f FullSet - Image f P \subset Image f (FullSet - P).
 Proof.
 move=> b.
@@ -1397,7 +1386,7 @@ by split.
 Qed.
 
 (* 4.1' *)
-Theorem invimage_subset {A B} (f: A -> B) (Q1 Q2: Ensemble B):
+Theorem invimage_subset A B (f: A -> B) Q1 Q2:
   Q1 \subset Q2 -> InvImage f Q1 \subset InvImage f Q2.
 Proof.
 move=> Hsubset a Hinv.
@@ -1405,7 +1394,7 @@ by apply Hsubset.
 Qed.
 
 (* 4.2' *)
-Theorem invimage_cup {A B} (f: A -> B) (Q1 Q2: Ensemble B):
+Theorem invimage_cup A B (f: A -> B) Q1 Q2:
   InvImage f (Q1 \cup Q2) = InvImage f Q1 \cup InvImage f Q2.
 Proof.
 apply eq_split.
@@ -1420,7 +1409,7 @@ Qed.
 
 (* こっちのほうは=で繋がれてて綺麗 *)
 (* 4.3' *)
-Theorem invimage_cap {A B} (f: A -> B) (Q1 Q2: Ensemble B):
+Theorem invimage_cap A B (f: A -> B) Q1 Q2:
   InvImage f (Q1 \cap Q2) = InvImage f Q1 \cap InvImage f Q2.
 Proof.
 apply eq_split.
@@ -1434,7 +1423,7 @@ apply eq_split.
 Qed.
 
 (* 4.4' *)
-Theorem invimage_sub {A B} (f: A -> B) (Q: Ensemble B):
+Theorem invimage_sub A B (f: A -> B) Q:
   InvImage f (FullSet - Q) = FullSet - InvImage f Q.
 Proof.
 rewrite 2!fullset_sub.
@@ -1448,7 +1437,7 @@ apply eq_split.
 Qed.
 
 (* 4.5 *)
-Theorem invimage_image {A B} (f: A -> B) (P: Ensemble A):
+Theorem invimage_image A B (f: A -> B) P:
   P \subset InvImage f (Image f P).
 Proof.
 move=> a H.
@@ -1456,7 +1445,7 @@ by exists a.
 Qed.
 
 (* 4.5' *)
-Theorem image_invimage {A B} (f: A -> B) (Q: Ensemble B):
+Theorem image_invimage A B (f: A -> B) Q:
   Image f (InvImage f Q) \subset Q.
 Proof.
 move=> b.
@@ -1465,13 +1454,13 @@ case => H Heq.
 by rewrite -Heq.
 Qed.
 
-Definition Surjective {A B} (f: A -> B) := Image f FullSet = FullSet.
+Definition Surjective A B (f: A -> B) := Image f FullSet = FullSet.
 
-Definition Injective {A B} (f: A -> B) := forall a a', f a = f a' -> a = a'.
+Definition Injective A B (f: A -> B) := forall a a', f a = f a' -> a = a'.
 
-Definition Bijective {A B} (f: A -> B) := Surjective f /\ Injective f.
+Definition Bijective A B (f: A -> B) := Surjective f /\ Injective f.
 
-Lemma surjective_valuerange {A B} (f: A -> B):
+Lemma surjective_valuerange A B (f: A -> B):
   Surjective f <-> forall b, b \in ValueRange (MapAsCorr f).
 Proof.
 rewrite /Surjective.
@@ -1479,7 +1468,7 @@ rewrite -eq_fullset.
 by rewrite image_defrange_eq_valuerange.
 Qed.
 
-Theorem surjective_exists {A B} (f: A -> B):
+Theorem surjective_exists A B (f: A -> B):
   Surjective f <-> forall b, exists a, f a = b.
 Proof.
 rewrite surjective_valuerange.
@@ -1489,7 +1478,7 @@ split;
     (* 方向が違うだけ *)
 Qed.
 
-Theorem injective_uniqueness {A B} (f: A -> B):
+Theorem injective_uniqueness A B (f: A -> B):
   Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> uniqueness (fun a => f a = b).
 Proof.
 split.
@@ -1505,7 +1494,7 @@ split.
   by exists a.
 Qed.
 
-Theorem injective_exists_unique {A B} (f: A -> B):
+Theorem injective_exists_unique A B (f: A -> B):
   Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> exists! a, f a = b.
 Proof.
 split.
@@ -1525,7 +1514,7 @@ Qed.
 
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす。p33に書いてある。 *)
 
-Lemma invcorr_map_as_corr {A B} (f: A -> B) (g: B -> A):
+Lemma invcorr_map_as_corr A B (f: A -> B) (g: B -> A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> forall a, g (f a) = a.
 Proof.
 move=> Heq a.
@@ -1537,7 +1526,7 @@ suff: a \in MapAsCorr g b => [ H |].
 by rewrite -Heq.
 Qed.
 
-Lemma invcorr_map_as_corr' {A B} (f: A -> B) (g: B -> A):
+Lemma invcorr_map_as_corr' A B (f: A -> B) (g: B -> A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> forall b, f (g b) = b.
 Proof.
 move=> Heq b.
@@ -1550,7 +1539,7 @@ rewrite -[MapAsCorr f]invcorr_twice.
 by rewrite Heq.
 Qed.
 
-Lemma corr_eq {A B} (f g: A ->c B):
+Lemma corr_eq A B (f g: A ->c B):
   (forall a b, b \in f a <-> b \in g a) -> f = g.
 Proof.
 move=> H.
@@ -1561,7 +1550,7 @@ by suff: b \in f a <-> b \in g a.
 Qed.
 
 (* S4 定理4 前半 *)
-Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
+Theorem invcorr_is_map_iff_bijective A B (f: A -> B):
   Bijective f <-> (forall gcorr: B ->c A, gcorr = InvCorr (MapAsCorr f) -> exists g, gcorr = MapAsCorr g).
 Proof.
 split => [| Hg ].
@@ -1588,8 +1577,8 @@ split => [| Hg ].
     by rewrite (get_proof (Hsig b)).
 - move: (Hg (InvCorr (MapAsCorr f))).
   case => // g Hinveq.
-  move: (invcorr_map_as_corr  _ _ Hinveq) => Hforall.
-  move: (invcorr_map_as_corr' _ _ Hinveq) => Hforall'.
+  move: (invcorr_map_as_corr Hinveq) => Hforall.
+  move: (invcorr_map_as_corr' Hinveq) => Hforall'.
   split.
   + rewrite surjective_exists => b.
     by exists (g b).
@@ -1600,7 +1589,7 @@ split => [| Hg ].
 Qed.
 
 (* S4 定理4 後半 *)
-Theorem invcorr_bijective {A B} (f: A -> B):
+Theorem invcorr_bijective A B (f: A -> B):
   Bijective f -> (exists g: B -> A, Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr f)).
 Proof.
 move=> Hbij.
@@ -1613,7 +1602,7 @@ exists f.
 by rewrite -Hg invcorr_twice in Hf.
 Qed.
 
-Definition InvMap {A B} (f: {f: A -> B | Bijective f}):
+Definition InvMap A B (f: {f: A -> B | Bijective f}):
   { g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f)) }.
 Proof.
 apply constructive_indefinite_description.
@@ -1621,7 +1610,7 @@ apply invcorr_bijective.
 by apply (get_proof f).
 Qed.
 
-Theorem invmap_eq {A B} (f: {f: A -> B | Bijective f}):
+Theorem invmap_eq A B (f: {f: A -> B | Bijective f}):
   forall a b, get_value f a = b <-> get_value (InvMap f) b = a.
 Proof.
 move=> a b.
@@ -1632,11 +1621,11 @@ split => Heq;
   by case (get_proof g).
 Qed.
 
-Definition Composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
+Definition Composite A B C (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
 Notation "f \comp g" := (Composite g f) (at level 50).
 
 (* S4 定理5a *)
-Theorem composite_surjective {A B C} (f: A -> B) (g: B -> C):
+Theorem composite_surjective A B C (f: A -> B) (g: B -> C):
   Surjective f -> Surjective g -> Surjective (g \comp f).
 Proof.
 rewrite !surjective_exists => Hf Hg c.
@@ -1648,7 +1637,7 @@ by rewrite Heqb.
 Qed.
 
 (* S4 定理5b *)
-Theorem composite_injective {A B C} (f: A -> B) (g: B -> C):
+Theorem composite_injective A B C (f: A -> B) (g: B -> C):
   Injective f -> Injective g -> Injective (g \comp f).
 Proof.
 rewrite 3!injective_exists_unique => Hf Hg c Hc.
@@ -1680,7 +1669,7 @@ split.
 Qed.
 
 (* S4 定理5c *)
-Theorem composite_bijective {A B C} (f: A -> B) (g: B -> C):
+Theorem composite_bijective A B C (f: A -> B) (g: B -> C):
   Bijective f -> Bijective g -> Bijective (g \comp f).
 Proof.
 rewrite /Bijective.
@@ -1691,7 +1680,7 @@ split.
 - by apply composite_injective.
 Qed.
 
-Lemma composite_bijective_sig {A B C} (f: A -> B | Bijective f) (g: B -> C | Bijective g):
+Lemma composite_bijective_sig A B C (f: A -> B | Bijective f) (g: B -> C | Bijective g):
   {c: A -> C | Bijective c}.
 Proof.
 apply constructive_indefinite_description.
@@ -1704,22 +1693,22 @@ Notation "f \compb g" := (composite_bijective_sig g f) (at level 50).
 
 
 (* S4 定理6(1) *)
-Theorem composite_assoc {A B C D} (f: A -> B) (g: B -> C) (h: C -> D):
+Theorem composite_assoc A B C D (f: A -> B) (g: B -> C) (h: C -> D):
   (h \comp g) \comp f = h \comp (g \comp f).
 Proof. by []. Qed.
 
 (* S4 定理6(2)-1 *)
-Theorem composite_idendity {A B} (f: A -> B):
+Theorem composite_idendity A B (f: A -> B):
   f \comp \I A = f.
 Proof. by []. Qed.
 
 (* S4 定理6(2)-2 *)
-Theorem identity_composite {A B} (f: A -> B):
+Theorem identity_composite A B (f: A -> B):
   \I B \comp f = f.
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
-Theorem invmap_composite_identity {A B} (f: A -> B | Bijective f):
+Theorem invmap_composite_identity A B (f: A -> B | Bijective f):
   get_value (InvMap f) \comp (get_value f) = \I A.
 Proof.
 rewrite /Composite /Identity.
@@ -1730,7 +1719,7 @@ by case (get_proof g).
 Qed.
 
 (* S4 定理6(3)-2 *)
-Theorem composite_invmap_identity {A B} (f: A -> B | Bijective f):
+Theorem composite_invmap_identity A B (f: A -> B | Bijective f):
   get_value f \comp get_value (InvMap f) = \I B.
 Proof.
 rewrite /Composite /Identity.
@@ -1743,7 +1732,7 @@ Qed.
 (* 写像の拡大と縮小についてはいまいちイメージがわかないので後回し *)
 
 (* 特徴関数(CharacteristicFunction)あるいは定義関数(IndicatorFunction)、略してCharにする *)
-Definition Char {X} (A: Ensemble X) (x: X): nat :=
+Definition Char X (A: Ensemble X) (x: X): nat :=
   match excluded_middle_informative (x \in A) with
   | left a => 1
   | right b => 0
@@ -1751,7 +1740,7 @@ Definition Char {X} (A: Ensemble X) (x: X): nat :=
 
 Notation "\X A" := (Char A) (at level 30).
 
-Lemma in_char {X} (A: Ensemble X) (a: X):
+Lemma in_char X (A: Ensemble X) (a: X):
   a \in A <-> (\X A) a = 1.
 Proof.
 split;
@@ -1759,7 +1748,7 @@ split;
   by case excluded_middle_informative.
 Qed.
 
-Lemma not_in_char {X} (A: Ensemble X) (a: X):
+Lemma not_in_char X (A: Ensemble X) (a: X):
   a \notin A <-> (\X A) a = 0.
 Proof.
 split;
@@ -1767,15 +1756,15 @@ split;
   by case excluded_middle_informative.
 Qed.
 
-Fact char_fullset {X} (x: X):
+Fact char_fullset X (x: X):
   x \in FullSet -> (\X FullSet) x = 1.
 Proof. by rewrite -in_char. Qed.
 
-Fact char_emptyset {X} (x: X):
+Fact char_emptyset X (x: X):
   x \in FullSet -> (\X EmptySet) x = 0.
 Proof. by rewrite -not_in_char not_emptyset. Qed.
 
-Fact char_neq {X} {A A': Ensemble X}:
+Fact char_neq X (A A': Ensemble X):
   A \in PowerSet FullSet -> A' \in PowerSet FullSet -> A <> A'
  -> \X A <> \X A'.
 Proof.
@@ -1789,7 +1778,7 @@ split;
   by rewrite -in_char in H.
 Qed.
 
-Fact char_eq_func {X} (f: X -> nat):
+Fact char_eq_func X (f: X -> nat):
   (forall x, f x = 0 \/ f x = 1) ->
   forall A: Ensemble X, A = (fun x => f x = 1) -> (\X A) = f.
 Proof.
@@ -1805,21 +1794,21 @@ case (Hfor x) => H;
 Qed.
 
 (* S4 問題3-1 *)
-Theorem invimage_image_injective {A B} (f: A -> B):
+Theorem invimage_image_injective A B (f: A -> B):
   Injective f -> forall P, P = InvImage f (Image f P).
 Admitted.
 
 (* S4 問題3-2 *)
-Theorem image_invimage_surjective {A B} (f: A -> B):
+Theorem image_invimage_surjective A B (f: A -> B):
   Surjective f -> forall Q, Image f (InvImage f Q) = Q.
 Admitted.
 
 (* S4 問題4 *)
-Theorem image_cap_injective {A B} (f: A -> B) (P1 P2: Ensemble A):
+Theorem image_cap_injective A B (f: A -> B) (P1 P2: Ensemble A):
   Injective f -> Image f (P1 \cap P2) = Image f P1 \cap Image f P2.
 Admitted.
 
-Lemma InvMapL {A B}:
+Lemma InvMapL A B:
   {f: A -> B | Bijective f} -> {g: B -> A | Bijective g}.
 Proof.
 move=> f.
@@ -1830,70 +1819,70 @@ by exists g.
 Qed.
 
 (* S4 問題8 *)
-Theorem inv_composite_bijective {A B C} (f: A -> B | Bijective f) (g: B -> C | Bijective g):
+Theorem inv_composite_bijective A B C (f: A -> B | Bijective f) (g: B -> C | Bijective g):
   InvMapL (composite_bijective_sig f g) =
   composite_bijective_sig (InvMapL g) (InvMapL f).
 Admitted.
 
 (* S4 問題9(a) *)
-Theorem composite_image {A B C} (f: A -> B) (g: B -> C) (P: Ensemble A):
+Theorem composite_image A B C (f: A -> B) (g: B -> C) (P: Ensemble A):
   Image (g \comp f) P = Image g (Image f P).
 Admitted.
 
 (* S4 問題9(b) *)
-Theorem composite_inv_image {A B C} (f: A -> B | Bijective f) (g: B -> C | Bijective g) (R: Ensemble C):
+Theorem composite_inv_image A B C (f: A -> B | Bijective f) (g: B -> C | Bijective g) (R: Ensemble C):
   Image (get_value (InvMap (g \compb f))) R = Image (get_value (InvMap f)) (Image (get_value (InvMap g)) R).
 Admitted.
 
 (* S4 問題10(a) *)
-Theorem surjective_composite_surjective {A B C} (f: A -> B) (g: B -> C):
+Theorem surjective_composite_surjective A B C (f: A -> B) (g: B -> C):
   Surjective (g \comp f) -> Surjective g.
 Admitted.
 
 (* S4 問題10(b) *)
-Theorem injective_composite_injective {A B C} (f: A -> B) (g: B -> C):
+Theorem injective_composite_injective A B C (f: A -> B) (g: B -> C):
   Injective (g \comp f) -> Injective f.
 Admitted.
 
 (* S4 問題11 *)
-Theorem surjective_composite_eq {A B C} (f: A -> B | Surjective f) (g g': B -> C):
+Theorem surjective_composite_eq A B C (f: A -> B | Surjective f) (g g': B -> C):
   g \comp (get_value f) = g' \comp (get_value f) -> g = g'.
 Admitted.
 
 (* S4 問題12 *)
-Theorem injective_composite_eq {A B C} (f f': A -> B) (g: B -> C | Injective g):
+Theorem injective_composite_eq A B C (f f': A -> B) (g: B -> C | Injective g):
   (get_value g) \comp f = (get_value g) \comp f' -> f = f'.
 Admitted.
 
 (* S4 問題13(a) *)
-Theorem composite_surjective_to_surjective {A B C} (f: A -> B) (g: B -> C):
+Theorem composite_surjective_to_surjective A B C (f: A -> B) (g: B -> C):
   Surjective (g \comp f) -> Injective g -> Surjective f.
 Admitted.
 
 (* S4 問題13(b) *)
-Theorem composite_injective_to_injective {A B C} (f: A -> B) (g: B -> C):
+Theorem composite_injective_to_injective A B C (f: A -> B) (g: B -> C):
   Injective (g \comp f) -> Surjective f -> Injective g.
 Admitted.
 
 (* S4 問題14-1 *)
-Theorem identity_to_bijective {A B} (f: A -> B) (g g': B -> A):
+Theorem identity_to_bijective A B (f: A -> B) (g g': B -> A):
   g \comp f = \I A -> f \comp g' = \I B -> Bijective f.
 Admitted.
 
 (* S4 問題14-2 *)
-Theorem identity_to_eq {A B} (f: A -> B) (g g': B -> A):
+Theorem identity_to_eq A B (f: A -> B) (g g': B -> A):
   g \comp f = \I A -> f \comp g' = \I B -> g = g'.
 Admitted.
 
-Lemma bijective_sig {A B} (f: A -> B) (H: Bijective f): {f: A -> B | Bijective f}.
+Lemma bijective_sig A B (f: A -> B) (H: Bijective f): {f: A -> B | Bijective f}.
 apply constructive_indefinite_description.
 by exists f.
 Qed.
 
 (* S4 問題14-3 *)
-Theorem identity_to_invmap {A B} (f: A -> B) (g g': B -> A)
+Theorem identity_to_invmap A B (f: A -> B) (g g': B -> A)
   (H1: g \comp f = \I A) (H2: f \comp g' = \I B):
-  g = get_value (InvMap (bijective_sig f (identity_to_bijective _ _ _ H1 H2))).
+  g = get_value (InvMap (bijective_sig (identity_to_bijective H1 H2))).
 Admitted.
 
 
