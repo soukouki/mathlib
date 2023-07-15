@@ -1594,12 +1594,13 @@ Qed.
 
 (* S4 定理4 後半 *)
 Theorem inv_corr_bijective {A B} (f: A -> B):
-  Bijective f -> (exists g: B -> A, Bijective g).
+  Bijective f -> (exists g: B -> A, Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr f)).
 Proof.
 move=> Hbij.
 rewrite inv_corr_is_map_iff_bijective in Hbij.
 case (Hbij (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
 exists g.
+split => //.
 rewrite inv_corr_is_map_iff_bijective => fcorr Hf.
 exists f.
 by rewrite -Hg inv_corr_twice in Hf.
@@ -1609,23 +1610,20 @@ Definition InvMap {A B} (f: {f: A -> B | Bijective f}):
   { g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f)) }.
 Proof.
 apply constructive_indefinite_description.
-case (iffLR (inv_corr_is_map_iff_bijective _) (get_proof f) _ eq_refl) => g Hg.
-exists g.
-split => //.
-rewrite inv_corr_is_map_iff_bijective => fcorr Hf.
-exists (get_value f).
-by rewrite Hf -Hg inv_corr_twice.
+apply inv_corr_bijective.
+by apply (get_proof f).
 Qed.
 
 Theorem inv_map_eq {A B} (f: {f: A -> B | Bijective f}):
   forall a b, get_value f a = b <-> get_value (InvMap f) b = a.
 Proof.
 move=> a b.
-split.
-- move=> Heq.
-あ、やっぱこれ無理じゃん。InvMapのところで情報が消えてる
-
-
+split => Heq;
+  rewrite -Heq;
+  move: (InvMap f) => g;
+  [ apply inv_corr_map_as_corr | apply inv_corr_map_as_corr' ];
+  by case (get_proof g).
+Qed.
 
 Definition Composite {A B C} (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
 Notation "f \circle g" := (Composite g f) (at level 50).
