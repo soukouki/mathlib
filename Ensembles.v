@@ -1700,35 +1700,16 @@ Theorem identity_composite {A B} (f: A -> B):
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
-Theorem invmap_composite_identity {A B} (F: { f: A -> B | Bijective f } ):
-  get_value (InvMap F) \circle (get_value F) = \I A.
+Theorem invmap_composite_identity {A B} (f: { f: A -> B | Bijective f } ):
+  get_value (InvMap f) \circle (get_value f) = \I A.
 Proof.
 rewrite /Composite.
 rewrite /Identity.
 apply functional_extensionality => a.
 apply inv_corr_map_as_corr.
-have: exists g: B -> A, InvCorr (MapAsCorr (get_value F)) = MapAsCorr g.
-  apply (iffRL (inv_corr_is_map_iff_bijective (get_value F))) => //.
-  by apply (get_proof F).
-move=> Hexi.
-move: (InvMap F) => G.
-Search InvCorr MapAsCorr eq.
-
-Restart.
-
-rewrite /Composite /Identity.
-apply functional_extensionality.
-move: (InvMap F) => G.
-suff: forall a b, get_value F a = b -> get_value G b = a.
-  move=> H a.
-  by apply H.
-move=> a b Hb.
-
-
-
-
-
-Admitted.
+move: (InvMap f) => g.
+by case (get_proof g) => Hgbij Hgeq.
+Qed.
 
 (* S4 定理6(3)-2 *)
 Theorem composite_invmap_identity {A B} (f: { f: A -> B | Bijective f } ):
