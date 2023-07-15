@@ -555,15 +555,15 @@ Definition PowerSet {T} (X: Ensemble T): FamilyEnsemble T := fun A: Ensemble T =
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別する *)
 
 Inductive BigCup AA: Ensemble T :=
-  | big_cup_intro: forall x: T, (exists A: Ensemble T, A \in AA -> x \in A) -> x \in BigCup AA.
+  | bigcup_intro: forall x: T, (exists A: Ensemble T, A \in AA -> x \in A) -> x \in BigCup AA.
 Notation "\bigcup AA" := (BigCup AA) (at level 50).
 
 Inductive BigCap AA: Ensemble T :=
-  | big_cap_intro: forall x: T, (forall A: Ensemble T, A \in AA -> x \in A) -> x \in BigCap AA.
+  | bigcap_intro: forall x: T, (forall A: Ensemble T, A \in AA -> x \in A) -> x \in BigCap AA.
 Notation "\bigcap AA" := (BigCap AA) (at level 50).
 
 (* (2.17) *)
-Theorem big_cup_in AA A: A \in AA -> A \subset \bigcup AA.
+Theorem bigcup_in AA A: A \in AA -> A \subset \bigcup AA.
 Proof.
 move=> HA_in_AA.
 split.
@@ -573,7 +573,7 @@ Qed.
 (* (2.18) *)
 (* /\になってる部分は->だと思うんだけれど、->だと証明できなかった・・・ *)
 (* ->の場合、A \in AA までたどり着くけどそれ自体の証明ができない *)
-Theorem big_cup_subset AA C: (forall A, A \in AA /\ A \subset C) -> \bigcup AA \subset C.
+Theorem bigcup_subset AA C: (forall A, A \in AA /\ A \subset C) -> \bigcup AA \subset C.
 Proof.
 move=> HA_subset_C x1.
 case => x2.
@@ -585,7 +585,7 @@ by apply Hx_in_A.
 Qed.
 
 (* (2.17)' *)
-Theorem big_cap_in AA A: A \in AA -> \bigcap AA \subset A.
+Theorem bigcap_in AA A: A \in AA -> \bigcap AA \subset A.
 Proof.
 move=> HA_in_AA x1.
 case => x2.
@@ -593,7 +593,7 @@ by apply.
 Qed.
 
 (* (2.18)' *)
-Theorem big_cap_subset AA C: (forall A, A \in AA -> C \subset A) -> C \subset \bigcap AA.
+Theorem bigcap_subset AA C: (forall A, A \in AA -> C \subset A) -> C \subset \bigcap AA.
 Proof.
 move=> HC_subset_A x1 Hx_in_C.
 split => A HA_in_AA.
@@ -1023,7 +1023,7 @@ Definition ValueRange {A B} (C: A ->c B): Ensemble B := fun b: B => exists a: A,
 
 Definition InvCorr {A B} (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
-Theorem def_range_neq_empty_set {A B} (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
+Theorem defrange_neq_empty_set {A B} (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
 Proof.
 apply eq_split => a.
 - rewrite /In /DefRange.
@@ -1037,30 +1037,30 @@ apply eq_split => a.
   by exists b.
 Qed.
 
-Lemma def_range_exists {A B} (C: A ->c B): DefRange C = fun a: A => exists b, b \in C a.
+Lemma defrange_exists {A B} (C: A ->c B): DefRange C = fun a: A => exists b, b \in C a.
 Proof. by []. Qed.
 
 (* (3.2) *)
-Theorem in_inv_corr A B (C: A ->c B) a b: b \in C a <-> a \in (InvCorr C) b.
+Theorem in_invcorr A B (C: A ->c B) a b: b \in C a <-> a \in (InvCorr C) b.
 Proof. by []. Qed.
 
 (* (3.3) *)
-Theorem def_range_inv_corr_to_value_range A B (C: A ->c B): DefRange(InvCorr C) = ValueRange C.
+Theorem defrange_invcorr_to_valuerange A B (C: A ->c B): DefRange(InvCorr C) = ValueRange C.
 Proof. by []. Qed.
 
 (* (3.3)' *)
-Theorem value_range_inv_corr_to_def_range A B (C: A ->c B): ValueRange(InvCorr C) = DefRange C.
+Theorem valuerange_invcorr_to_defrange A B (C: A ->c B): ValueRange(InvCorr C) = DefRange C.
 Proof. by []. Qed.
 
 (* 3.4 *)
-Theorem inv_corr_twice A B (C: A ->c B): InvCorr (InvCorr C) = C.
+Theorem invcorr_twice A B (C: A ->c B): InvCorr (InvCorr C) = C.
 Proof. by []. Qed.
 
 Lemma in_emptyset A (x: A): x \in \emptyset <-> False.
 Proof. by []. Qed.
 
 (* p.27 *)
-Theorem inv_corr_is_not_empty_iff_in_value_range A B b (C: A ->c B):
+Theorem invcorr_is_not_empty_iff_in_valuerange A B b (C: A ->c B):
   (InvCorr C b <> \emptyset) <-> b \in ValueRange C.
 split.
 - move=> Hneq.
@@ -1145,7 +1145,7 @@ apply eq_split.
   by apply Huniq.
 Qed.
 
-Lemma inv_corr_cap_emptyset_unique {A B} (C: A ->c B):
+Lemma invcorr_cap_emptyset_unique {A B} (C: A ->c B):
   (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)
   -> forall a, uniqueness (fun b => b \in C a).
 Proof.
@@ -1156,12 +1156,12 @@ rewrite cap_eq_emptyset.
 rewrite /Subset => H2.
 move: (H2 a).
 rewrite compset_in.
-rewrite -2!in_inv_corr.
+rewrite -2!in_invcorr.
 by apply.
 Qed.
 
 (* S3 問題3 *)
-Theorem map_as_corr_inv_corr {A B: Type} (C: A ->c B):
+Theorem map_as_corr_invcorr {A B: Type} (C: A ->c B):
   (exists! f: A -> B, MapAsCorr f = C) <->
   (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
 Proof.
@@ -1185,9 +1185,9 @@ split.
     rewrite /InvCorr /MapAsCorr /In in Heq'.
     by rewrite Heq' in HB. (* ここまでは古い証明と同じ *)
 - case => Hdef Hinv.
-  move: (inv_corr_cap_emptyset_unique C Hinv) => Huniq.
+  move: (invcorr_cap_emptyset_unique C Hinv) => Huniq.
   have: forall a: A, exists b, \{b} = C a => [ a | Hsig ].
-    rewrite /In def_range_exists in Hdef.
+    rewrite /In defrange_exists in Hdef.
     move: (constructive_indefinite_description _ (Hdef a)) => Bsig.
     exists (get_value Bsig).
     apply singleton_unique_eq => //.
@@ -1240,8 +1240,8 @@ split.
     by rewrite Heq' in HB.
 - case.
   rewrite -eq_fullset.
-  rewrite /In def_range_exists => Hdef Hinv.
-  move: (inv_corr_cap_emptyset_unique C Hinv) => Huniq.
+  rewrite /In defrange_exists => Hdef Hinv.
+  move: (invcorr_cap_emptyset_unique C Hinv) => Huniq.
   rewrite -unique_existence.
   split.
   + have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| F ].
@@ -1265,7 +1265,7 @@ split.
       by [ rewrite -Heq1 | rewrite -Heq2 ].
 Qed.
 
-Lemma def_range_map_as_corr {A B} (f: A -> B) a:
+Lemma defrange_map_as_corr {A B} (f: A -> B) a:
   a \in DefRange (MapAsCorr f) <-> exists b, f a = b.
 Proof.
 split;
@@ -1273,7 +1273,7 @@ split;
   by exists b.
 Qed.
 
-Lemma value_range_map_as_corr {A B} (f: A -> B) b:
+Lemma valuerange_map_as_corr {A B} (f: A -> B) b:
   b \in ValueRange (MapAsCorr f) <-> exists a, f a = b.
 Proof.
 split;
@@ -1296,7 +1296,7 @@ Definition Image {A B} (f: A -> B) (P: Ensemble A): Ensemble B :=
   fun b: B => exists a, a \in P /\ f a = b.
 
 (* p.30 *)
-Theorem image_def_range_eq_value_range {A B} (f: A -> B):
+Theorem image_defrange_eq_valuerange {A B} (f: A -> B):
   Image f (FullSet: Ensemble A) = ValueRange (MapAsCorr f).
 Proof.
 apply eq_split.
@@ -1381,9 +1381,9 @@ Theorem image_sub {A B} (f: A -> B) (P: Ensemble A):
   Image f FullSet - Image f P \subset Image f (FullSet - P).
 Proof.
 move=> b.
-rewrite image_def_range_eq_value_range.
+rewrite image_defrange_eq_valuerange.
 case => b'.
-rewrite value_range_map_as_corr.
+rewrite valuerange_map_as_corr.
 case => a.
 move=> Heq Hex.
 rewrite fullset_sub.
@@ -1471,21 +1471,21 @@ Definition Injective {A B} (f: A -> B) := forall a a', f a = f a' -> a = a'.
 
 Definition Bijective {A B} (f: A -> B) := Surjective f /\ Injective f.
 
-Lemma surjective_value_range {A B} (f: A -> B):
+Lemma surjective_valuerange {A B} (f: A -> B):
   Surjective f <-> forall b, b \in ValueRange (MapAsCorr f).
 Proof.
 rewrite /Surjective.
 rewrite -eq_fullset.
-by rewrite image_def_range_eq_value_range.
+by rewrite image_defrange_eq_valuerange.
 Qed.
 
 Theorem surjective_exists {A B} (f: A -> B):
   Surjective f <-> forall b, exists a, f a = b.
 Proof.
-rewrite surjective_value_range.
+rewrite surjective_valuerange.
 split;
   move=> H b;
-  by [rewrite -value_range_map_as_corr | rewrite value_range_map_as_corr].
+  by [rewrite -valuerange_map_as_corr | rewrite valuerange_map_as_corr].
     (* 方向が違うだけ *)
 Qed.
 
@@ -1494,14 +1494,14 @@ Theorem injective_uniqueness {A B} (f: A -> B):
 Proof.
 split.
 - move=> Hinj b Hb.
-  rewrite value_range_map_as_corr in Hb.
+  rewrite valuerange_map_as_corr in Hb.
   rewrite /uniqueness => a a' Heqa Heqa'.
   apply Hinj.
   by rewrite Heqa Heqa'.
 - move=> Hb a a' Heq.
   rewrite /uniqueness in Hb.
   apply (Hb (f a)) => //.
-  rewrite value_range_map_as_corr.
+  rewrite valuerange_map_as_corr.
   by exists a.
 Qed.
 
@@ -1512,7 +1512,7 @@ split.
 - move=> Hinj b Hexi.
   rewrite -unique_existence.
   split.
-  + by rewrite value_range_map_as_corr in Hexi.
+  + by rewrite valuerange_map_as_corr in Hexi.
   + apply injective_uniqueness => //.
 - rewrite injective_uniqueness.
   move=> H1 b H2.
@@ -1525,7 +1525,7 @@ Qed.
 
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす。p33に書いてある。 *)
 
-Lemma inv_corr_map_as_corr {A B} (f: A -> B) (g: B -> A):
+Lemma invcorr_map_as_corr {A B} (f: A -> B) (g: B -> A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> forall a, g (f a) = a.
 Proof.
 move=> Heq a.
@@ -1537,7 +1537,7 @@ suff: a \in MapAsCorr g b => [ H |].
 by rewrite -Heq.
 Qed.
 
-Lemma inv_corr_map_as_corr' {A B} (f: A -> B) (g: B -> A):
+Lemma invcorr_map_as_corr' {A B} (f: A -> B) (g: B -> A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> forall b, f (g b) = b.
 Proof.
 move=> Heq b.
@@ -1546,7 +1546,7 @@ suff: forall a, a \in \{g b} -> b \in \{f a} => [| a Haeq ].
 suff: b \in MapAsCorr f a => [ H |].
   rewrite /MapAsCorr /In in H.
   by rewrite H.
-rewrite -[MapAsCorr f]inv_corr_twice.
+rewrite -[MapAsCorr f]invcorr_twice.
 by rewrite Heq.
 Qed.
 
@@ -1561,13 +1561,13 @@ by suff: b \in f a <-> b \in g a.
 Qed.
 
 (* S4 定理4 前半 *)
-Theorem inv_corr_is_map_iff_bijective {A B} (f: A -> B):
+Theorem invcorr_is_map_iff_bijective {A B} (f: A -> B):
   Bijective f <-> (forall gcorr: B ->c A, gcorr = InvCorr (MapAsCorr f) -> exists g, gcorr = MapAsCorr g).
 Proof.
 split => [| Hg ].
 - case => Hsur Hinj g Hgeq.
   have: forall b : B, {x : A | f x = b} => [ b | Hsig ].
-    move: (iffLR (surjective_value_range _) Hsur b) => H1.
+    move: (iffLR (surjective_valuerange _) Hsur b) => H1.
     move: (iffLR (injective_exists_unique _) Hinj b H1) => H2.
     apply (constructive_definite_description _ H2).
   exists (fun b => get_value (Hsig b)).
@@ -1580,7 +1580,7 @@ split => [| Hg ].
       move: (get_proof (Hsig b)) => H.
       by apply.
     apply injective_uniqueness => //.
-    rewrite value_range_map_as_corr.
+    rewrite valuerange_map_as_corr.
     by exists a.
   + rewrite /MapAsCorr /In in Hmap.
     rewrite /InvCorr /MapAsCorr /In.
@@ -1588,8 +1588,8 @@ split => [| Hg ].
     by rewrite (get_proof (Hsig b)).
 - move: (Hg (InvCorr (MapAsCorr f))).
   case => // g Hinveq.
-  move: (inv_corr_map_as_corr  _ _ Hinveq) => Hforall.
-  move: (inv_corr_map_as_corr' _ _ Hinveq) => Hforall'.
+  move: (invcorr_map_as_corr  _ _ Hinveq) => Hforall.
+  move: (invcorr_map_as_corr' _ _ Hinveq) => Hforall'.
   split.
   + rewrite surjective_exists => b.
     by exists (g b).
@@ -1600,35 +1600,35 @@ split => [| Hg ].
 Qed.
 
 (* S4 定理4 後半 *)
-Theorem inv_corr_bijective {A B} (f: A -> B):
+Theorem invcorr_bijective {A B} (f: A -> B):
   Bijective f -> (exists g: B -> A, Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr f)).
 Proof.
 move=> Hbij.
-rewrite inv_corr_is_map_iff_bijective in Hbij.
+rewrite invcorr_is_map_iff_bijective in Hbij.
 case (Hbij (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
 exists g.
 split => //.
-rewrite inv_corr_is_map_iff_bijective => fcorr Hf.
+rewrite invcorr_is_map_iff_bijective => fcorr Hf.
 exists f.
-by rewrite -Hg inv_corr_twice in Hf.
+by rewrite -Hg invcorr_twice in Hf.
 Qed.
 
 Definition InvMap {A B} (f: {f: A -> B | Bijective f}):
   { g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f)) }.
 Proof.
 apply constructive_indefinite_description.
-apply inv_corr_bijective.
+apply invcorr_bijective.
 by apply (get_proof f).
 Qed.
 
-Theorem inv_map_eq {A B} (f: {f: A -> B | Bijective f}):
+Theorem invmap_eq {A B} (f: {f: A -> B | Bijective f}):
   forall a b, get_value f a = b <-> get_value (InvMap f) b = a.
 Proof.
 move=> a b.
 split => Heq;
   rewrite -Heq;
   move: (InvMap f) => g;
-  [ apply inv_corr_map_as_corr | apply inv_corr_map_as_corr' ];
+  [ apply invcorr_map_as_corr | apply invcorr_map_as_corr' ];
   by case (get_proof g).
 Qed.
 
@@ -1652,14 +1652,14 @@ Theorem composite_injective {A B C} (f: A -> B) (g: B -> C):
   Injective f -> Injective g -> Injective (g \circle f).
 Proof.
 rewrite 3!injective_exists_unique => Hf Hg c Hc.
-rewrite value_range_map_as_corr in Hc.
+rewrite valuerange_map_as_corr in Hc.
 case (Hg c).
-  rewrite value_range_map_as_corr.
+  rewrite valuerange_map_as_corr.
   case Hc => a Heqa.
   by exists (f a).
 move=> b Huniqb.
 case (Hf b).
-  rewrite value_range_map_as_corr.
+  rewrite valuerange_map_as_corr.
   case Hc => a Heqa.
   exists a.
   case Huniqb => Heqc H.
@@ -1707,23 +1707,23 @@ Theorem identity_composite {A B} (f: A -> B):
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
-Theorem inv_map_composite_identity {A B} (f: { f: A -> B | Bijective f } ):
+Theorem invmap_composite_identity {A B} (f: { f: A -> B | Bijective f } ):
   get_value (InvMap f) \circle (get_value f) = \I A.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => a.
-apply inv_corr_map_as_corr.
+apply invcorr_map_as_corr.
 move: (InvMap f) => g.
 by case (get_proof g).
 Qed.
 
 (* S4 定理6(3)-2 *)
-Theorem composite_inv_map_identity {A B} (f: { f: A -> B | Bijective f } ):
+Theorem composite_invmap_identity {A B} (f: { f: A -> B | Bijective f } ):
   get_value f \circle get_value (InvMap f) = \I B.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => b.
-apply inv_corr_map_as_corr'.
+apply invcorr_map_as_corr'.
 move: (InvMap f) => g.
 by case (get_proof g).
 Qed.
