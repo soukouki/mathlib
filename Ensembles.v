@@ -1800,8 +1800,7 @@ Theorem invimage_image_injective A B (f: A -> B):
 Proof.
 move=> Hinj P.
 apply eq_split.
-- move=> a Ha.
-  by exists a.
+- by apply invimage_image.
 - move=> a.
   rewrite {1}/In /InvImage.
   case => a'.
@@ -1820,10 +1819,7 @@ Theorem image_invimage_surjective A B (f: A -> B):
 Proof.
 move=> Hsur Q.
 apply eq_split.
-- move=> b Hb.
-  case Hb => a.
-  case => Ha Heq.
-  by rewrite -Heq.
+- by apply image_invimage.
 - move=> b Hb.
   rewrite surjective_exists in Hsur.
   case (Hsur b) => a Heq.
@@ -1835,7 +1831,12 @@ Qed.
 (* S4 問題4 *)
 Theorem image_cap_injective A B (f: A -> B) (P1 P2: Ensemble A):
   Injective f -> Image f (P1 \cap P2) = Image f P1 \cap Image f P2.
+Proof.
+move=> Hinj.
+apply eq_split.
+- by apply image_cap.
 Admitted.
+
 
 Lemma InvMapL A B:
   {f: A -> B | Bijective f} -> {g: B -> A | Bijective g}.
