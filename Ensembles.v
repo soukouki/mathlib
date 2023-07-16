@@ -1797,7 +1797,22 @@ Qed.
 (* S4 問題3-1 *)
 Theorem invimage_image_injective A B (f: A -> B):
   Injective f -> forall P, P = InvImage f (Image f P).
-Admitted.
+Proof.
+move=> Hinj P.
+apply eq_split.
+- move=> a Ha.
+  by exists a.
+- move=> a.
+  rewrite {1}/In /InvImage.
+  case => a'.
+  case => Ha' Heqf.
+  suff: a = a' => [ Heq |].
+    by rewrite Heq.
+  rewrite injective_uniqueness in Hinj.
+  apply (Hinj (f a)) => //.
+  rewrite valuerange_map_as_corr.
+  by exists a.
+Qed.
 
 (* S4 問題3-2 *)
 Theorem image_invimage_surjective A B (f: A -> B):
