@@ -12,6 +12,7 @@ Require Import Coq.Logic.ClassicalDescription.
 Require Import Coq.Logic.PropExtensionality.
 
 Module Ensembles.
+
 Declare Scope ensemble_scope.
 Open Scope ensemble_scope.
 
@@ -1864,28 +1865,37 @@ Theorem composite_injective_to_injective A B C (f: A -> B) (g: B -> C):
   Injective (g \comp f) -> Surjective f -> Injective g.
 Admitted.
 
+Section Problem14.
+
+Variable A B: Type.
+Variable f: A -> B.
+Variable g g': B -> A.
+
+Hypothesis H1: g \comp f = \I A.
+Hypothesis H2: f \comp g' = \I B.
+
 (* S4 問題14-1 *)
-Theorem identity_to_bijective A B (f: A -> B) (g g': B -> A):
-  g \comp f = \I A -> f \comp g' = \I B -> Bijective f.
+Theorem identity_to_bijective:
+  Bijective f.
 Admitted.
 
 (* S4 問題14-2 *)
-Theorem identity_to_eq A B (f: A -> B) (g g': B -> A):
-  g \comp f = \I A -> f \comp g' = \I B -> g = g'.
+Theorem identity_to_eq:
+  g = g'.
 Admitted.
 
-Lemma bijective_sig A B (f: A -> B) (H: Bijective f): {f: A -> B | Bijective f}.
+Lemma bijective_sig (H: Bijective f): {f: A -> B | Bijective f}.
+Proof.
 apply constructive_indefinite_description.
 by exists f.
 Qed.
 
 (* S4 問題14-3 *)
-Theorem identity_to_invmap A B (f: A -> B) (g g': B -> A)
-  (H1: g \comp f = \I A) (H2: f \comp g' = \I B):
-  g = get_value (InvMap (bijective_sig (identity_to_bijective H1 H2))).
+Theorem identity_to_invmap:
+  g = get_value (InvMap (bijective_sig identity_to_bijective)).
 Admitted.
 
-
+End Problem14.
 
 
 
