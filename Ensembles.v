@@ -1817,7 +1817,20 @@ Qed.
 (* S4 問題3-2 *)
 Theorem image_invimage_surjective A B (f: A -> B):
   Surjective f -> forall Q, Image f (InvImage f Q) = Q.
-Admitted.
+Proof.
+move=> Hsur Q.
+apply eq_split.
+- move=> b Hb.
+  case Hb => a.
+  case => Ha Heq.
+  by rewrite -Heq.
+- move=> b Hb.
+  rewrite surjective_exists in Hsur.
+  case (Hsur b) => a Heq.
+  exists a.
+  split => //.
+  by rewrite -Heq in Hb.
+Qed.
 
 (* S4 問題4 *)
 Theorem image_cap_injective A B (f: A -> B) (P1 P2: Ensemble A):
