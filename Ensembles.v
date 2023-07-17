@@ -1835,8 +1835,23 @@ Proof.
 move=> Hinj.
 apply eq_split.
 - by apply image_cap.
-Admitted.
-
+- move=> b_.
+  case => b HP1 HP2.
+  rewrite /In /Image.
+  case HP1 => a1.
+  case => Ha1 Heq1.
+  case HP2 => a2.
+  case => Ha2 Heq2.
+  suff: a1 = a2 => [ Heq |].
+    exists a1.
+    split => //.
+    split => //.
+    by rewrite Heq.
+  rewrite injective_uniqueness in Hinj.
+  apply (Hinj b) => //.
+  rewrite valuerange_map_as_corr.
+  by exists a1.
+Qed.
 
 Lemma InvMapL A B:
   {f: A -> B | Bijective f} -> {g: B -> A | Bijective g}.
