@@ -1853,21 +1853,39 @@ apply eq_split.
   by exists a1.
 Qed.
 
-Lemma InvMapL A B:
-  {f: A -> B | Bijective f} -> {g: B -> A | Bijective g}.
+Lemma invmap_sig A B (f: A -> B):
+  {g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr f)} ->
+  {g: B -> A | Bijective g}.
 Proof.
-move=> f.
-move: (InvMap f) => H.
-case H => g.
-case => Hg _.
+case => g.
+case => Hbij _.
 by exists g.
 Qed.
 
 (* S4 問題8 *)
 Theorem inv_composite_bijective A B C (f: A -> B | Bijective f) (g: B -> C | Bijective g):
-  InvMapL (composite_bijective_sig f g) =
-  composite_bijective_sig (InvMapL g) (InvMapL f).
+  invmap_sig (InvMap (composite_bijective_sig f g)) =
+  composite_bijective_sig (invmap_sig (InvMap g)) (invmap_sig (InvMap f)).
+Proof.
+Search (_ -> _ = _) sig.
+apply eq_sig_hprop.
+  move=> cinv Hcbij Hcbij'.
+  try apply propositional_extensionality.
+  (* 謎 *)
+  by admit.
+apply functional_extensionality => c.
+case (composite_bijective (get_proof f) (get_proof g)) => Hcsur Hcinj.
+Search Surjective.
+rewrite surjective_exists in Hcsur.
+case (Hcsur c) => a Hcomp.
+(* こっからどうすればいいのか全然わからん *)
+
+
+
+
+
 Admitted.
+(* この問題はこのままだと解けないと思う。InvMapLの段階でf.f^(-1)=Iのための情報が欠けてる感じがする。 *)
 
 (* S4 問題9(a) *)
 Theorem composite_image A B C (f: A -> B) (g: B -> C) (P: Ensemble A):
