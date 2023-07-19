@@ -1874,6 +1874,27 @@ apply eq_sig_hprop.
   (* 謎 *)
   by admit.
 apply functional_extensionality => c.
+have: A => [| a ].
+  admit.
+(* aに対するinvmapのinjectiveを取ってきて、uniquenessを使う *)
+have: forall (ci: C -> A | Bijective ci),
+  ci = invmap_sig (InvMap (g \compb f))
+  -> uniqueness (fun c => get_value ci c = a)
+  => [ ci Hci | Hcuniq ].
+  case (InvMap (g \compb f)) => ci'.
+  case.
+  case => Hci'sur Hci'inj Hci'eq.
+  rewrite injective_uniqueness in Hci'inj.
+  have: ci' = get_value ci => [| Heq ].
+    admit.
+  rewrite -Heq.
+  apply (Hci'inj a).
+  admit.
+fold get_value.
+apply Hcuniq.
+これ無理じゃん
+
+
 case (composite_bijective (get_proof f) (get_proof g)) => Hcsur Hcinj.
 Search Surjective.
 rewrite surjective_exists in Hcsur.
