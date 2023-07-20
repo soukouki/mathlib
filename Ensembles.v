@@ -1591,25 +1591,30 @@ Qed.
 
 (* S4 定理4 後半 *)
 Theorem invcorr_bijective A B (f: A -> B):
-  Bijective f -> (exists g: B -> A, Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr f)).
+  Bijective f -> (exists g: B -> A, Bijective g).
 Proof.
 move=> Hbij.
 rewrite invcorr_is_map_iff_bijective in Hbij.
 case (Hbij (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
 exists g.
-split => //.
 rewrite invcorr_is_map_iff_bijective => fcorr Hf.
 exists f.
 by rewrite -Hg invcorr_twice in Hf.
 Qed.
 
-Definition InvMap A B (f: {f: A -> B | Bijective f}):
-  { g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f)) }.
+Definition InvMap A B (f: A -> B | Bijective f): { g: B -> A | Bijective g}
+  :=
+    let exi := (invcorr_bijective (get_proof f))
+    in constructive_indefinite_description (Bijective (B:=A)) exi.
+
+Lemma invmap_invcorr A B (f: A -> B | Bijective f):
+  forall g, g = InvMap f -> MapAsCorr (get_value g) = InvCorr (MapAsCorr (get_value f)).
 Proof.
-apply constructive_indefinite_description.
-apply invcorr_bijective.
-by apply (get_proof f).
-Qed.
+move=> g Hgeq.
+move: (get_proof f) (get_proof g) => Hf Hg.
+rewrite invcorr_is_map_iff_bijective in Hg.
+rewrite Hgeq /InvMap.
+うーん、この感じじゃ無理か？
 
 Theorem invmap_eq A B (f: {f: A -> B | Bijective f}):
   forall a b, get_value f a = b <-> get_value (InvMap f) b = a.
