@@ -1591,9 +1591,10 @@ Qed.
 
 (* S4 定理4 後半 *)
 Theorem invcorr_bijective A B (f: A -> B):
-  Bijective f -> (exists g: B -> A, Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr f)).
+  Bijective f -> {g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr f)}.
 Proof.
 move=> Hbij.
+apply constructive_indefinite_description.
 rewrite invcorr_is_map_iff_bijective in Hbij.
 case (Hbij (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
 exists g.
@@ -1603,23 +1604,21 @@ exists f.
 by rewrite -Hg invcorr_twice in Hf.
 Qed.
 
-Definition InvMap A B (f: {f: A -> B | Bijective f}):
-  { g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f)) }.
-Proof.
-apply constructive_indefinite_description.
-apply invcorr_bijective.
-by apply (get_proof f).
-Qed.
+(* InvMapの設計については
+https://github.com/itleigns/CoqLibrary/blob/de210b755ab010e835e3777b9b47351972bbb577/Topology/ShuugouIsouNyuumonn/ShuugouIsouNyuumonn1.v#L1268
+を参考にした *)
 
-Theorem invmap_eq A B (f: {f: A -> B | Bijective f}):
-  forall a b, get_value f a = b <-> get_value (InvMap f) b = a.
+Definition InvMap A B (f: A -> B | Bijective f): (B -> A)
+  := get_value (invcorr_bijective (get_proof f)).
+
+Theorem invmap_eq A B (f: A -> B | Bijective f):
+  forall a b, InvMap f b = a <-> get_value f a = b.
 Proof.
 move=> a b.
 split => Heq;
   rewrite -Heq;
-  move: (InvMap f) => g;
-  [ apply invcorr_map_as_corr | apply invcorr_map_as_corr' ];
-  by case (get_proof g).
+  [ apply invcorr_map_as_corr' | apply invcorr_map_as_corr ];
+  by case (get_proof (invcorr_bijective (get_proof f))).
 Qed.
 
 Definition Composite A B C (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
@@ -1681,18 +1680,6 @@ split.
 - by apply composite_injective.
 Qed.
 
-Lemma composite_bijective_sig A B C (f: A -> B | Bijective f) (g: B -> C | Bijective g):
-  {c: A -> C | Bijective c}.
-Proof.
-apply constructive_indefinite_description.
-exists (get_value g \comp get_value f).
-apply composite_bijective.
-- by apply (get_proof f).
-- by apply (get_proof g).
-Qed.
-Notation "f \compb g" := (composite_bijective_sig g f) (at level 50).
-
-
 (* S4 定理6(1) *)
 Theorem composite_assoc A B C D (f: A -> B) (g: B -> C) (h: C -> D):
   (h \comp g) \comp f = h \comp (g \comp f).
@@ -1710,24 +1697,20 @@ Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
 Theorem invmap_composite_identity A B (f: A -> B | Bijective f):
-  get_value (InvMap f) \comp (get_value f) = \I A.
+  InvMap f \comp (get_value f) = \I A.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => a.
-apply invcorr_map_as_corr.
-move: (InvMap f) => g.
-by case (get_proof g).
+by rewrite invmap_eq.
 Qed.
 
 (* S4 定理6(3)-2 *)
 Theorem composite_invmap_identity A B (f: A -> B | Bijective f):
-  get_value f \comp get_value (InvMap f) = \I B.
+  get_value f \comp InvMap f = \I B.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => b.
-apply invcorr_map_as_corr'.
-move: (InvMap f) => g.
-by case (get_proof g).
+by rewrite -invmap_eq.
 Qed.
 
 (* 写像の拡大と縮小についてはいまいちイメージがわかないので後回し *)
