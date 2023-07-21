@@ -1602,13 +1602,14 @@ exists f.
 by rewrite -Hg invcorr_twice in Hf.
 Qed.
 
-Definition InvMap A B (f: A -> B | Bijective f): { g: B -> A | Bijective g}
-  :=
-    let exi := (invcorr_bijective (get_proof f))
-    in constructive_indefinite_description (Bijective (B:=A)) exi.
+Definition InvMap A B (f: A -> B) (Hbi: Bijective f):
+  exists g: B -> A, Bijective g.
+Proof.
+by apply (invcorr_bijective Hbi).
+Qed.
 
-Lemma invmap_invcorr A B (f: A -> B | Bijective f):
-  forall g, g = InvMap f -> MapAsCorr (get_value g) = InvCorr (MapAsCorr (get_value f)).
+Lemma invmap_invcorr A B (f: A -> B) (Hfbi: Bijective f):
+  forall g, g = InvMap Hfbi -> MapAsCorr (get_value g) = InvCorr (MapAsCorr (get_value f)).
 Proof.
 move=> g Hgeq.
 move: (get_proof f) (get_proof g) => Hf Hg.
