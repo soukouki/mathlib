@@ -1608,17 +1608,18 @@ Qed.
 https://github.com/itleigns/CoqLibrary/blob/de210b755ab010e835e3777b9b47351972bbb577/Topology/ShuugouIsouNyuumonn/ShuugouIsouNyuumonn1.v#L1268
 を参考にした *)
 
-Definition InvMap A B (f: A -> B | Bijective f): (B -> A)
-  := get_value (invcorr_bijective (get_proof f)).
+Definition InvMap A B (f: A -> B) (H: Bijective f): (B -> A)
+  := get_value (invcorr_bijective H).
 
-Theorem invmap_eq A B (f: A -> B | Bijective f):
-  forall a b, InvMap f b = a <-> get_value f a = b.
+Theorem invmap_eq A B (f: A -> B) (Hbij: Bijective f):
+  forall a b, InvMap Hbij b = a <-> f a = b.
 Proof.
 move=> a b.
-split => Heq;
+suff: InvCorr (MapAsCorr f) = MapAsCorr (InvMap Hbij) => [ H |].
+  split => Heq;
   rewrite -Heq;
-  [ apply invcorr_map_as_corr' | apply invcorr_map_as_corr ];
-  by case (get_proof (invcorr_bijective (get_proof f))).
+  by [ apply invcorr_map_as_corr' | apply invcorr_map_as_corr ].
+by case (get_proof (invcorr_bijective Hbij)).
 Qed.
 
 Definition Composite A B C (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
@@ -1697,7 +1698,7 @@ Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
 Theorem invmap_composite_identity A B (f: A -> B | Bijective f):
-  InvMap f \comp (get_value f) = \I A.
+  InvMap (get_proof f) \comp (get_value f) = \I A.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => a.
@@ -1706,7 +1707,7 @@ Qed.
 
 (* S4 定理6(3)-2 *)
 Theorem composite_invmap_identity A B (f: A -> B | Bijective f):
-  get_value f \comp InvMap f = \I B.
+  get_value f \comp InvMap (get_proof f) = \I B.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => b.
@@ -1836,60 +1837,18 @@ apply eq_split.
   by exists a1.
 Qed.
 
-Lemma invmap_sig A B (f: A -> B):
-  {g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr f)} ->
-  {g: B -> A | Bijective g}.
-Proof.
-case => g.
-case => Hbij _.
-by exists g.
-Qed.
-
 (* S4 問題8 *)
 Theorem inv_composite_bijective A B C (f: A -> B | Bijective f) (g: B -> C | Bijective g):
-  invmap_sig (InvMap (composite_bijective_sig f g)) =
-  composite_bijective_sig (invmap_sig (InvMap g)) (invmap_sig (InvMap f)).
+  InvMap (composite_bijective (get_proof f) (get_proof g))
+  = (InvMap (get_proof f)) \comp (InvMap (get_proof g)).
 Proof.
-Search (_ -> _ = _) sig.
-apply eq_sig_hprop.
-  move=> cinv Hcbij Hcbij'.
-  try apply propositional_extensionality.
-  (* 謎 *)
-  by admit.
-apply functional_extensionality => c.
-have: A => [| a ].
-  admit.
-(* aに対するinvmapのinjectiveを取ってきて、uniquenessを使う *)
-have: forall (ci: C -> A | Bijective ci),
-  ci = invmap_sig (InvMap (g \compb f))
-  -> uniqueness (fun c => get_value ci c = a)
-  => [ ci Hci | Hcuniq ].
-  case (InvMap (g \compb f)) => ci'.
-  case.
-  case => Hci'sur Hci'inj Hci'eq.
-  rewrite injective_uniqueness in Hci'inj.
-  have: ci' = get_value ci => [| Heq ].
-    admit.
-  rewrite -Heq.
-  apply (Hci'inj a).
-  admit.
-fold get_value.
-apply Hcuniq.
-これ無理じゃん
 
-
-case (composite_bijective (get_proof f) (get_proof g)) => Hcsur Hcinj.
-Search Surjective.
-rewrite surjective_exists in Hcsur.
-case (Hcsur c) => a Hcomp.
-(* こっからどうすればいいのか全然わからん *)
 
 
 
 
 
 Admitted.
-(* この問題はこのままだと解けないと思う。InvMapLの段階でf.f^(-1)=Iのための情報が欠けてる感じがする。 *)
 
 (* S4 問題9(a) *)
 Theorem composite_image A B C (f: A -> B) (g: B -> C) (P: Ensemble A):
