@@ -1590,7 +1590,7 @@ split => [| Hg ].
 Qed.
 
 (* S4 定理4 後半 *)
-Theorem invcorr_bijective A B P (f: A -> B | Bijective f /\ P):
+Theorem invcorr_bijective A B P (f: A -> B | Bijective f /\ P f):
   {g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f))}.
 Proof.
 apply constructive_indefinite_description.
@@ -1608,36 +1608,26 @@ Qed.
 https://github.com/itleigns/CoqLibrary/blob/de210b755ab010e835e3777b9b47351972bbb577/Topology/ShuugouIsouNyuumonn/ShuugouIsouNyuumonn1.v#L1268
 を参考にした *)
 
-(* 欲しい物
-(f: A -> B | Bijective f)で引数を取って、
-戻り値で
-{g: B -> A | Bijective g}と
-{g: B -> A | InvCorr (MapAsCorr f) = MapAsCorr g}を取り出せるような形にしたい
-
-(f: A -> B | Bijective f) -> {g: B -> A | Bijective g /\ InvCorr (MapAsCorr f) = MapAsCorr g}
-だと戻り値から{g: B -> A | Bijective g}が取れない・・・
-いーっそ全部{g: B -> A | Bijective g /\ P g}だけでやってみる？ *)
-
-Definition InvMap A B P (f: A -> B | Bijective f /\ P):
+Definition InvMap A B P (f: A -> B | Bijective f /\ P f):
   {g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f))}
-  := (invcorr_bijective f).
+  := (invcorr_bijective _ f).
 
-Theorem invmap_eq A B P (f: A -> B | Bijective f /\ P):
-  forall a b, get_value (InvMap f) b = a <-> (get_value f) a = b.
+Theorem invmap_eq A B P (f: A -> B | Bijective f /\ P f):
+  forall a b, get_value (InvMap _ f) b = a <-> (get_value f) a = b.
 Proof.
 move=> a b.
-suff: InvCorr (MapAsCorr (get_value f)) = MapAsCorr (get_value (InvMap f)) => [ H |].
+suff: InvCorr (MapAsCorr (get_value f)) = MapAsCorr (get_value (InvMap _ f)) => [ H |].
   split => Heq;
   rewrite -Heq;
   by [ apply invcorr_map_as_corr' | apply invcorr_map_as_corr ].
-by case (get_proof (invcorr_bijective f)).
+by case (get_proof (invcorr_bijective _ f)).
 Qed.
 
-Lemma invmap_bijective A B P (f: A -> B | Bijective f /\ P):
-  Bijective (get_value (InvMap f)).
+Lemma invmap_bijective A B P (f: A -> B | Bijective f /\ P f):
+  Bijective (get_value (InvMap _ f)).
 Proof.
 rewrite /InvMap.
-move: (invcorr_bijective f) => g.
+move: (invcorr_bijective _ f) => g.
 move: (get_proof g).
 by case.
 Qed.
@@ -1702,7 +1692,7 @@ split.
 - by apply composite_injective.
 Qed.
 
-Lemma composite_sig A B C P Q (f: A -> B | Bijective f /\ P) (g: B -> C | Bijective g /\ Q):
+Lemma composite_sig A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
   {c: A -> C | Bijective (get_value g \comp get_value f) /\ True}.
 Proof.
 apply constructive_indefinite_description.
@@ -1729,8 +1719,8 @@ Theorem identity_composite A B (f: A -> B):
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
-Theorem invmap_composite_identity A B (f: A -> B) (Hf: Bijective f):
-  InvMap Hf \comp f = \I A.
+Theorem invmap_composite_identity A B P (f: A -> B | Bijective f /\ P f):
+  get_value (InvMap _ f) \comp get_value f = \I A.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => a.
@@ -1738,8 +1728,8 @@ by rewrite invmap_eq.
 Qed.
 
 (* S4 定理6(3)-2 *)
-Theorem composite_invmap_identity A B (f: A -> B) (Hf: Bijective f):
-  f \comp InvMap Hf = \I B.
+Theorem composite_invmap_identity A B P (f: A -> B | Bijective f /\ P f):
+  get_value f \comp get_value (InvMap _ f) = \I B.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => b.
@@ -1869,30 +1859,30 @@ apply eq_split.
   by exists a1.
 Qed.
 
-Lemma func_eq_invmap A B (f g: A -> B) (Hg: Bijective g):
-  f = g <-> f \comp InvMap Hg = \I B.
+Lemma func_eq_invmap A B P Q (f: A -> B | Bijective f /\ P f) (g: A -> B | Bijective g /\ Q g):
+  get_value f = get_value g <-> get_value f \comp get_value (InvMap _ g) = \I B.
 Proof.
 split => [ Heq | Hi ].
 - rewrite Heq.
   by apply composite_invmap_identity.
-- suff: f = \I B \comp g => //.
+- suff: get_value f = \I B \comp get_value g => //.
   rewrite -Hi.
   rewrite composite_assoc.
   by rewrite invmap_composite_identity.
 Qed.
 
-Lemma invmap_twice A B (f: A -> B) (Hf: Bijective f):
-  InvMap (invmap_bijective Hf) = f.
+Lemma invmap_twice A B P (f: A -> B | Bijective f /\ P f):
+  get_value (InvMap _ (InvMap _ f)) = get_value f.
 Proof.
-move: (invmap_bijective Hf) => Hg.
+move: (invmap_bijective _ f) => Hg.
 apply functional_extensionality => a.
 rewrite invmap_eq.
 by rewrite invmap_eq.
 Qed.
 
 (* S4 問題8 *)
-Theorem inv_composite_bijective A B C (f: A -> B) (Hf: Bijective f) (g: B -> C) (Hg: Bijective g):
-  InvMap (composite_bijective Hf Hg) = InvMap Hf \comp InvMap Hg.
+Theorem inv_composite_bijective A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
+  get_value (InvMap _ (composite_sig _ _ f g)) = get_value (InvMap _ f) \comp get_value (InvMap _ g).
 Proof.
 symmetry.
 move: (composite_bijective Hf Hg) => Hc.
