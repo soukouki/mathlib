@@ -1590,44 +1590,54 @@ split => [| Hg ].
 Qed.
 
 (* S4 定理4 後半 *)
-Theorem invcorr_bijective A B (f: A -> B):
-  Bijective f -> {g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr f)}.
+Theorem invcorr_bijective A B P (f: A -> B | Bijective f /\ P):
+  {g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f))}.
 Proof.
-move=> Hbij.
 apply constructive_indefinite_description.
+case (get_proof f) => Hbij _.
 rewrite invcorr_is_map_iff_bijective in Hbij.
-case (Hbij (InvCorr (MapAsCorr f)) eq_refl) => g Hg.
+case (Hbij (InvCorr (MapAsCorr (get_value f))) eq_refl) => g Hg.
 exists g.
 split => //.
 rewrite invcorr_is_map_iff_bijective => fcorr Hf.
-exists f.
+exists (get_value f).
 by rewrite -Hg invcorr_twice in Hf.
 Qed.
-
 
 (* InvMapの設計については
 https://github.com/itleigns/CoqLibrary/blob/de210b755ab010e835e3777b9b47351972bbb577/Topology/ShuugouIsouNyuumonn/ShuugouIsouNyuumonn1.v#L1268
 を参考にした *)
 
-Definition InvMap A B (f: A -> B) (H: Bijective f): (B -> A)
-  := get_value (invcorr_bijective H).
+(* 欲しい物
+(f: A -> B | Bijective f)で引数を取って、
+戻り値で
+{g: B -> A | Bijective g}と
+{g: B -> A | InvCorr (MapAsCorr f) = MapAsCorr g}を取り出せるような形にしたい
 
-Theorem invmap_eq A B (f: A -> B) (Hbij: Bijective f):
-  forall a b, InvMap Hbij b = a <-> f a = b.
+(f: A -> B | Bijective f) -> {g: B -> A | Bijective g /\ InvCorr (MapAsCorr f) = MapAsCorr g}
+だと戻り値から{g: B -> A | Bijective g}が取れない・・・
+いーっそ全部{g: B -> A | Bijective g /\ P g}だけでやってみる？ *)
+
+Definition InvMap A B P (f: A -> B | Bijective f /\ P):
+  {g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f))}
+  := (invcorr_bijective f).
+
+Theorem invmap_eq A B P (f: A -> B | Bijective f /\ P):
+  forall a b, get_value (InvMap f) b = a <-> (get_value f) a = b.
 Proof.
 move=> a b.
-suff: InvCorr (MapAsCorr f) = MapAsCorr (InvMap Hbij) => [ H |].
+suff: InvCorr (MapAsCorr (get_value f)) = MapAsCorr (get_value (InvMap f)) => [ H |].
   split => Heq;
   rewrite -Heq;
   by [ apply invcorr_map_as_corr' | apply invcorr_map_as_corr ].
-by case (get_proof (invcorr_bijective Hbij)).
+by case (get_proof (invcorr_bijective f)).
 Qed.
 
-Lemma invmap_bijective A B (f: A -> B) (Hf: Bijective f):
-  Bijective (InvMap Hf).
+Lemma invmap_bijective A B P (f: A -> B | Bijective f /\ P):
+  Bijective (get_value (InvMap f)).
 Proof.
 rewrite /InvMap.
-move: (invcorr_bijective Hf) => g.
+move: (invcorr_bijective f) => g.
 move: (get_proof g).
 by case.
 Qed.
@@ -1690,6 +1700,17 @@ case => Hsurg Hing.
 split.
 - by apply composite_surjective.
 - by apply composite_injective.
+Qed.
+
+Lemma composite_sig A B C P Q (f: A -> B | Bijective f /\ P) (g: B -> C | Bijective g /\ Q):
+  {c: A -> C | Bijective (get_value g \comp get_value f) /\ True}.
+Proof.
+apply constructive_indefinite_description.
+exists (get_value g \comp get_value f).
+split => //.
+apply composite_bijective.
+- by case (get_proof f).
+- by case (get_proof g).
 Qed.
 
 (* S4 定理6(1) *)
