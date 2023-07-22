@@ -1604,6 +1604,7 @@ exists f.
 by rewrite -Hg invcorr_twice in Hf.
 Qed.
 
+
 (* InvMapの設計については
 https://github.com/itleigns/CoqLibrary/blob/de210b755ab010e835e3777b9b47351972bbb577/Topology/ShuugouIsouNyuumonn/ShuugouIsouNyuumonn1.v#L1268
 を参考にした *)
@@ -1621,6 +1622,16 @@ suff: InvCorr (MapAsCorr f) = MapAsCorr (InvMap Hbij) => [ H |].
   by [ apply invcorr_map_as_corr' | apply invcorr_map_as_corr ].
 by case (get_proof (invcorr_bijective Hbij)).
 Qed.
+
+Lemma invmap_bijective A B (f: A -> B) (Hf: Bijective f):
+  Bijective (InvMap Hf).
+Proof.
+rewrite /InvMap.
+move: (invcorr_bijective Hf) => g.
+move: (get_proof g).
+by case.
+Qed.
+
 
 Definition Composite A B C (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
 Notation "f \comp g" := (Composite g f) (at level 50).
@@ -1697,8 +1708,8 @@ Theorem identity_composite A B (f: A -> B):
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
-Theorem invmap_composite_identity A B (f: A -> B | Bijective f):
-  InvMap (get_proof f) \comp (get_value f) = \I A.
+Theorem invmap_composite_identity A B (f: A -> B) (Hf: Bijective f):
+  InvMap Hf \comp f = \I A.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => a.
@@ -1706,8 +1717,8 @@ by rewrite invmap_eq.
 Qed.
 
 (* S4 定理6(3)-2 *)
-Theorem composite_invmap_identity A B (f: A -> B | Bijective f):
-  get_value f \comp InvMap (get_proof f) = \I B.
+Theorem composite_invmap_identity A B (f: A -> B) (Hf: Bijective f):
+  f \comp InvMap Hf = \I B.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => b.
@@ -1837,11 +1848,49 @@ apply eq_split.
   by exists a1.
 Qed.
 
-(* S4 問題8 *)
-Theorem inv_composite_bijective A B C (f: A -> B | Bijective f) (g: B -> C | Bijective g):
-  InvMap (composite_bijective (get_proof f) (get_proof g))
-  = (InvMap (get_proof f)) \comp (InvMap (get_proof g)).
+Lemma func_eq_invmap A B (f g: A -> B) (Hg: Bijective g):
+  f = g <-> f \comp InvMap Hg = \I B.
 Proof.
+split => [ Heq | Hi ].
+- rewrite Heq.
+  by apply composite_invmap_identity.
+- suff: f = \I B \comp g => //.
+  rewrite -Hi.
+  rewrite composite_assoc.
+  by rewrite invmap_composite_identity.
+Qed.
+
+Lemma invmap_twice A B (f: A -> B) (Hf: Bijective f):
+  InvMap (invmap_bijective Hf) = f.
+Proof.
+move: (invmap_bijective Hf) => Hg.
+apply functional_extensionality => a.
+rewrite invmap_eq.
+by rewrite invmap_eq.
+Qed.
+
+(* そもそもそんな難しく考えなくとも、普通ならこう式変形していく気がする
+(g f)^-1 = f^-1 . g^-1
+f^-1 . g^-1 = (g . f)^1
+f^-1 . g^-1 . (g . f)^1^1 = I
+f^-1 . g^-1 . (g . f) = I
+f^-1 . (g^-1 . g) . f = I
+f^-1 . I . f = I
+f^-1 . f = I
+I = I
+*)
+
+(* S4 問題8 *)
+Theorem inv_composite_bijective A B C (f: A -> B) (Hf: Bijective f) (g: B -> C) (Hg: Bijective g):
+  InvMap (composite_bijective Hf Hg) = InvMap Hf \comp InvMap Hg.
+Proof.
+symmetry.
+Search ((_ \comp _) = _).
+
+
+
+
+
 
 
 
