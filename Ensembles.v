@@ -1698,7 +1698,7 @@ Theorem composite_assoc A B C D (f: A -> B) (g: B -> C) (h: C -> D):
 Proof. by []. Qed.
 
 (* S4 定理6(2)-1 *)
-Theorem composite_idendity A B (f: A -> B):
+Theorem composite_identity A B (f: A -> B):
   f \comp \I A = f.
 Proof. by []. Qed.
 
@@ -1869,35 +1869,32 @@ rewrite invmap_eq.
 by rewrite invmap_eq.
 Qed.
 
-(* そもそもそんな難しく考えなくとも、普通ならこう式変形していく気がする
-(g f)^-1 = f^-1 . g^-1
-f^-1 . g^-1 = (g . f)^1
-f^-1 . g^-1 . (g . f)^1^1 = I
-f^-1 . g^-1 . (g . f) = I
-f^-1 . (g^-1 . g) . f = I
-f^-1 . I . f = I
-f^-1 . f = I
-I = I
-*)
-
 (* S4 問題8 *)
 Theorem inv_composite_bijective A B C (f: A -> B) (Hf: Bijective f) (g: B -> C) (Hg: Bijective g):
   InvMap (composite_bijective Hf Hg) = InvMap Hf \comp InvMap Hg.
 Proof.
 symmetry.
-Search ((_ \comp _) = _).
+move: (composite_bijective Hf Hg) => Hc.
+move: (invmap_bijective Hc) => Hci.
+rewrite (func_eq_invmap _ Hci).
+suff: InvMap Hci = g \comp f => [ Heq |].
+  rewrite Heq.
+  rewrite composite_assoc -[InvMap Hg \comp _]composite_assoc.
+  rewrite invmap_composite_identity.
+  rewrite identity_composite.
+  by rewrite invmap_composite_identity.
+rewrite /InvMap.
 
-
-
-
-
-
-
+(* こっれどうやるんだ？？？
+InvMapの引数がかなり取りづらいのが原因な気がする *)
 
 
 
 
 Admitted.
+
+
+
 
 (* S4 問題9(a) *)
 Theorem composite_image A B C (f: A -> B) (g: B -> C) (P: Ensemble A):
