@@ -1692,17 +1692,6 @@ split.
 - by apply composite_injective.
 Qed.
 
-Lemma composite_sig A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
-  {c: A -> C | Bijective (get_value g \comp get_value f) /\ True}.
-Proof.
-apply constructive_indefinite_description.
-exists (get_value g \comp get_value f).
-split => //.
-apply composite_bijective.
-- by case (get_proof f).
-- by case (get_proof g).
-Qed.
-
 (* S4 定理6(1) *)
 Theorem composite_assoc A B C D (f: A -> B) (g: B -> C) (h: C -> D):
   (h \comp g) \comp f = h \comp (g \comp f).
@@ -1880,24 +1869,28 @@ rewrite invmap_eq.
 by rewrite invmap_eq.
 Qed.
 
+Lemma composite_sig A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
+  {c: A -> C | Bijective (get_value g \comp get_value f) /\ (fun c => exists f' g', g' \comp f' = c -> P f' /\ Q g') c}.
+Proof.
+apply constructive_indefinite_description.
+exists (get_value g \comp get_value f).
+split => //.
+- apply composite_bijective.
+  + by case (get_proof f).
+  + by case (get_proof g).
+- exists (get_value f).
+  exists (get_value g) => Heq.
+  split.
+  + by case (get_proof f).
+  + by case (get_proof g).
+Qed.
+
 (* S4 問題8 *)
 Theorem inv_composite_bijective A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
   get_value (InvMap _ (composite_sig _ _ f g)) = get_value (InvMap _ f) \comp get_value (InvMap _ g).
 Proof.
-symmetry.
-move: (composite_bijective Hf Hg) => Hc.
-move: (invmap_bijective Hc) => Hci.
-rewrite (func_eq_invmap _ Hci).
-suff: InvMap Hci = g \comp f => [ Heq |].
-  rewrite Heq.
-  rewrite composite_assoc -[InvMap Hg \comp _]composite_assoc.
-  rewrite invmap_composite_identity.
-  rewrite identity_composite.
-  by rewrite invmap_composite_identity.
-rewrite /InvMap.
 
-(* こっれどうやるんだ？？？
-InvMapの引数がかなり取りづらいのが原因な気がする *)
+
 
 
 
