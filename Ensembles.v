@@ -1870,16 +1870,12 @@ by rewrite invmap_eq.
 Qed.
 
 Lemma composite_sig A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
-  {c: A -> C | Bijective c /\ (fun c => get_value g \comp get_value f = c /\ P (get_value f) /\ Q (get_value g)) c}.
+  {c: A -> C | Bijective c /\ (fun c => get_value g \comp get_value f = c) c}.
 Proof.
 apply constructive_indefinite_description.
 exists (get_value g \comp get_value f).
 split => //.
 - apply composite_bijective.
-  + by case (get_proof f).
-  + by case (get_proof g).
-- split => //.
-  split.
   + by case (get_proof f).
   + by case (get_proof g).
 Qed.
@@ -1893,11 +1889,9 @@ symmetry.
 rewrite func_eq_invmap.
 rewrite invmap_twice.
 rewrite composite_assoc.
-case (get_proof (composite_sig _ _ f g)) => H1.
-case => H2.
-case => H3 H4.
-fold get_value in H2.
-rewrite -H2.
+case (get_proof (composite_sig _ _ f g)) => _ Heq.
+fold get_value in Heq.
+rewrite -Heq.
 rewrite -[get_value (InvMap _ g) \comp _]composite_assoc.
 rewrite invmap_composite_identity.
 rewrite identity_composite.
