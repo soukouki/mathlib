@@ -1848,13 +1848,13 @@ apply eq_split.
   by exists a1.
 Qed.
 
-Lemma func_eq_invmap A B P Q (f: A -> B | Bijective f /\ P f) (g: A -> B | Bijective g /\ Q g):
-  get_value f = get_value g <-> get_value f \comp get_value (InvMap _ g) = \I B.
+Lemma func_eq_invmap A B Q (f: A -> B) (g: A -> B | Bijective g /\ Q g):
+  f = get_value g <-> f \comp get_value (InvMap _ g) = \I B.
 Proof.
 split => [ Heq | Hi ].
 - rewrite Heq.
   by apply composite_invmap_identity.
-- suff: get_value f = \I B \comp get_value g => //.
+- suff: f = \I B \comp get_value g => //.
   rewrite -Hi.
   rewrite composite_assoc.
   by rewrite invmap_composite_identity.
@@ -1870,7 +1870,7 @@ by rewrite invmap_eq.
 Qed.
 
 Lemma composite_sig A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
-  {c: A -> C | Bijective (get_value g \comp get_value f) /\ (fun c => exists f' g', g' \comp f' = c -> P f' /\ Q g') c}.
+  {c: A -> C | Bijective c /\ (fun c => get_value g \comp get_value f = c /\ P (get_value f) /\ Q (get_value g)) c}.
 Proof.
 apply constructive_indefinite_description.
 exists (get_value g \comp get_value f).
@@ -1878,8 +1878,7 @@ split => //.
 - apply composite_bijective.
   + by case (get_proof f).
   + by case (get_proof g).
-- exists (get_value f).
-  exists (get_value g) => Heq.
+- split => //.
   split.
   + by case (get_proof f).
   + by case (get_proof g).
@@ -1889,16 +1888,20 @@ Qed.
 Theorem inv_composite_bijective A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
   get_value (InvMap _ (composite_sig _ _ f g)) = get_value (InvMap _ f) \comp get_value (InvMap _ g).
 Proof.
-
-
-
-
-
-
-Admitted.
-
-
-
+symmetry.
+rewrite func_eq_invmap.
+rewrite invmap_twice.
+rewrite composite_assoc.
+case (get_proof (composite_sig _ _ f g)) => H1.
+case => H2.
+case => H3 H4.
+fold get_value in H2.
+rewrite -H2.
+rewrite -[get_value (InvMap _ g) \comp _]composite_assoc.
+rewrite invmap_composite_identity.
+rewrite identity_composite.
+by rewrite invmap_composite_identity.
+Qed.
 
 (* S4 問題9(a) *)
 Theorem composite_image A B C (f: A -> B) (g: B -> C) (P: Ensemble A):
