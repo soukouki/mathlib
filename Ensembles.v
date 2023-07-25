@@ -1885,6 +1885,7 @@ split => //.
 Qed.
 
 (* S4 問題8 *)
+(* (f . g)^-1 = f^-1 . g^-1 *)
 Theorem inv_composite_bijective A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
   get_value (InvMap _ (composite_sig _ _ f g)) = get_value (InvMap _ f) \comp get_value (InvMap _ g).
 Proof.
@@ -1906,12 +1907,31 @@ Qed.
 (* S4 問題9(a) *)
 Theorem composite_image A B C (f: A -> B) (g: B -> C) (P: Ensemble A):
   Image (g \comp f) P = Image g (Image f P).
-Admitted.
+Proof.
+apply eq_split => [ c H | c H ].
+- case H => a.
+  case => H1 H2.
+  exists (f a).
+  split => //.
+  by exists a.
+- case H => b.
+  case => H1 H2.
+  case H1 => a.
+  case => H3 H4.
+  exists a.
+  split => //.
+  rewrite /Composite.
+  by rewrite H4.
+Qed.
 
 (* S4 問題9(b) *)
-Theorem composite_inv_image A B C (f: A -> B | Bijective f) (g: B -> C | Bijective g) (R: Ensemble C):
-  Image (get_value (InvMap (g \compb f))) R = Image (get_value (InvMap f)) (Image (get_value (InvMap g)) R).
-Admitted.
+(* (f . g)^-1 (R) = f^-1 (g^-1 (R)) *)
+Theorem composite_inv_image A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g) (R: Ensemble C):
+  Image (get_value (InvMap _ (composite_sig _ _ f g))) R = Image (get_value (InvMap _ f)) (Image (get_value (InvMap _ g)) R).
+Proof.
+rewrite inv_composite_bijective.
+by rewrite composite_image.
+Qed.
 
 (* S4 問題10(a) *)
 Theorem surjective_composite_surjective A B C (f: A -> B) (g: B -> C):
