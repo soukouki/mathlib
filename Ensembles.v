@@ -1608,23 +1608,24 @@ Qed.
 https://github.com/itleigns/CoqLibrary/blob/de210b755ab010e835e3777b9b47351972bbb577/Topology/ShuugouIsouNyuumonn/ShuugouIsouNyuumonn1.v#L1268
 を参考にした *)
 
-Definition InvMap A B P (f: A -> B | Bijective f /\ P f):
+Definition InvMap A B {P} (f: A -> B | Bijective f /\ P f):
   {g: B -> A | Bijective g /\ MapAsCorr g = InvCorr (MapAsCorr (get_value f))}
   := (invcorr_bijective _ f).
+Notation "f ^-1" := (InvMap f) (at level 30).
 
-Theorem invmap_eq A B P (f: A -> B | Bijective f /\ P f):
-  forall a b, get_value (InvMap _ f) b = a <-> (get_value f) a = b.
+Theorem invmap_eq A B {P} (f: A -> B | Bijective f /\ P f):
+  forall a b, get_value (f^-1) b = a <-> (get_value f) a = b.
 Proof.
 move=> a b.
-suff: InvCorr (MapAsCorr (get_value f)) = MapAsCorr (get_value (InvMap _ f)) => [ H |].
+suff: InvCorr (MapAsCorr (get_value f)) = MapAsCorr (get_value (InvMap f)) => [ H |].
   split => Heq;
   rewrite -Heq;
   by [ apply invcorr_map_as_corr' | apply invcorr_map_as_corr ].
 by case (get_proof (invcorr_bijective _ f)).
 Qed.
 
-Lemma invmap_bijective A B P (f: A -> B | Bijective f /\ P f):
-  Bijective (get_value (InvMap _ f)).
+Lemma invmap_bijective A B {P} (f: A -> B | Bijective f /\ P f):
+  Bijective (get_value (f^-1)).
 Proof.
 rewrite /InvMap.
 move: (invcorr_bijective _ f) => g.
@@ -1708,8 +1709,8 @@ Theorem identity_composite A B (f: A -> B):
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
-Theorem invmap_composite_identity A B P (f: A -> B | Bijective f /\ P f):
-  get_value (InvMap _ f) \comp get_value f = \I A.
+Theorem invmap_composite_identity A B {P} (f: A -> B | Bijective f /\ P f):
+  get_value (f^-1) \comp get_value f = \I A.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => a.
@@ -1718,7 +1719,7 @@ Qed.
 
 (* S4 定理6(3)-2 *)
 Theorem composite_invmap_identity A B P (f: A -> B | Bijective f /\ P f):
-  get_value f \comp get_value (InvMap _ f) = \I B.
+  get_value f \comp get_value (f^-1) = \I B.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => b.
@@ -1848,8 +1849,8 @@ apply eq_split.
   by exists a1.
 Qed.
 
-Lemma func_eq_invmap A B Q (f: A -> B) (g: A -> B | Bijective g /\ Q g):
-  f = get_value g <-> f \comp get_value (InvMap _ g) = \I B.
+Lemma func_eq_invmap A B {Q} (f: A -> B) (g: A -> B | Bijective g /\ Q g):
+  f = get_value g <-> f \comp get_value (g^-1) = \I B.
 Proof.
 split => [ Heq | Hi ].
 - rewrite Heq.
@@ -1860,16 +1861,16 @@ split => [ Heq | Hi ].
   by rewrite invmap_composite_identity.
 Qed.
 
-Lemma invmap_twice A B P (f: A -> B | Bijective f /\ P f):
-  get_value (InvMap _ (InvMap _ f)) = get_value f.
+Lemma invmap_twice A B {P} (f: A -> B | Bijective f /\ P f):
+  get_value (f ^-1 ^-1) = get_value f.
 Proof.
-move: (invmap_bijective _ f) => Hg.
+move: (invmap_bijective f) => Hg.
 apply functional_extensionality => a.
 rewrite invmap_eq.
 by rewrite invmap_eq.
 Qed.
 
-Lemma composite_sig A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
+Lemma composite_sig A B C {P Q} (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
   {c: A -> C | Bijective c /\ get_value g \comp get_value f = c}.
 Proof.
 apply constructive_indefinite_description.
@@ -1880,19 +1881,25 @@ split => //.
   + by case (get_proof g).
 Qed.
 
+Lemma get_composite_sig_value A B C {P Q} (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
+  get_value (composite_sig f g) = get_value g \comp get_value f.
+Proof.
+case (get_proof (composite_sig f g)) => _ Heq.
+fold get_value in Heq.
+by rewrite -Heq.
+Qed.
+
 (* S4 問題8 *)
 (* (f . g)^-1 = f^-1 . g^-1 *)
-Theorem inv_composite_bijective A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
-  get_value (InvMap _ (composite_sig _ _ f g)) = get_value (InvMap _ f) \comp get_value (InvMap _ g).
+Theorem inv_composite_bijective A B C {P Q} (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
+  get_value ((composite_sig f g)^-1) = get_value (f^-1) \comp get_value (g^-1).
 Proof.
 symmetry.
 rewrite func_eq_invmap.
 rewrite invmap_twice.
 rewrite composite_assoc.
-case (get_proof (composite_sig _ _ f g)) => _ Heq.
-fold get_value in Heq.
-rewrite -Heq.
-rewrite -[get_value (InvMap _ g) \comp _]composite_assoc.
+rewrite get_composite_sig_value.
+rewrite -[get_value (InvMap g) \comp _]composite_assoc.
 rewrite invmap_composite_identity.
 rewrite identity_composite.
 by rewrite invmap_composite_identity.
@@ -1920,8 +1927,8 @@ Qed.
 
 (* S4 問題9(b) *)
 (* (f . g)^-1 (R) = f^-1 (g^-1 (R)) *)
-Theorem composite_inv_image A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g) (R: Ensemble C):
-  Image (get_value (InvMap _ (composite_sig _ _ f g))) R = Image (get_value (InvMap _ f)) (Image (get_value (InvMap _ g)) R).
+Theorem composite_inv_image A B C {P Q} (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g) (R: Ensemble C):
+  Image (get_value ((composite_sig f g)^-1)) R = Image (get_value (f^-1)) (Image (get_value (g^-1)) R).
 Proof.
 rewrite inv_composite_bijective.
 by rewrite composite_image.
@@ -1985,7 +1992,7 @@ Qed.
 
 (* S4 問題14-3 *)
 Theorem identity_to_invmap:
-  g = get_value (InvMap _ (bijective_sig identity_to_bijective)).
+  g = get_value ((bijective_sig identity_to_bijective)^-1).
 Admitted.
 
 End Problem14.
