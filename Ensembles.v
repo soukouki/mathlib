@@ -1964,13 +1964,13 @@ apply (Hinj (g b) H);
 Qed.
 
 (* S4 問題11 *)
-Theorem surjective_composite_eq A B C (f: A -> B | Surjective f) (g g': B -> C):
-  g \comp (get_value f) = g' \comp (get_value f) -> g = g'.
+Theorem surjective_composite_eq A B C (f: A -> B) (Hf: Surjective f) (g g': B -> C):
+  g \comp f = g' \comp f -> g = g'.
 Admitted.
 
 (* S4 問題12 *)
-Theorem injective_composite_eq A B C (f f': A -> B) (g: B -> C | Injective g):
-  (get_value g) \comp f = (get_value g) \comp f' -> f = f'.
+Theorem injective_composite_eq A B C (f f': A -> B) (g: B -> C) (Hg: Injective g):
+  g \comp f = g \comp f' -> f = f'.
 Admitted.
 
 (* S4 問題13(a) *)
