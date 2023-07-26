@@ -1949,7 +1949,19 @@ Qed.
 (* S4 問題10(b) *)
 Theorem injective_composite_injective A B C (f: A -> B) (g: B -> C):
   Injective (g \comp f) -> Injective f.
-Admitted.
+Proof.
+move=> Hinj.
+Search Injective.
+rewrite injective_uniqueness in Hinj.
+rewrite injective_uniqueness => b Hb.
+move=> a1 a2 H1 H2.
+have: (g b) \in ValueRange (MapAsCorr (g \comp f)) => [| H ].
+  rewrite valuerange_map_as_corr.
+  exists a1.
+  by rewrite -H1.
+apply (Hinj (g b) H);
+  by [rewrite -H1 | rewrite -H2].
+Qed.
 
 (* S4 問題11 *)
 Theorem surjective_composite_eq A B C (f: A -> B | Surjective f) (g g': B -> C):
