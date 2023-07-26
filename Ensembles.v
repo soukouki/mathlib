@@ -1870,7 +1870,7 @@ by rewrite invmap_eq.
 Qed.
 
 Lemma composite_sig A B C P Q (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
-  {c: A -> C | Bijective c /\ (fun c => get_value g \comp get_value f = c) c}.
+  {c: A -> C | Bijective c /\ get_value g \comp get_value f = c}.
 Proof.
 apply constructive_indefinite_description.
 exists (get_value g \comp get_value f).
