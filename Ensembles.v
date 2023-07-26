@@ -1937,7 +1937,14 @@ Qed.
 (* S4 問題10(a) *)
 Theorem surjective_composite_surjective A B C (f: A -> B) (g: B -> C):
   Surjective (g \comp f) -> Surjective g.
-Admitted.
+Proof.
+move=> Hsur.
+rewrite surjective_exists in Hsur.
+rewrite surjective_exists => b.
+case (Hsur b) => a Heq.
+exists (f a).
+by rewrite -Heq.
+Qed.
 
 (* S4 問題10(b) *)
 Theorem injective_composite_injective A B C (f: A -> B) (g: B -> C):
