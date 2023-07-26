@@ -1976,15 +1976,16 @@ Theorem identity_to_eq:
   g = g'.
 Admitted.
 
-Lemma bijective_sig (H: Bijective f): {f: A -> B | Bijective f}.
+Lemma bijective_sig (H: Bijective f): {f: A -> B | Bijective f /\ (fun _ => True) f}.
 Proof.
 apply constructive_indefinite_description.
-by exists f.
+exists f.
+by split.
 Qed.
 
 (* S4 問題14-3 *)
 Theorem identity_to_invmap:
-  g = get_value (InvMap (bijective_sig identity_to_bijective)).
+  g = get_value (InvMap _ (bijective_sig identity_to_bijective)).
 Admitted.
 
 End Problem14.
