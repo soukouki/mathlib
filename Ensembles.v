@@ -1963,10 +1963,26 @@ apply (Hinj (g b) H);
   by [rewrite -H1 | rewrite -H2].
 Qed.
 
+Lemma comp_eq_rewrite A B C (f f': A -> B) (g g': B -> C):
+  g \comp f = g' \comp f'
+  -> forall a c, g (f a) = c <-> g' (f' a) = c.
+Proof.
+move=> Heq a c.
+suff: (g \comp f) a = c <-> (g' \comp f') a = c => //.
+by rewrite Heq.
+Qed.
+
 (* S4 問題11 *)
 Theorem surjective_composite_eq A B C (f: A -> B) (Hf: Surjective f) (g g': B -> C):
   g \comp f = g' \comp f -> g = g'.
-Admitted.
+Proof.
+move=> Heq.
+rewrite surjective_exists in Hf.
+apply functional_extensionality => b.
+case (Hf b) => a H.
+rewrite -H.
+by rewrite (comp_eq_rewrite Heq).
+Qed.
 
 (* S4 問題12 *)
 Theorem injective_composite_eq A B C (f f': A -> B) (g: B -> C) (Hg: Injective g):
