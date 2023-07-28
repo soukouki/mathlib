@@ -1987,6 +1987,11 @@ Qed.
 (* S4 問題12 *)
 Theorem injective_composite_eq A B C (f f': A -> B) (g: B -> C) (Hg: Injective g):
   g \comp f = g \comp f' -> f = f'.
+Proof.
+move=> Heq.
+apply functional_extensionality => a.
+
+
 Admitted.
 
 (* S4 問題13(a) *)
