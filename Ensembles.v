@@ -1935,12 +1935,12 @@ rewrite /Composite.
 by rewrite Heq.
 Qed.
 
-Lemma comp_eq_rewrite A B C (f f': A -> B) (g g': B -> C):
-  g \comp f = g' \comp f'
-  -> forall a c, g (f a) = c <-> g' (f' a) = c.
+Lemma comp_eq_iff A B C (f: A -> B) (g: B -> C) (h: A -> C):
+  g \comp f = h
+  -> forall a c, g (f a) = c <-> h a = c.
 Proof.
 move=> Heq a c.
-suff: (g \comp f) a = c <-> (g' \comp f') a = c => //.
+suff: (g \comp f) a = c <-> h a = c => //.
 by rewrite Heq.
 Qed.
 
@@ -1953,7 +1953,7 @@ rewrite surjective_exists in Hf.
 apply functional_extensionality => b.
 case (Hf b) => a H.
 rewrite -H.
-by rewrite (comp_eq_rewrite Heq).
+by rewrite (comp_eq_iff Heq).
 Qed.
 
 (* S4 問題12 *)
@@ -1963,7 +1963,7 @@ Proof.
 move=> Heq.
 apply functional_extensionality => a.
 apply Hg.
-by rewrite (comp_eq_rewrite Heq).
+by rewrite (comp_eq_iff Heq).
 Qed.
 
 (* S4 問題13(a) *)
@@ -2004,6 +2004,22 @@ Hypothesis H2: f \comp g' = \I B.
 (* S4 問題14-1 *)
 Theorem identity_to_bijective:
   Bijective f.
+Proof.
+split.
+- rewrite surjective_exists => b.
+  exists (g b).
+  have: f (g' b) = b => [| Heq ].
+    by rewrite (comp_eq_iff H2).
+  rewrite -{2}Heq.
+  
+  
+  admit.
+- move=> a1 a2 Ha.
+  have: g (f a1) = g (f a2) => [| H ].
+    by rewrite Ha.
+  rewrite (comp_eq_iff H1) in H.
+  symmetry in H.
+  by rewrite (comp_eq_iff H1) in H.
 Admitted.
 
 (* S4 問題14-2 *)
@@ -2011,7 +2027,7 @@ Theorem identity_to_eq:
   g = g'.
 Admitted.
 
-Lemma bijective_sig (H: Bijective f): {f: A -> B | Bijective f /\ (fun _ => True) f}.
+Lemma bijective_sig {P} (H: Bijective f): {f: A -> B | Bijective f /\ (fun _ => True) f}.
 Proof.
 apply constructive_indefinite_description.
 exists f.
