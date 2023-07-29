@@ -679,7 +679,8 @@ rewrite [A \cap (B^c \cap C^c)]cap_comm.
 rewrite cap_assoc.
 rewrite -[A \cap _]cap_assoc.
 rewrite [C^c \cap A]cap_comm.
-by rewrite -2!sub_cap_compset.
+rewrite -2!sub_cap_compset.
+apply eq_refl.
 Qed.
 
 (* S2 問題4b *)
@@ -1990,9 +1991,9 @@ Theorem injective_composite_eq A B C (f f': A -> B) (g: B -> C) (Hg: Injective g
 Proof.
 move=> Heq.
 apply functional_extensionality => a.
-
-
-Admitted.
+apply Hg.
+by rewrite (comp_eq_rewrite Heq).
+Qed.
 
 (* S4 問題13(a) *)
 Theorem composite_surjective_to_surjective A B C (f: A -> B) (g: B -> C):
