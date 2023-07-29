@@ -1490,7 +1490,6 @@ split.
   apply Hinj.
   by rewrite Heqa Heqa'.
 - move=> Hb a a' Heq.
-  rewrite /uniqueness in Hb.
   apply (Hb (f a)) => //.
   rewrite valuerange_map_as_corr.
   by exists a.
@@ -1654,32 +1653,15 @@ Qed.
 Theorem composite_injective A B C (f: A -> B) (g: B -> C):
   Injective f -> Injective g -> Injective (g \comp f).
 Proof.
-rewrite 3!injective_exists_unique => Hf Hg c Hc.
+move=> Hf Hg.
+rewrite injective_exists_unique => c Hc.
 rewrite valuerange_map_as_corr in Hc.
-case (Hg c).
-  rewrite valuerange_map_as_corr.
-  case Hc => a Heqa.
-  by exists (f a).
-move=> b Huniqb.
-case (Hf b).
-  rewrite valuerange_map_as_corr.
-  case Hc => a Heqa.
-  exists a.
-  case Huniqb => Heqc H.
-  symmetry.
-  by apply (H (f a)).
-move=> a Huniqa.
+case Hc => a Ha.
 exists a.
-split.
-- case Huniqb => Heqb _.
-  rewrite -Heqb.
-  case Huniqa => Heqa _.
-  by rewrite -Heqa.
-- move=> a' Heqa'.
-  case Huniqb => Hgeq Heqb.
-  case Huniqa => Hfeq Heqa.
-  rewrite (Heqa a') => //.
-  by rewrite (Heqb (f a')).
+split => // a' Ha'.
+apply /Hf /Hg.
+rewrite /Composite in Ha Ha'.
+by rewrite Ha Ha'.
 Qed.
 
 (* S4 定理5c *)
@@ -1804,10 +1786,7 @@ apply eq_split.
   case => Ha' Heqf.
   suff: a = a' => [ Heq |].
     by rewrite Heq.
-  rewrite injective_uniqueness in Hinj.
-  apply (Hinj (f a)) => //.
-  rewrite valuerange_map_as_corr.
-  by exists a.
+  by apply Hinj.
 Qed.
 
 (* S4 問題3-2 *)
@@ -1844,10 +1823,8 @@ apply eq_split.
     split => //.
     split => //.
     by rewrite Heq.
-  rewrite injective_uniqueness in Hinj.
-  apply (Hinj b) => //.
-  rewrite valuerange_map_as_corr.
-  by exists a1.
+  apply Hinj.
+  by rewrite Heq1 Heq2.
 Qed.
 
 Lemma func_eq_invmap A B {Q} (f: A -> B) (g: A -> B | Bijective g /\ Q g):
@@ -1952,16 +1929,10 @@ Theorem injective_composite_injective A B C (f: A -> B) (g: B -> C):
   Injective (g \comp f) -> Injective f.
 Proof.
 move=> Hinj.
-Search Injective.
-rewrite injective_uniqueness in Hinj.
-rewrite injective_uniqueness => b Hb.
-move=> a1 a2 H1 H2.
-have: (g b) \in ValueRange (MapAsCorr (g \comp f)) => [| H ].
-  rewrite valuerange_map_as_corr.
-  exists a1.
-  by rewrite -H1.
-apply (Hinj (g b) H);
-  by [rewrite -H1 | rewrite -H2].
+move=> a1 a2 Heq.
+apply Hinj.
+rewrite /Composite.
+by rewrite Heq.
 Qed.
 
 Lemma comp_eq_rewrite A B C (f f': A -> B) (g g': B -> C):
