@@ -2008,11 +2008,10 @@ Proof.
 split.
 - rewrite surjective_exists => b.
   exists (g b).
-  have: f (g' b) = b => [| Heq ].
-    by rewrite (comp_eq_iff H2).
-  rewrite -{2}Heq.
+  suff: f \comp g = \I B => [ H3 |].
+    by rewrite (comp_eq_iff H3).
   
-  
+
   admit.
 - move=> a1 a2 Ha.
   have: g (f a1) = g (f a2) => [| H ].
@@ -2027,7 +2026,7 @@ Theorem identity_to_eq:
   g = g'.
 Admitted.
 
-Lemma bijective_sig {P} (H: Bijective f): {f: A -> B | Bijective f /\ (fun _ => True) f}.
+Lemma bijective_sig (H: Bijective f): {f: A -> B | Bijective f /\ (fun _ => True) f}.
 Proof.
 apply constructive_indefinite_description.
 exists f.
@@ -2041,8 +2040,47 @@ Admitted.
 
 End Problem14.
 
+Lemma char_return_or X (A: Ensemble X) x:
+  (\X A) x = 1 \/ (\X A) x = 0.
+Proof.
+rewrite /Char.
+case (excluded_middle_informative) => H;
+  by [left | right].
+Qed.
+
+Section Problem15.
+
+Variable X: Type.
+Variable A B: Ensemble X.
+
+(* S4 問題15-1 *)
+Theorem char_le_subset:
+  (forall x, (\X A) x <= (\X B) x) <-> A \subset B.
+Proof.
+split => [ Hle y | Hsubset x ].
+- rewrite 2!in_char => Hy.
+  move: (Hle y).
+  rewrite Hy => Hla.
+  case (char_return_or B y) => // Hb.
+  rewrite Hb in Hla.
+  by move: (PeanoNat.Nat.nle_succ_0 _ Hla).
+- case (char_return_or B x) => Hb.
+  + rewrite Hb.
+    case (char_return_or A x) => H;
+      rewrite H;
+      by auto.
+  + rewrite Hb.
+    rewrite -not_in_char in Hb.
+    suff: x \notin A.
+      rewrite not_in_char => Ha.
+      by rewrite Ha.
+    move=> Ha.
+    apply Hb.
+    by apply Hsubset.
+Qed.
 
 
+End Problem15.
 
 End Section4.
 
