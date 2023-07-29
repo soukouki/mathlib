@@ -1718,10 +1718,8 @@ Definition Char X (A: Ensemble X) (x: X): nat :=
   | right b => 0
   end.
 
-Notation "\X A" := (Char A) (at level 30).
-
 Lemma in_char X (A: Ensemble X) (a: X):
-  a \in A <-> (\X A) a = 1.
+  a \in A <-> Char A a = 1.
 Proof.
 split;
   rewrite /Char;
@@ -1729,7 +1727,7 @@ split;
 Qed.
 
 Lemma not_in_char X (A: Ensemble X) (a: X):
-  a \notin A <-> (\X A) a = 0.
+  a \notin A <-> Char A a = 0.
 Proof.
 split;
   rewrite /Char;
@@ -1737,16 +1735,16 @@ split;
 Qed.
 
 Fact char_fullset X (x: X):
-  x \in FullSet -> (\X FullSet) x = 1.
+  x \in FullSet -> Char FullSet x = 1.
 Proof. by rewrite -in_char. Qed.
 
 Fact char_emptyset X (x: X):
-  x \in FullSet -> (\X EmptySet) x = 0.
+  x \in FullSet -> Char EmptySet x = 0.
 Proof. by rewrite -not_in_char not_emptyset. Qed.
 
 Fact char_neq X (A A': Ensemble X):
   A \in PowerSet FullSet -> A' \in PowerSet FullSet -> A <> A'
- -> \X A <> \X A'.
+ -> Char A <> Char A'.
 Proof.
 move=> HP HP' Hneq Hceq.
 apply Hneq.
@@ -1760,7 +1758,7 @@ Qed.
 
 Fact char_eq_func X (f: X -> nat):
   (forall x, f x = 0 \/ f x = 1) ->
-  forall A: Ensemble X, A = (fun x => f x = 1) -> (\X A) = f.
+  forall A: Ensemble X, A = (fun x => f x = 1) -> Char A = f.
 Proof.
 move=> Hfor A HAeq.
 apply functional_extensionality => x.
@@ -2041,7 +2039,7 @@ Admitted.
 End Problem14.
 
 Lemma char_return_or X (A: Ensemble X) x:
-  (\X A) x = 1 \/ (\X A) x = 0.
+  Char A x = 1 \/ Char A x = 0.
 Proof.
 rewrite /Char.
 case (excluded_middle_informative) => H;
@@ -2050,12 +2048,31 @@ Qed.
 
 Section Problem15.
 
+Lemma char_cap_notin X (A B: Ensemble X) x:
+  Char A x = 0
+  -> Char (A \cap B) x = Char A x * Char B x.
+Proof.
+move=> Ha.
+rewrite Ha.
+case (char_return_or B x) => Hb;
+  rewrite Hb.
+- suff: Char (A \cap B) x = 0 => [ H |].
+    by [ rewrite H | ].
+  rewrite -not_in_char -cap_and => Hab.
+  rewrite -not_in_char -in_char in Ha Hb.
+  by case Hab.
+- rewrite -2!not_in_char in Ha Hb.
+  rewrite -not_in_char -cap_and => Hab.
+  apply Ha.
+  by case Hab.
+Qed.
+
 Variable X: Type.
 Variable A B: Ensemble X.
 
 (* S4 問題15-1 *)
 Theorem char_le_subset:
-  (forall x, (\X A) x <= (\X B) x) <-> A \subset B.
+  (forall x, Char A x <= Char B x) <-> A \subset B.
 Proof.
 split => [ Hle y | Hsubset x ].
 - rewrite 2!in_char => Hy.
@@ -2078,6 +2095,28 @@ split => [ Hle y | Hsubset x ].
     apply Hb.
     by apply Hsubset.
 Qed.
+
+Variable x: X.
+
+(* S4 問題15(a) *)
+Theorem char_cap:
+  Char (A \cap B) x = Char A x * Char B x.
+Proof.
+case (char_return_or A x) => Ha.
+case (char_return_or B x) => Hb. (* ここで3パターンに場合分けされる *)
+- rewrite Ha Hb.
+  suff: Char (A \cap B) x = 1 => //.
+  rewrite -in_char.
+  rewrite -2!in_char in Ha Hb.
+  by split.
+- rewrite cap_comm PeanoNat.Nat.mul_comm.
+  by apply char_cap_notin.
+- by apply char_cap_notin.
+Qed.
+
+(* S4 問題15(b) *)
+Theorem char_cup:
+  Char (A \cup B) x = Char A x + Char B x - Char (A \cap B) x.
 
 
 End Problem15.
