@@ -1982,7 +1982,15 @@ Qed.
 (* S4 問題13(b) *)
 Theorem composite_injective_to_injective A B C (f: A -> B) (g: B -> C):
   Injective (g \comp f) -> Surjective f -> Injective g.
-Admitted.
+Proof.
+move=> Hinj Hsur b1 b2 Heq.
+rewrite surjective_exists in Hsur.
+case (Hsur b1) => a1 Ha1.
+case (Hsur b2) => a2 Ha2.
+subst.
+move: (Hinj _ _ Heq) => Ha.
+by subst.
+Qed.
 
 Section Problem14.
 
