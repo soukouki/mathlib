@@ -2158,7 +2158,22 @@ case (char_return_or B x) => Hb. (* ここで4パターンに場合分けされ�
   by case Hcup.
 Qed.
 
-
+(* S4 問題15(c) *)
+Theorem char_comp:
+  Char (A^c) x = 1 - Char A x.
+Proof.
+case (char_return_or A x) => Ha.
+- suff: x \notin A^c => [ Hcomp |].
+    rewrite not_in_char in Hcomp.
+    by rewrite Ha Hcomp.
+  rewrite -in_char in Ha.
+  by rewrite compset_in.
+- suff: x \in A^c => [ Hcomp |].
+    rewrite in_char in Hcomp.
+    by rewrite Ha Hcomp.
+  rewrite -not_in_char in Ha.
+  by rewrite compset_in.
+Qed.
 
 
 End Problem15.
