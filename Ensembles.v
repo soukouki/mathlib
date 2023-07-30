@@ -2067,6 +2067,19 @@ case (char_return_or B x) => Hb;
   by case Hab.
 Qed.
 
+Lemma sub_not X (A B: Ensemble X):
+  (A - B)^c = A^c \cup (A \cap B).
+Proof.
+rewrite -eq_iff => x.
+rewrite compset_in sub_iff.
+rewrite Classical.not_and_or.
+rewrite cup_comm cap_cup_distrib.
+rewrite compset_cup fullset_cap.
+rewrite -cup_or [x \in B \/ _]or_comm.
+rewrite -3!compset_in.
+by rewrite compset_twice.
+Qed.
+
 Open Scope nat_scope.
 
 Lemma char_cup_lemma X (A B: Ensemble X) x:
@@ -2173,6 +2186,30 @@ case (char_return_or A x) => Ha.
     by rewrite Ha Hcomp.
   rewrite -not_in_char in Ha.
   by rewrite compset_in.
+Qed.
+
+(* S4 問題15(d) *)
+Theorem char_sub:
+  Char (Sub A B) x = Char A x * (1 - Char B x).
+Proof.
+case (char_return_or A x) => Ha.
+- case (char_return_or B x) => Hb.
+  + suff: x \notin (Sub A B) => [ Hsub |].
+      rewrite not_in_char in Hsub.
+      by rewrite Ha Hb Hsub.
+    rewrite -2!in_char in Ha Hb.
+    rewrite -compset_in sub_not.
+    by right.
+  + suff: x \in (Sub A B) => [ Hsub |].
+      rewrite in_char in Hsub.
+      by rewrite Ha Hb Hsub.
+    by rewrite -in_char -not_in_char in Ha Hb.
+- suff: x \notin (Sub A B) => [ Hsub |].
+    rewrite not_in_char in Hsub.
+    by rewrite Ha Hsub.
+  rewrite -not_in_char in Ha.
+  rewrite -compset_in sub_not.
+  by left.
 Qed.
 
 
