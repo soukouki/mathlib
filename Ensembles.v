@@ -2004,19 +2004,13 @@ Theorem identity_to_bijective:
   Bijective f.
 Proof.
 split.
-- rewrite surjective_exists => b.
-  exists (g b).
-  suff: f \comp g = \I B => [ H3 |].
-    by rewrite (comp_eq_iff H3).
-  
-
-  admit.
-- move=> a1 a2 Ha.
-  have: g (f a1) = g (f a2) => [| H ].
-    by rewrite Ha.
-  rewrite (comp_eq_iff H1) in H.
-  symmetry in H.
-  by rewrite (comp_eq_iff H1) in H.
+- apply (surjective_composite_surjective (f := g')).
+  rewrite H2.
+  rewrite surjective_exists => b.
+  by exists b.
+- Search Injective Composite.
+  apply (injective_composite_injective (g := g)).
+  by rewrite H1.
 Admitted.
 
 (* S4 問題14-2 *)
@@ -2212,6 +2206,7 @@ case (char_return_or A x) => Ha.
   by left.
 Qed.
 
+(* S4 問題15(e) は整数を扱う必要があって面倒なので飛ばす *)
 
 End Problem15.
 
