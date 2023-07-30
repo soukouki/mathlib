@@ -1942,6 +1942,16 @@ suff: (g \comp f) a = c <-> h a = c => //.
 by rewrite Heq.
 Qed.
 
+Lemma comp_eq_iff' A B C (f: A -> B) (g: B -> C) (h: A -> C):
+  g \comp f = h
+  -> forall a c, c = g (f a) <-> c = h a.
+Proof.
+move=> H.
+split;
+  symmetry;
+  by [rewrite -(comp_eq_iff H) | rewrite (comp_eq_iff H)].
+Qed.
+
 (* S4 問題11 *)
 Theorem surjective_composite_eq A B C (f: A -> B) (Hf: Surjective f) (g g': B -> C):
   g \comp f = g' \comp f -> g = g'.
@@ -2011,12 +2021,22 @@ split.
 - Search Injective Composite.
   apply (injective_composite_injective (g := g)).
   by rewrite H1.
-Admitted.
+Qed.
 
 (* S4 問題14-2 *)
 Theorem identity_to_eq:
   g = g'.
-Admitted.
+Proof.
+apply functional_extensionality => b.
+case identity_to_bijective => Hfsur Hfinj.
+apply Hfinj.
+rewrite (comp_eq_iff' H2).
+have: Injective g => [| Hg ].
+  apply (composite_injective_to_injective (f := f)) => //.
+  by rewrite H1.
+apply Hg.
+by rewrite (comp_eq_iff H1).
+Qed.
 
 Lemma bijective_sig (H: Bijective f): {f: A -> B | Bijective f /\ (fun _ => True) f}.
 Proof.
@@ -2028,6 +2048,11 @@ Qed.
 (* S4 問題14-3 *)
 Theorem identity_to_invmap:
   g = get_value ((bijective_sig identity_to_bijective)^-1).
+Proof.
+
+
+
+
 Admitted.
 
 End Problem14.
