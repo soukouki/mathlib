@@ -2000,6 +2000,17 @@ move: (Hinj _ _ Heq) => Ha.
 by subst.
 Qed.
 
+Lemma map_as_corr_injective A B:
+  Injective (fun f: A -> B => MapAsCorr f).
+Proof.
+move=> f f' Hfeq.
+apply functional_extensionality => a.
+suff: f a \in MapAsCorr f' a.
+  move=> H.
+  by rewrite /MapAsCorr /In in H.
+by rewrite -Hfeq.
+Qed.
+
 Section Problem14.
 
 Variable A B: Type.
@@ -2038,17 +2049,24 @@ apply Hg.
 by rewrite (comp_eq_iff H1).
 Qed.
 
-Lemma bijective_sig (H: Bijective f): {f: A -> B | Bijective f /\ (fun _ => True) f}.
+Lemma identity_to_bijective_sig:
+  {f: A -> B | Bijective f /\ (fun _ => True) f}.
 Proof.
-apply constructive_indefinite_description.
-exists f.
-by split.
+suff: ((fun h : A -> B => Bijective h /\ True) f) => [ He |].
+  apply (exist (fun f => Bijective f /\ True) f He).
+split => //.
+apply identity_to_bijective.
 Qed.
 
 (* S4 問題14-3 *)
 Theorem identity_to_invmap:
-  g = get_value ((bijective_sig identity_to_bijective)^-1).
+  g = get_value (identity_to_bijective_sig^-1).
 Proof.
+(* g = f^-1 *)
+move: (get_proof (identity_to_bijective_sig^-1)).
+case => Hbij Heq.
+apply map_as_corr_injective.
+rewrite Heq.
 
 
 
