@@ -6,7 +6,7 @@ Set Implicit Arguments.
 
 From mathcomp Require Import ssreflect.
 
-Require Export Classical_Prop.
+Require Export Coq.Logic.Classical_Prop.
 
 Lemma not_or_and {P Q}: ~ (P \/ Q) <-> ~ P /\ ~ Q.
 Proof.

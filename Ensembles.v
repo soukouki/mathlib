@@ -2067,6 +2067,19 @@ case (char_return_or B x) => Hb;
   by case Hab.
 Qed.
 
+Open Scope nat_scope.
+
+Lemma char_cup_lemma X (A B: Ensemble X) x:
+  x \in A -> x \notin B
+  -> Char (A \cup B) x = Char A x + Char B x - Char A x * Char B x.
+Proof.
+move=> Ha Hb.
+have: x \in A \cup B => [| Hcup ].
+  by left.
+rewrite 2!in_char not_in_char in Ha Hcup Hb.
+by rewrite Ha Hb Hcup.
+Qed.
+
 Variable X: Type.
 Variable A B: Ensemble X.
 
@@ -2114,9 +2127,38 @@ case (char_return_or B x) => Hb. (* ここで3パターンに場合分けされ�
 - by apply char_cap_notin.
 Qed.
 
+Open Scope nat_scope.
+
 (* S4 問題15(b) *)
 Theorem char_cup:
   Char (A \cup B) x = Char A x + Char B x - Char (A \cap B) x.
+Proof.
+rewrite char_cap.
+case (char_return_or A x) => Ha;
+case (char_return_or B x) => Hb. (* ここで4パターンに場合分けされる *)
+- suff: Char (A \cup B) x = 1 => [ Hcup |].
+    by rewrite Ha Hb Hcup.
+  rewrite -in_char.
+  rewrite -in_char in Ha.
+  by left.
+- rewrite -in_char in Ha.
+  rewrite -not_in_char in Hb.
+  by apply char_cup_lemma.
+- rewrite -not_in_char in Ha.
+  rewrite -in_char in Hb.
+  rewrite cup_comm.
+  rewrite PeanoNat.Nat.mul_comm.
+  rewrite PeanoNat.Nat.add_comm.
+  by apply char_cup_lemma.
+- suff: Char (A \cup B) x = 0 => [ Hcup |].
+    by rewrite Ha Hb Hcup.
+  rewrite -not_in_char => Hcup.
+  rewrite -2!not_in_char in Ha Hb.
+  move: Ha Hb.
+  by case Hcup.
+Qed.
+
+
 
 
 End Problem15.
