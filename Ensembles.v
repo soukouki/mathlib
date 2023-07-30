@@ -1513,6 +1513,17 @@ split.
     by apply H.
 Qed.
 
+Lemma map_as_corr_injective A B:
+  Injective (fun f: A -> B => MapAsCorr f).
+Proof.
+move=> f f' Hfeq.
+apply functional_extensionality => a.
+suff: f a \in MapAsCorr f' a.
+  move=> H.
+  by rewrite /MapAsCorr /In in H.
+by rewrite -Hfeq.
+Qed.
+
 (* 標準的単射についての話が出てくるけれど、正直当たり前にしか見えないので一旦飛ばす。p33に書いてある。 *)
 
 Lemma invcorr_map_as_corr A B (f: A -> B) (g: B -> A):
@@ -2000,17 +2011,6 @@ move: (Hinj _ _ Heq) => Ha.
 by subst.
 Qed.
 
-Lemma map_as_corr_injective A B:
-  Injective (fun f: A -> B => MapAsCorr f).
-Proof.
-move=> f f' Hfeq.
-apply functional_extensionality => a.
-suff: f a \in MapAsCorr f' a.
-  move=> H.
-  by rewrite /MapAsCorr /In in H.
-by rewrite -Hfeq.
-Qed.
-
 Section Problem14.
 
 Variable A B: Type.
@@ -2029,8 +2029,7 @@ split.
   rewrite H2.
   rewrite surjective_exists => b.
   by exists b.
-- Search Injective Composite.
-  apply (injective_composite_injective (g := g)).
+- apply (injective_composite_injective (g := g)).
   by rewrite H1.
 Qed.
 
@@ -2050,28 +2049,36 @@ by rewrite (comp_eq_iff H1).
 Qed.
 
 Lemma identity_to_bijective_sig:
-  {f: A -> B | Bijective f /\ (fun _ => True) f}.
+  {f': A -> B | Bijective f' /\ f' = f}.
 Proof.
-suff: ((fun h : A -> B => Bijective h /\ True) f) => [ He |].
-  apply (exist (fun f => Bijective f /\ True) f He).
+suff: ((fun f' : A -> B => Bijective f' /\ f' = f) f) => [ He |].
+  apply (exist _ f He).
 split => //.
-apply identity_to_bijective.
+by apply identity_to_bijective.
 Qed.
 
 (* S4 問題14-3 *)
+(* g = f^-1 *)
 Theorem identity_to_invmap:
   g = get_value (identity_to_bijective_sig^-1).
 Proof.
-(* g = f^-1 *)
-move: (get_proof (identity_to_bijective_sig^-1)).
-case => Hbij Heq.
+case (get_proof (identity_to_bijective_sig^-1)) => _ Heq.
 apply map_as_corr_injective.
 rewrite Heq.
-
-
-
-
-Admitted.
+case (get_proof (identity_to_bijective_sig)) => _ Heq'.
+fold get_value in Heq'.
+rewrite Heq'.
+clear Heq Heq'.
+apply corr_eq => b a.
+rewrite -in_invcorr.
+split => H;
+  rewrite H;
+  rewrite /In /MapAsCorr.
+- move: H2 => H2'.
+  rewrite -identity_to_eq in H2'.
+  by rewrite (comp_eq_iff' H2').
+- by rewrite (comp_eq_iff' H1).
+Qed.
 
 End Problem14.
 
