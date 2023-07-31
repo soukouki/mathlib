@@ -10,6 +10,7 @@ Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Coq.Logic.IndefiniteDescription.
 Require Import Coq.Logic.ClassicalDescription.
 Require Import Coq.Logic.PropExtensionality.
+Require Import PeanoNat Decimal BinIntDef BinInt.
 
 Module Ensembles.
 
@@ -974,6 +975,7 @@ Notation "A \cup B" := (Cup A B) (at level 50): ensemble_scope.
 Notation "A \cap B" := (Cap A B) (at level 50): ensemble_scope.
 Notation "A - B" := (Sub A B) (* at level 50 *): ensemble_scope.
 Notation "A ^ 'c'" := (ComplementarySet A) (at level 30): ensemble_scope.
+Notation "A \triangle B" := (SymmetricDifference A B) (at level 50): ensemble_scope.
 
 Arguments FullSet {_}.
 Arguments BigCup {_} _ _.
@@ -2138,10 +2140,9 @@ by rewrite Ha Hb Hcup.
 Qed.
 
 Variable X: Type.
-Variable A B: Ensemble X.
 
 (* S4 問題15-1 *)
-Theorem char_le_subset:
+Theorem char_le_subset (A B: Ensemble X):
   (forall x, Char A x <= Char B x) <-> A \subset B.
 Proof.
 split => [ Hle y | Hsubset x ].
@@ -2150,7 +2151,7 @@ split => [ Hle y | Hsubset x ].
   rewrite Hy => Hla.
   case (char_return_or B y) => // Hb.
   rewrite Hb in Hla.
-  by move: (PeanoNat.Nat.nle_succ_0 _ Hla).
+  by move: (Nat.nle_succ_0 _ Hla).
 - case (char_return_or B x) => Hb.
   + rewrite Hb.
     case (char_return_or A x) => H;
@@ -2169,7 +2170,7 @@ Qed.
 Variable x: X.
 
 (* S4 問題15(a) *)
-Theorem char_cap:
+Theorem char_cap (A B: Ensemble X):
   Char (A \cap B) x = Char A x * Char B x.
 Proof.
 case (char_return_or A x) => Ha.
@@ -2179,7 +2180,7 @@ case (char_return_or B x) => Hb. (* ここで3パターンに場合分けされ�
   rewrite -in_char.
   rewrite -2!in_char in Ha Hb.
   by split.
-- rewrite cap_comm PeanoNat.Nat.mul_comm.
+- rewrite cap_comm Nat.mul_comm.
   by apply char_cap_notin.
 - by apply char_cap_notin.
 Qed.
@@ -2187,7 +2188,7 @@ Qed.
 Open Scope nat_scope.
 
 (* S4 問題15(b) *)
-Theorem char_cup:
+Theorem char_cup (A B: Ensemble X):
   Char (A \cup B) x = Char A x + Char B x - Char (A \cap B) x.
 Proof.
 rewrite char_cap.
@@ -2204,8 +2205,8 @@ case (char_return_or B x) => Hb. (* ここで4パターンに場合分けされ�
 - rewrite -not_in_char in Ha.
   rewrite -in_char in Hb.
   rewrite cup_comm.
-  rewrite PeanoNat.Nat.mul_comm.
-  rewrite PeanoNat.Nat.add_comm.
+  rewrite Nat.mul_comm.
+  rewrite Nat.add_comm.
   by apply char_cup_lemma.
 - suff: Char (A \cup B) x = 0 => [ Hcup |].
     by rewrite Ha Hb Hcup.
@@ -2216,7 +2217,7 @@ case (char_return_or B x) => Hb. (* ここで4パターンに場合分けされ�
 Qed.
 
 (* S4 問題15(c) *)
-Theorem char_comp:
+Theorem char_comp (A B: Ensemble X):
   Char (A^c) x = 1 - Char A x.
 Proof.
 case (char_return_or A x) => Ha.
@@ -2233,7 +2234,7 @@ case (char_return_or A x) => Ha.
 Qed.
 
 (* S4 問題15(d) *)
-Theorem char_sub:
+Theorem char_sub (A B: Ensemble X):
   Char (Sub A B) x = Char A x * (1 - Char B x).
 Proof.
 case (char_return_or A x) => Ha.
@@ -2256,9 +2257,22 @@ case (char_return_or A x) => Ha.
   by left.
 Qed.
 
-(* S4 問題15(e) は整数を扱う必要があって面倒なので飛ばす *)
+Open Scope Z_scope.
+
+(* S4 問題15(e) *)
+Theorem char_sym_diff (A B: Ensemble X):
+  Z.of_nat (Char (A \triangle B) x) = Z.abs (Z.of_nat (Char A x) - Z.of_nat (Char B x)).
+Proof.
+rewrite /SymmetricDifference.
+rewrite char_cup char_cap !char_sub.
+case (char_return_or A x) => Ha;
+case (char_return_or B x) => Hb; (* 全部展開して4通りに分けて解く *)
+by rewrite Ha Hb.
+Qed.
 
 End Problem15.
+
+
 
 End Section4.
 
