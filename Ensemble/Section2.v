@@ -4,7 +4,7 @@ Set Implicit Arguments.
 
 From mathcomp Require Import ssreflect.
 
-Require Import Setoid.
+Require Import PeanoNat.
 
 Add LoadPath "." as Local.
 Require Import Local.Classical.
@@ -441,9 +441,76 @@ Implicit Types AA BB: FamilyEnsemble T.
 
 Definition PowerSet {T} (X: Ensemble T): FamilyEnsemble T := fun A: Ensemble T => A \subset X.
 
-(* p.18にPowerSetの個数を問う問題があるので、余裕があったらやりたい *)
+(* 個数の定義はCoq.Sets.Finite_setsを持ってきた *)
+Inductive Cardinal: Ensemble T -> nat -> Prop :=
+  | cardinal_empty: Cardinal \emptyset 0
+  | cardinal_add: forall (A: Ensemble T) (n: nat),
+      Cardinal A n -> forall x, x \notin A -> Cardinal (A \cup \{ x }) (S n).
 
-(* ドイツ文字の変数は、AA, BBのように2文字つなげて区別する *)
+Lemma cardinal_invert (A: Ensemble T) (n: nat) (HA: Cardinal A n):
+    match n with
+      | O => A = \emptyset
+      | S n => exists A' x, A = A' \cup \{ x } /\ x \notin A' /\ Cardinal A' n
+    end.
+Proof.
+induction HA => //.
+exists A.
+by exists x.
+Qed.
+
+Lemma emptyset_cardinal A: Cardinal A 0 <-> A = \emptyset.
+Proof.
+split => [ HA | Heq ].
+- by apply (cardinal_invert HA).
+- rewrite Heq.
+  by apply cardinal_empty.
+Qed.
+
+Lemma singleton_cardinal A: Cardinal A 1 <-> exists x, A = \{ x }.
+split => [ HA | Hexi ].
+- case (cardinal_invert HA) => A'.
+  case => x.
+  case => HAeq.
+  case => Hx' HA'.
+  exists x.
+  subst.
+  suff: A' = \emptyset => [ H |].
+    by rewrite H emptyset_cup.
+  by rewrite emptyset_cardinal in HA'.
+- case Hexi => x Heq.
+  rewrite Heq.
+  rewrite -(emptyset_cup \{ x }).
+  apply cardinal_add => //.
+  by apply emptyset_cardinal.
+Qed.
+
+Lemma subset_cardinal  A B: A \subset B -> forall n m, Cardinal A n -> Cardinal B m -> n <= m.
+Proof.
+move=> Hsubset n m Hn Hm.
+rewrite /Subset in Hsubset.
+induction m.
+- have: B = \emptyset => [| HB_empty ].
+    
+
+
+    使いづれーーーーー！
+    cardinalがnatを引数にする形で定義されてるからとても扱いづらい
+    でも、Ensembleは有限集合か無限集合かはわからないから、任意の集合からその個数を取得することはできない
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(* ドイツ文字の変数は、AA, BBのように2文字つなげて区別することにする *)
 
 Inductive BigCup AA: Ensemble T :=
   | bigcup_intro: forall x: T, (exists A: Ensemble T, A \in AA -> x \in A) -> x \in BigCup AA.
