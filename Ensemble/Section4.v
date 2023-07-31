@@ -12,13 +12,12 @@ Require Import PeanoNat BinIntDef BinInt.
 Add LoadPath "." as Local.
 Require Local.Classical.
 Require Import Local.Ensemble.Section3.
-Import Section1.Ensemble.
-Import Section2.Ensemble.
-Import Section3.Ensemble.
 Import Classical.
 Open Scope ensemble_scope.
 
 Module Ensemble.
+
+Include Section3.Ensemble.
 
 Section Section4.
 

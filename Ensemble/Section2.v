@@ -9,10 +9,11 @@ Require Import Setoid.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
 Require Import Local.Ensemble.Section1.
-Import Ensemble.
 Open Scope ensemble_scope.
 
 Module Ensemble.
+
+Include Section1.Ensemble.
 
 Section Section2.
 
