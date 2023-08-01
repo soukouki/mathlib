@@ -466,6 +466,34 @@ split => [ HA | Heq ].
   by apply cardinal_empty.
 Qed.
 
+Lemma emptyset_notin A: A = \emptyset <-> forall x: T, x \notin A.
+Proof.
+split => [ Heq x | H ].
+- by rewrite Heq.
+- apply eq_split.
+  + move=> x HA.
+    apply NNPP => Hnot.
+    by apply (H x).
+  + by apply emptyset_subset.
+Qed.
+
+Lemma emptyset_cardinal_n n: Cardinal \emptyset n <-> n = 0.
+Proof.
+split => [ H | Heq ].
+- move: (cardinal_invert H).
+  case_eq n => // n' Hn.
+  subst.
+  case => A.
+  case => x.
+  case => Hcup.
+  symmetry in Hcup.
+  rewrite emptyset_notin in Hcup.
+  case (Hcup x).
+  by right.
+- rewrite Heq.
+  by apply cardinal_empty.
+Qed.
+
 Lemma singleton_cardinal A: Cardinal A 1 <-> exists x, A = \{ x }.
 split => [ HA | Hexi ].
 - case (cardinal_invert HA) => A'.
@@ -484,13 +512,39 @@ split => [ HA | Hexi ].
   by apply emptyset_cardinal.
 Qed.
 
-Lemma subset_cardinal  A B: A \subset B -> forall n m, Cardinal A n -> Cardinal B m -> n <= m.
+Lemma subset_emptyset (A: Ensemble T): A \subset \emptyset <-> A = \emptyset.
 Proof.
-move=> Hsubset n m Hn Hm.
-rewrite /Subset in Hsubset.
-induction m.
-- have: B = \emptyset => [| HB_empty ].
-    
+split => H.
+- by apply eq_split.
+- by rewrite H.
+Qed.
+
+Lemma subset_cardinal A B: A \subset B -> forall n m, Cardinal A n -> Cardinal B m -> n <= m.
+Proof.
+move=> Hsubset n m Ha Hb.
+move: m Hb.
+induction m => Hb.
+- rewrite Nat.le_0_r.
+  move: (cardinal_invert Hb) => Heqb.
+  rewrite Heqb in Hsubset.
+  suff: A = \emptyset => [ Heqa |].
+    rewrite Heqa in Ha.
+    by rewrite emptyset_cardinal_n in Ha.
+  by rewrite -subset_emptyset.
+- 
+
+
+  (* どうにかしてx \in Bを作り出して、Hsubsetを使う形 *)
+  move: (cardinal_invert Hm).
+  case => B'.
+  case => x.
+  case => HB'.
+  case => Hx' Hc.
+  
+
+  move: (cardinal_invert Hn).
+  
+
 
 
     使いづれーーーーー！
