@@ -4,6 +4,7 @@ Set Implicit Arguments.
 
 From mathcomp Require Import ssreflect.
 
+Require Import Coq.Logic.ClassicalDescription.
 Require Import PeanoNat.
 
 Add LoadPath "." as Local.
@@ -519,20 +520,94 @@ split => H.
 - by rewrite H.
 Qed.
 
+Lemma eq_cardinal A n m: Cardinal A n -> Cardinal A m -> n = m.
+Proof.
+move=> HA HB.
+case (classic (A = \emptyset)) => [ Heq | Hneq ].
+- rewrite Heq in HA HB.
+  rewrite 2!emptyset_cardinal_n in HA HB.
+  by subst.
+- case_eq n => [ H | n' Hn' ].
+    rewrite H in HA.
+    by rewrite emptyset_cardinal in HA.
+  case_eq m => [ H | m' Hm' ].
+    rewrite H in HB.
+    by rewrite emptyset_cardinal in HB.
+  subst.
+  move: (cardinal_invert HA).
+
+
+
 Lemma subset_cardinal A B: A \subset B -> forall n m, Cardinal A n -> Cardinal B m -> n <= m.
 Proof.
 move=> Hsubset n m Ha Hb.
-move: m Hb.
-induction m => Hb.
+induction Hb.
 - rewrite Nat.le_0_r.
-  move: (cardinal_invert Hb) => Heqb.
-  rewrite Heqb in Hsubset.
   suff: A = \emptyset => [ Heqa |].
     rewrite Heqa in Ha.
     by rewrite emptyset_cardinal_n in Ha.
   by rewrite -subset_emptyset.
+- rename A0 into B, n0 into m, H into Hx.
+  suff: Cardinal (B \cup \{ x }) (S m) => [ Hc |].
+    
+
+なぜn <= S mと言えるのか
+- AはB+xで上から抑えられてる
+- cardinal (B + x) (S m)を考える
 - 
 
+  rewrite Nat.le_succ_r.
+  case (excluded_middle_informative (A = B \cup \{ x })) => Heq;
+    subst.
+  + right.
+    
+
+
+  + left.
+    apply IHHb => x' HA.
+    case (Hsubset _ HA) => // x'' Hx''.
+    rewrite singleton_eq in Hx''.
+    subst.
+    apply NNPP => H'.
+    apply Heq.
+    apply eq_split => // x'' Hx''.
+    
+
+
+  case_eq (classic (A = B \cup \{ x })) => Heq.
+  + right.
+    subst.
+    admit.
+  + left.
+    apply IHHb => x' HA.
+    case (Hsubset _ HA) => // x'' Hx''.
+    rewrite singleton_eq in Hx''.
+    subst.
+
+
+    apply NNPP => H'.
+    apply Heq.
+    apply eq_split => // x'' Hx''B.
+    apply NNPP => Hx''A.
+    
+
+    case Hx'' => x''' Hx'''.
+    * 
+
+
+
+
+  induction n.
+  + by apply Nat.le_0_l.
+  + case IHn.
+
+
+
+    Search (_ <= S _) or.
+    rewrite Nat.le_succ_r.
+    left.
+    apply IHm.
+    case IHn.
 
   (* どうにかしてx \in Bを作り出して、Hsubsetを使う形 *)
   move: (cardinal_invert Hm).
