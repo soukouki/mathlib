@@ -442,202 +442,7 @@ Implicit Types AA BB: FamilyEnsemble T.
 
 Definition PowerSet {T} (X: Ensemble T): FamilyEnsemble T := fun A: Ensemble T => A \subset X.
 
-(* 個数の定義はCoq.Sets.Finite_setsを持ってきた *)
-Inductive Cardinal: Ensemble T -> nat -> Prop :=
-  | cardinal_empty: Cardinal \emptyset 0
-  | cardinal_add: forall (A: Ensemble T) (n: nat),
-      Cardinal A n -> forall x, x \notin A -> Cardinal (A \cup \{ x }) (S n).
-
-Lemma cardinal_invert (A: Ensemble T) (n: nat) (HA: Cardinal A n):
-    match n with
-      | O => A = \emptyset
-      | S n => exists A' x, A = A' \cup \{ x } /\ x \notin A' /\ Cardinal A' n
-    end.
-Proof.
-induction HA => //.
-exists A.
-by exists x.
-Qed.
-
-Lemma emptyset_cardinal A: Cardinal A 0 <-> A = \emptyset.
-Proof.
-split => [ HA | Heq ].
-- by apply (cardinal_invert HA).
-- rewrite Heq.
-  by apply cardinal_empty.
-Qed.
-
-Lemma emptyset_notin A: A = \emptyset <-> forall x: T, x \notin A.
-Proof.
-split => [ Heq x | H ].
-- by rewrite Heq.
-- apply eq_split.
-  + move=> x HA.
-    apply NNPP => Hnot.
-    by apply (H x).
-  + by apply emptyset_subset.
-Qed.
-
-Lemma emptyset_cardinal_n n: Cardinal \emptyset n <-> n = 0.
-Proof.
-split => [ H | Heq ].
-- move: (cardinal_invert H).
-  case_eq n => // n' Hn.
-  subst.
-  case => A.
-  case => x.
-  case => Hcup.
-  symmetry in Hcup.
-  rewrite emptyset_notin in Hcup.
-  case (Hcup x).
-  by right.
-- rewrite Heq.
-  by apply cardinal_empty.
-Qed.
-
-Lemma singleton_cardinal A: Cardinal A 1 <-> exists x, A = \{ x }.
-split => [ HA | Hexi ].
-- case (cardinal_invert HA) => A'.
-  case => x.
-  case => HAeq.
-  case => Hx' HA'.
-  exists x.
-  subst.
-  suff: A' = \emptyset => [ H |].
-    by rewrite H emptyset_cup.
-  by rewrite emptyset_cardinal in HA'.
-- case Hexi => x Heq.
-  rewrite Heq.
-  rewrite -(emptyset_cup \{ x }).
-  apply cardinal_add => //.
-  by apply emptyset_cardinal.
-Qed.
-
-Lemma subset_emptyset (A: Ensemble T): A \subset \emptyset <-> A = \emptyset.
-Proof.
-split => H.
-- by apply eq_split.
-- by rewrite H.
-Qed.
-
-Lemma eq_cardinal A n m: Cardinal A n -> Cardinal A m -> n = m.
-Proof.
-move=> HA HB.
-case (classic (A = \emptyset)) => [ Heq | Hneq ].
-- rewrite Heq in HA HB.
-  rewrite 2!emptyset_cardinal_n in HA HB.
-  by subst.
-- case_eq n => [ H | n' Hn' ].
-    rewrite H in HA.
-    by rewrite emptyset_cardinal in HA.
-  case_eq m => [ H | m' Hm' ].
-    rewrite H in HB.
-    by rewrite emptyset_cardinal in HB.
-  subst.
-  move: (cardinal_invert HA).
-
-
-
-Lemma subset_cardinal A B: A \subset B -> forall n m, Cardinal A n -> Cardinal B m -> n <= m.
-Proof.
-move=> Hsubset n m Ha Hb.
-induction Hb.
-- rewrite Nat.le_0_r.
-  suff: A = \emptyset => [ Heqa |].
-    rewrite Heqa in Ha.
-    by rewrite emptyset_cardinal_n in Ha.
-  by rewrite -subset_emptyset.
-- rename A0 into B, n0 into m, H into Hx.
-  suff: Cardinal (B \cup \{ x }) (S m) => [ Hc |].
-    
-
-なぜn <= S mと言えるのか
-- AはB+xで上から抑えられてる
-- cardinal (B + x) (S m)を考える
-- 
-
-  rewrite Nat.le_succ_r.
-  case (excluded_middle_informative (A = B \cup \{ x })) => Heq;
-    subst.
-  + right.
-    
-
-
-  + left.
-    apply IHHb => x' HA.
-    case (Hsubset _ HA) => // x'' Hx''.
-    rewrite singleton_eq in Hx''.
-    subst.
-    apply NNPP => H'.
-    apply Heq.
-    apply eq_split => // x'' Hx''.
-    
-
-
-  case_eq (classic (A = B \cup \{ x })) => Heq.
-  + right.
-    subst.
-    admit.
-  + left.
-    apply IHHb => x' HA.
-    case (Hsubset _ HA) => // x'' Hx''.
-    rewrite singleton_eq in Hx''.
-    subst.
-
-
-    apply NNPP => H'.
-    apply Heq.
-    apply eq_split => // x'' Hx''B.
-    apply NNPP => Hx''A.
-    
-
-    case Hx'' => x''' Hx'''.
-    * 
-
-
-
-
-  induction n.
-  + by apply Nat.le_0_l.
-  + case IHn.
-
-
-
-    Search (_ <= S _) or.
-    rewrite Nat.le_succ_r.
-    left.
-    apply IHm.
-    case IHn.
-
-  (* どうにかしてx \in Bを作り出して、Hsubsetを使う形 *)
-  move: (cardinal_invert Hm).
-  case => B'.
-  case => x.
-  case => HB'.
-  case => Hx' Hc.
-  
-
-  move: (cardinal_invert Hn).
-  
-
-
-
-    使いづれーーーーー！
-    cardinalがnatを引数にする形で定義されてるからとても扱いづらい
-    でも、Ensembleは有限集合か無限集合かはわからないから、任意の集合からその個数を取得することはできない
-
-
-
-
-
-
-
-
-
-
-
-
-
+(* p.18の定理を証明するには、個数を定義する必要がありややこしいので、練習問題の後で解く *)
 
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別することにする *)
 
@@ -1068,6 +873,173 @@ split.
   + rewrite sym_diff_comm.
     by apply (sub_sym_diff Hsub).
 Qed.
+
+
+(* Cardinal cardinal_invert cardinal_elimの定義はCoq.Sets.Finite_setsを持ってきた *)
+Inductive Cardinal: Ensemble T -> nat -> Prop :=
+  | cardinal_empty: Cardinal \emptyset 0
+  | cardinal_add: forall (A: Ensemble T) (n: nat),
+      Cardinal A n -> forall x, x \notin A -> Cardinal (A \cup \{ x }) (S n).
+
+Lemma cardinal_invert (A: Ensemble T) (n: nat) (HA: Cardinal A n):
+  match n with
+  | O => A = \emptyset
+  | S n => exists A' x, A = A' \cup \{ x } /\ x \notin A' /\ Cardinal A' n
+  end.
+Proof.
+induction HA => //.
+exists A.
+by exists x.
+Qed.
+
+Lemma emptyset_cardinal A: Cardinal A 0 <-> A = \emptyset.
+Proof.
+split => [ HA | Heq ].
+- by apply (cardinal_invert HA).
+- rewrite Heq.
+  by apply cardinal_empty.
+Qed.
+
+Lemma emptyset_cardinal_n n: Cardinal \emptyset n <-> n = 0.
+Proof.
+split => [ Hn | Heq ].
+- move: (cardinal_invert Hn).
+  case_eq n => // n' Hn'.
+  subst.
+  case => A.
+  case => x.
+  case => Hcup.
+  symmetry in Hcup.
+  rewrite emptyset_not_in in Hcup.
+  case (Hcup x).
+  by right.
+- rewrite Heq.
+  by apply cardinal_empty.
+Qed.
+
+Lemma not_emptyset_get A: A <> \emptyset -> exists x: T, x \in A.
+Proof.
+move=> Hneq.
+apply NNPP => Hexi.
+apply Hneq.
+rewrite exists_iff_not_forall_not in Hexi.
+rewrite emptyset_not_in.
+by apply (NNPP _ Hexi).
+Qed.
+
+Lemma sub_cup_eq A B: A - B \cup B = A \cup B.
+Proof.
+rewrite sub_cap_compset.
+rewrite cap_cup_distrib.
+rewrite [B^c \cup B]cup_comm compset_cup.
+by rewrite cap_comm fullset_cap.
+Qed.
+
+Lemma cardinal_num_eq A n:
+  Cardinal A n <-> forall x1 x2, x1 \notin A -> Cardinal (A \cup \{ x1 } - \{ x2 }) n.
+Proof.
+split => [ Hc x1 x2 Hx1 | H ].
+- have: (Cardinal (A \cup \{ x1 }) (S n)) => [| H1 ].
+    by apply cardinal_add.
+  move: (cardinal_invert H1).
+  case => A'.
+  case => x1'.
+  case => HA'.
+  case => Hx1' Hc'.
+  have: A = A' => [| HAeq ].
+
+Lemma cardinal_invert' A n (Hn: Cardinal A n):
+  match excluded_middle_informative (A = \emptyset) with
+  | left _ => A = \emptyset
+  | right _ => exists A' x, Cardinal A' (Nat.pred n) /\ A = A' \cup \{ x }
+  end.
+Proof.
+case excluded_middle_informative => // HA.
+case (not_emptyset_get HA) => x Hx.
+exists (A - \{ x }).
+exists x.
+split.
+- have: n > 0 => [| Hgt ].
+    apply NNPP => H1.
+    move: (Compare_dec.not_gt _ _ H1) => H2; clear H1.
+    rewrite Nat.le_0_r in H2.
+    subst.
+    apply HA.
+    by rewrite emptyset_cardinal in Hn.
+  have: exists m, n = S m.
+    case Hgt => [| m Hm ].
+    + by exists 0.
+    + by exists m.
+  case => m Hm.
+  rewrite Hm.
+  rewrite Nat.pred_succ.
+  subst.
+  move: (cardinal_invert Hn).
+  case => A'.
+  case => x'.
+  case => HA'.
+  subst.
+  case => Hx' Hcm.
+  have: x <> x' => [| Hneq ].
+    move=> Heq.
+    subst.
+    
+
+
+  suff: A' = A' \cup \{ x' } - \{ x} => [ Heq |].
+    by rewrite -Heq.
+  suff: x' = x => [ Heq |].
+    subst.
+    apply eq_split => x' H1.
+    + split.
+      * by left.
+      * rewrite singleton_eq => H2.
+        by subst.
+    + case H1 => x'' H2.
+      by case H2.
+  case Hx => a H1.
+  + 
+  + rewrite singleton_eq in H1.
+
+  Hx => もう使った
+  
+
+
+
+- rewrite sub_cup_eq.
+  apply eq_split => x' H.
+  + by left.
+  + case H => // x'' H'.
+    rewrite singleton_eq in H'.
+    by subst.
+Admitted.
+
+
+Lemma cardinal_invert (A: Ensemble T) (n: nat) (HA: Cardinal A n):
+  match n with
+  | O => A = \emptyset
+  | S n => exists A' x, A = A' \cup \{ x } /\ x \notin A' /\ Cardinal A' n
+  end.
+Proof.
+
+A=emptysetかどうかをclassicなりで判定すれば、A<>\emptysetのときはnot A=emptysetで要素取って来れるんじゃない？
+exists (A - \{ x }).
+
+
+Lemma singleton_cardinal x n: Cardinal (\emptyset \cup \{ x }) n <-> n = 1.
+Proof.
+split => [ Hn | Heq ].
+- move: (cardinal_invert Hn).
+  
+Admitted.
+
+Lemma eq_cardinal A n m: Cardinal A n -> Cardinal A m -> n = m.
+Proof.
+Admitted.
+
+Lemma subset_cardinal A B: A \subset B -> forall n m, Cardinal A n -> Cardinal B m -> n <= m.
+Admitted.
+
 
 End Section2.
 
