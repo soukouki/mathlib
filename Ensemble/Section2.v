@@ -929,51 +929,6 @@ rewrite [B^c \cup B]cup_comm compset_cup.
 by rewrite cap_comm fullset_cap.
 Qed.
 
-Lemma cardinal_invert' A n (Hn: Cardinal A n):
-  match excluded_middle_informative (A = \emptyset) with
-  | left _ => A = \emptyset
-  | right _ => exists A' x, Cardinal A' (pred n) /\ A = A' \cup \{ x }
-  end.
-Proof.
-case excluded_middle_informative => // HA.
-case (not_emptyset_get HA) => x Hx.
-exists (A - \{ x }).
-exists x.
-split.
-- have: n > 0 => [| Hgt ].
-    apply NNPP => H1.
-    move: (Compare_dec.not_gt _ _ H1) => H2; clear H1.
-    rewrite Nat.le_0_r in H2.
-    subst.
-    apply HA.
-    by apply (cardinal_invert Hn).
-  have: exists m, n = S m.
-    case Hgt => [| m Hm ].
-    + by exists 0.
-    + by exists m.
-  case => m Hm.
-  rewrite Hm.
-  rewrite Nat.pred_succ.
-  subst.
-  move: (cardinal_invert Hn).
-  case => A'.
-  case => x'.
-  case => HA'.
-  subst.
-  case => Hx' Hcm.
-  have: x <> x' => [| Hneq ].
-    move=> Heq.
-    subst.
-    admit.
-  admit.
-- rewrite sub_cup_eq.
-  apply eq_split => x' H.
-  + by left.
-  + case H => // x'' H'.
-    rewrite singleton_eq in H'.
-    by subst.
-Admitted.
-
 Lemma singleton_cardinal x n: Cardinal (\emptyset \cup \{ x }) n <-> n = 1.
 Proof.
 split => [ Hn | Heq ].
@@ -981,7 +936,10 @@ split => [ Hn | Heq ].
   
 Admitted.
 
-Lemma cardinal_pred A n x: Cardinal A n -> x \in A -> Cardinal (A - \{ x }) (pred n).
+Lemma cardinal_pred A n x:
+  Cardinal A n ->
+  x \in A ->
+  Cardinal (A - \{ x }) (pred n).
 Proof.
 Admitted.
 
@@ -996,7 +954,7 @@ apply eq_split => [ a H | a ].
   by case.
 Qed.
 
-Lemma singleton_not_in_sub A a: a \notin A -> A = A - \{ a }.
+Corollary singleton_not_in_sub A a: a \notin A -> A = A - \{ a }.
 Proof.
 move=> HA.
 apply not_in_sub => b Hb.
@@ -1004,7 +962,11 @@ rewrite singleton_eq in Hb.
 by subst.
 Qed.
 
-Lemma simplify_cup_singleton A B c: c \notin A -> c \notin B -> A \cup \{ c } = B \cup \{ c } -> A = B.
+Lemma simplify_cup_singleton A B c:
+  c \notin A ->
+  c \notin B ->
+  A \cup \{ c } = B \cup \{ c } ->
+  A = B.
 Proof.
 move=> HA HB Hcup.
 rewrite -eq_iff => x.
@@ -1025,6 +987,17 @@ split => [ Ha | Hb ].
   rewrite singleton_eq => Heq.
   by subst.
 Qed.
+
+Lemma notin_cup_eq A B a b:
+  a \notin A ->
+  b \notin B ->
+  a \notin B ->
+  A \cup \{ a} = B \cup \{ b} ->
+  a = b.
+Proof.
+move=> H1 H2 H3 Hcup.
+rewrite -eq_iff in Hcup.
+Admitted.
 
 Lemma eq_cardinal A B n m: Cardinal A n -> Cardinal B m -> A = B -> n = m.
 Proof.
@@ -1056,11 +1029,14 @@ case (classic (a \in B)) => HaB.
   + subst.
     apply (IHHn _ B) => //.
     by apply simplify_cup_singleton in Heq.
-  + 
-
-
-
-Admitted.
+  + absurd (A \cup \{ a} = B \cup \{ b}) => //.
+    (* absurdは P /\ ~P -> False と False -> Q をまとめたコマンド *)
+    move=> Hcup.
+    apply Hab.
+    rewrite -eq_iff in Hcup.
+    Search (_ \cup _ = _ \cup _).
+    by apply (notin_cup_eq H H0 HaB).
+Qed.
 
 Lemma subset_cardinal A B: A \subset B -> forall n m, Cardinal A n -> Cardinal B m -> n <= m.
 Admitted.
