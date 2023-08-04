@@ -892,18 +892,12 @@ exists A.
 by exists x.
 Qed.
 
-Lemma emptyset_cardinal A: Cardinal A 0 <-> A = \emptyset.
+Lemma emptyset_cardinal A n: Cardinal A n -> (A = \emptyset <-> n = 0).
 Proof.
-split => [ HA | Heq ].
-- by apply (cardinal_invert HA).
-- rewrite Heq.
-  by apply cardinal_empty.
-Qed.
-
-Lemma emptyset_cardinal_n n: Cardinal \emptyset n <-> n = 0.
-Proof.
-split => [ Hn | Heq ].
-- move: (cardinal_invert Hn).
+move=> Hn.
+split => Heq.
+- subst.
+  move: (cardinal_invert Hn).
   case_eq n => // n' Hn'.
   subst.
   case => A.
@@ -913,8 +907,8 @@ split => [ Hn | Heq ].
   rewrite emptyset_not_in in Hcup.
   case (Hcup x).
   by right.
-- rewrite Heq.
-  by apply cardinal_empty.
+- subst.
+  by apply (cardinal_invert Hn).
 Qed.
 
 Lemma not_emptyset_get A: A <> \emptyset -> exists x: T, x \in A.
@@ -935,23 +929,10 @@ rewrite [B^c \cup B]cup_comm compset_cup.
 by rewrite cap_comm fullset_cap.
 Qed.
 
-Lemma cardinal_num_eq A n:
-  Cardinal A n <-> forall x1 x2, x1 \notin A -> Cardinal (A \cup \{ x1 } - \{ x2 }) n.
-Proof.
-split => [ Hc x1 x2 Hx1 | H ].
-- have: (Cardinal (A \cup \{ x1 }) (S n)) => [| H1 ].
-    by apply cardinal_add.
-  move: (cardinal_invert H1).
-  case => A'.
-  case => x1'.
-  case => HA'.
-  case => Hx1' Hc'.
-  have: A = A' => [| HAeq ].
-
 Lemma cardinal_invert' A n (Hn: Cardinal A n):
   match excluded_middle_informative (A = \emptyset) with
   | left _ => A = \emptyset
-  | right _ => exists A' x, Cardinal A' (Nat.pred n) /\ A = A' \cup \{ x }
+  | right _ => exists A' x, Cardinal A' (pred n) /\ A = A' \cup \{ x }
   end.
 Proof.
 case excluded_middle_informative => // HA.
@@ -965,7 +946,7 @@ split.
     rewrite Nat.le_0_r in H2.
     subst.
     apply HA.
-    by rewrite emptyset_cardinal in Hn.
+    by apply (cardinal_invert Hn).
   have: exists m, n = S m.
     case Hgt => [| m Hm ].
     + by exists 0.
@@ -983,29 +964,8 @@ split.
   have: x <> x' => [| Hneq ].
     move=> Heq.
     subst.
-    
-
-
-  suff: A' = A' \cup \{ x' } - \{ x} => [ Heq |].
-    by rewrite -Heq.
-  suff: x' = x => [ Heq |].
-    subst.
-    apply eq_split => x' H1.
-    + split.
-      * by left.
-      * rewrite singleton_eq => H2.
-        by subst.
-    + case H1 => x'' H2.
-      by case H2.
-  case Hx => a H1.
-  + 
-  + rewrite singleton_eq in H1.
-
-  Hx => もう使った
-  
-
-
-
+    admit.
+  admit.
 - rewrite sub_cup_eq.
   apply eq_split => x' H.
   + by left.
@@ -1014,18 +974,6 @@ split.
     by subst.
 Admitted.
 
-
-Lemma cardinal_invert (A: Ensemble T) (n: nat) (HA: Cardinal A n):
-  match n with
-  | O => A = \emptyset
-  | S n => exists A' x, A = A' \cup \{ x } /\ x \notin A' /\ Cardinal A' n
-  end.
-Proof.
-
-A=emptysetかどうかをclassicなりで判定すれば、A<>\emptysetのときはnot A=emptysetで要素取って来れるんじゃない？
-exists (A - \{ x }).
-
-
 Lemma singleton_cardinal x n: Cardinal (\emptyset \cup \{ x }) n <-> n = 1.
 Proof.
 split => [ Hn | Heq ].
@@ -1033,8 +981,85 @@ split => [ Hn | Heq ].
   
 Admitted.
 
-Lemma eq_cardinal A n m: Cardinal A n -> Cardinal A m -> n = m.
+Lemma cardinal_pred A n x: Cardinal A n -> x \in A -> Cardinal (A - \{ x }) (pred n).
 Proof.
+Admitted.
+
+Lemma not_in_sub A B: (forall b, b \in B -> b \notin A) -> A = A - B.
+Proof.
+move=> Hb.
+apply eq_split => [ a H | a ].
+- rewrite sub_iff.
+  split => // Ha.
+  by apply (Hb a Ha).
+- rewrite sub_iff.
+  by case.
+Qed.
+
+Lemma singleton_not_in_sub A a: a \notin A -> A = A - \{ a }.
+Proof.
+move=> HA.
+apply not_in_sub => b Hb.
+rewrite singleton_eq in Hb.
+by subst.
+Qed.
+
+Lemma simplify_cup_singleton A B c: c \notin A -> c \notin B -> A \cup \{ c } = B \cup \{ c } -> A = B.
+Proof.
+move=> HA HB Hcup.
+rewrite -eq_iff => x.
+rewrite -eq_iff in Hcup.
+move: (Hcup x) => Hcup'; clear Hcup.
+rewrite -2!cup_or in Hcup'.
+split => [ Ha | Hb ].
+- have: x \in A \/ x \in \{ c }.
+    by left.
+  rewrite Hcup'.
+  case => //.
+  rewrite singleton_eq => Heq.
+  by subst.
+- have: x \in B \/ x \in \{ c }.
+    by left.
+  rewrite -Hcup'.
+  case => //.
+  rewrite singleton_eq => Heq.
+  by subst.
+Qed.
+
+Lemma eq_cardinal A B n m: Cardinal A n -> Cardinal B m -> A = B -> n = m.
+Proof.
+move=> Hn.
+move: m B.
+induction Hn.
+  subst.
+  symmetry.
+  by rewrite -(emptyset_cardinal H).
+rename x into a.
+move=> m B Hm Heq.
+induction Hm.
+  apply NNPP => H1.
+  rewrite emptyset_not_in in Heq.
+  case (Heq a).
+  by right.
+rename x into b.
+rename A0 into B.
+rename n0 into m.
+apply f_equal.
+case (classic (a \in B)) => HaB.
+- apply IHHn with (B := B \cup \{ b } - \{ a }).
+  + rewrite -[m]Nat.pred_succ.
+    apply cardinal_pred;
+      by [ apply cardinal_add | left ].
+  + rewrite -Heq -sub_cup_sub.
+    by apply singleton_not_in_sub.
+- case (classic (a = b)) => Hab.
+  + subst.
+    apply (IHHn _ B) => //.
+    by apply simplify_cup_singleton in Heq.
+  + 
+
+
+
 Admitted.
 
 Lemma subset_cardinal A B: A \subset B -> forall n m, Cardinal A n -> Cardinal B m -> n <= m.
