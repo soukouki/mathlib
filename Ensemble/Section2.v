@@ -936,12 +936,71 @@ split => [ Hn | Heq ].
   
 Admitted.
 
+Lemma notin_sub A x: x \notin A -> A - \{ x } = A.
+Proof.
+move=> Hx.
+apply eq_split => x' Hx'.
+- rewrite sub_iff in Hx'.
+  by case Hx'.
+- rewrite sub_iff.
+  split => //.
+  rewrite singleton_eq => H.
+  apply Hx.
+  by subst.
+Qed.
+
+Lemma neq_cup_sub_eq A x y:
+  x <> y ->
+  A \cup \{ x } - \{ y } = A - \{ y } \cup \{ x }.
+Proof.
+Admitted.
+
+Lemma cardinal_in_le A x n: x \in A -> Cardinal A n -> 0 < n.
+Admitted.
+
 Lemma cardinal_pred A n x:
   Cardinal A n ->
   x \in A ->
   Cardinal (A - \{ x }) (pred n).
 Proof.
-Admitted.
+move => Hn.
+induction Hn => Hx.
+  rewrite emptyset_sub.
+  by apply cardinal_empty.
+case (classic (x \in A)) => HxA.
+- have: x0 <> x => [ Heq | Hneq ].
+    by subst.
+  rewrite (neq_cup_sub_eq _ Hneq).
+  suff: S (pred n) = pred (S n) => [ Heq |].
+    rewrite -Heq.
+    apply cardinal_add.
+    + by apply IHHn.
+    + rewrite sub_iff.
+      rewrite not_and_or.
+      by left.
+  rewrite Nat.pred_succ.
+  apply (Nat.lt_succ_pred 0).
+  by apply (cardinal_in_le _ HxA).
+- rewrite Nat.pred_succ.
+  case (classic (x = x0)) => [ Heq | Hneq ].
+  + subst.
+    suff: A \cup \{ x0 } - \{ x0 } = A => [ Heq |].
+      by rewrite Heq.
+    apply eq_split => x H1.
+    * case H1 => x' Hx' Hx''.
+      rewrite singleton_eq in Hx''.
+      move: Hx''.
+      case Hx' => // x1.
+      by rewrite singleton_eq.
+    * split.
+      - by left.
+      - rewrite singleton_eq => Heq.
+        by subst.
+  + move: HxA Hneq.
+    case Hx => // x1.
+    rewrite singleton_eq => Heq.
+    by subst.
+Qed.
 
 Lemma not_in_sub A B: (forall b, b \in B -> b \notin A) -> A = A - B.
 Proof.
@@ -995,9 +1054,13 @@ Lemma notin_cup_eq A B a b:
   A \cup \{ a} = B \cup \{ b} ->
   a = b.
 Proof.
-move=> H1 H2 H3 Hcup.
-rewrite -eq_iff in Hcup.
-Admitted.
+move=> H1 H2 H3 Heq.
+rewrite -eq_iff in Heq.
+case (Heq a).
+rewrite -2!cup_or => He1 He2.
+case He1 => //.
+by right.
+Qed.
 
 Lemma eq_cardinal A B n m: Cardinal A n -> Cardinal B m -> A = B -> n = m.
 Proof.
@@ -1034,8 +1097,7 @@ case (classic (a \in B)) => HaB.
     move=> Hcup.
     apply Hab.
     rewrite -eq_iff in Hcup.
-    Search (_ \cup _ = _ \cup _).
-    by apply (notin_cup_eq H H0 HaB).
+    by apply (notin_cup_eq H H0).
 Qed.
 
 Lemma subset_cardinal A B: A \subset B -> forall n m, Cardinal A n -> Cardinal B m -> n <= m.
