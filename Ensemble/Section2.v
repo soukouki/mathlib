@@ -953,7 +953,18 @@ Lemma neq_cup_sub_eq A x y:
   x <> y ->
   A \cup \{ x } - \{ y } = A - \{ y } \cup \{ x }.
 Proof.
-Admitted.
+move=> Hneq.
+rewrite cup_sub.
+suff: (\{ x } - \{ y } = \{ x }) => [ Heq |].
+  by rewrite Heq.
+apply eq_split => a Ha.
+- move: Hneq.
+  by case Ha.
+- split => //.
+  rewrite singleton_eq in Ha.
+  subst.
+  by rewrite singleton_eq.
+Qed.
 
 Lemma cardinal_in_le A x n: x \in A -> Cardinal A n -> 0 < n.
 Admitted.
