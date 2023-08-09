@@ -88,6 +88,7 @@ Proof. by []. Qed.
 (* p.27 *)
 Theorem invcorr_is_not_empty_iff_in_valuerange A B b (C: A ->c B):
   (InvCorr C b <> \emptyset) <-> b \in ValueRange C.
+Proof.
 split.
 - move=> Hneq.
   apply NNPP => Hnot_in.
@@ -95,7 +96,6 @@ split.
   apply eq_split => // x Hin_inv.
   rewrite in_emptyset.
   apply Hnot_in.
-  rewrite /ValueRange.
   exists x.
   by apply Hin_inv.
 - move=> Hb Hneq.
