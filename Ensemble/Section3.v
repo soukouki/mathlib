@@ -192,8 +192,7 @@ Proof.
 rewrite -eq_fullset.
 split.
 - move=> Hf.
-  have: {f: A -> B | MapAsCorr f = C}.
-    by apply constructive_definite_description.
+  move: (constructive_definite_description _ Hf).
   clear Hf => Hf.
   split.
   + move => a.
@@ -246,8 +245,7 @@ Goal forall A B (C: A ->c B),
 Proof.
 split.
 - move=> Hf.
-  have: {f: A -> B | MapAsCorr f = C}.
-    by apply constructive_definite_description.
+  move: (constructive_definite_description _ Hf).
   clear Hf => Hf.
   split.
   + rewrite -eq_fullset => a.
@@ -280,8 +278,10 @@ split.
       by apply (get_proof F a (get_value F a)).
     apply eq_split.
     + move=> b H.
+      rewrite /In /MapAsCorr in H.
       by rewrite H.
     + move=> b Hb.
+      rewrite /In /MapAsCorr.
       by apply (Huniq a).
   + move=> f1 f2 Heq1 Heq2.
     apply functional_extensionality => a.
