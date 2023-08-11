@@ -82,6 +82,7 @@ Theorem singleton_subset a A: a \in A <-> \{a} \subset A.
 Proof.
 split.
 - move=> HA a' Heq.
+  rewrite /In /Singleton in Heq.
   by rewrite -Heq.
 - move=> HA.
   by apply HA.

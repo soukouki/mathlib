@@ -31,13 +31,11 @@ Definition Image A B (f: A -> B) (P: Ensemble A): Ensemble B :=
 Theorem image_defrange_eq_valuerange A B (f: A -> B):
   Image f (FullSet: Ensemble A) = ValueRange (MapAsCorr f).
 Proof.
-apply eq_split.
-- move=> b.
-  case => a.
+apply eq_split => b.
+- case => a.
   case => _ Heq.
   by exists a.
-- move=> b.
-  case => a Hb.
+- case => a Hb.
   by exists a.
 Qed.
 
@@ -114,7 +112,8 @@ Theorem image_sub A B (f: A -> B) P:
 Proof.
 move=> b.
 rewrite image_defrange_eq_valuerange.
-case => b'.
+rewrite sub_iff.
+case.
 rewrite valuerange_map_as_corr.
 case => a.
 move=> Heq Hex.
