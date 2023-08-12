@@ -28,12 +28,12 @@ Notation "A ->c B" := (Corr A B) (at level 99).
 Definition Graph A B (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => (snd x) \in C (fst x)).
 
 (* (3.1) *)
-Theorem corr_from_graph A B C (a: A):
+Theorem graph_pair A B C (a: A):
   C a = ((fun b => (Graph C) (pair a b)): Ensemble B).
 Proof. by []. Qed.
 
 (* S3 定理1 *)
-Theorem exists_one_graph_from_pair A B (X: Ensemble (A * B)): exists! (G: A ->c B), X = Graph G.
+Theorem exists_one_corr_from_graph A B (X: Ensemble (A * B)): exists! (G: A ->c B), X = Graph G.
 Proof.
 exists (fun a b => X (pair a b)).
 split.
@@ -49,7 +49,7 @@ Definition ValueRange A B (C: A ->c B): Ensemble B := fun b: B => exists a: A, (
 
 Definition InvCorr A B (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
-Theorem defrange_neq_empty_set A B (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
+Theorem defrange_ne_empty_set A B (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
 Proof.
 apply eq_split => a.
 - rewrite /In /DefRange.
