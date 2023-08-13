@@ -270,11 +270,8 @@ Lemma invcorr_map_as_corr A B (f: A -> B) (g: B -> A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> forall a, g (f a) = a.
 Proof.
 move=> Heq a.
-suff: forall b, b \in \{f a} -> a \in \{g b} => [| b Hbeq ].
-  by apply.
-suff: a \in MapAsCorr g b => [ H |].
-  rewrite /MapAsCorr /In in H.
-  by rewrite H.
+remember (f a).
+suff: a \in MapAsCorr g b => //.
 by rewrite -Heq.
 Qed.
 
@@ -282,11 +279,8 @@ Lemma invcorr_map_as_corr' A B (f: A -> B) (g: B -> A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> forall b, f (g b) = b.
 Proof.
 move=> Heq b.
-suff: forall a, a \in \{g b} -> b \in \{f a} => [| a Haeq ].
-  by apply.
-suff: b \in MapAsCorr f a => [ H |].
-  rewrite /MapAsCorr /In in H.
-  by rewrite H.
+remember (g b).
+suff: b \in MapAsCorr f a => //.
 rewrite -[MapAsCorr f]invcorr_twice.
 by rewrite Heq.
 Qed.
