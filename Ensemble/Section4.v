@@ -292,7 +292,7 @@ move=> H.
 apply functional_extensionality => a.
 apply functional_extensionality => b.
 apply propositional_extensionality.
-by suff: b \in f a <-> b \in g a.
+by apply H.
 Qed.
 
 (* S4 定理4 前半 *)
@@ -372,8 +372,7 @@ Qed.
 Lemma invmap_bijective A B {P} (f: A -> B | Bijective f /\ P f):
   Bijective (get_value (f^-1)).
 Proof.
-rewrite /InvMap.
-move: (invcorr_bijective _ f) => g.
+move: (f^-1) => g.
 move: (get_proof g).
 by case.
 Qed.
@@ -576,7 +575,7 @@ Proof.
 split => [ Heq | Hi ].
 - rewrite Heq.
   by apply composite_invmap_identity.
-- suff: f = \I B \comp get_value g => //.
+- rewrite -[get_value g]identity_composite.
   rewrite -Hi.
   rewrite composite_assoc.
   by rewrite invmap_composite_identity.
