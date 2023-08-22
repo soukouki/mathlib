@@ -3,6 +3,7 @@
 Set Implicit Arguments.
 
 From mathcomp Require Import ssreflect.
+Require Import Setoid.
 
 Module Ensemble.
 
@@ -82,8 +83,8 @@ Theorem singleton_subset a A: a \in A <-> \{a} \subset A.
 Proof.
 split.
 - move=> HA a' Heq.
-  rewrite /In /Singleton in Heq.
-  by rewrite -Heq.
+  rewrite singleton_eq in Heq.
+  by rewrite Heq.
 - move=> HA.
   by apply HA.
 Qed.
