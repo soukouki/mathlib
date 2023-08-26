@@ -827,21 +827,12 @@ Section Problem15.
 
 Lemma char_cap_notin X (A B: Ensemble X) x:
   Char A x = 0
-  -> Char (A \cap B) x = Char A x * Char B x.
+  -> Char (A \cap B) x = 0.
 Proof.
 move=> Ha.
-rewrite Ha.
-case (char_return_or B x) => Hb;
-  rewrite Hb.
-- suff: Char (A \cap B) x = 0 => [ H |].
-    by [ rewrite H | ].
-  rewrite -not_in_char -cap_and => Hab.
-  rewrite -not_in_char -in_char in Ha Hb.
-  by case Hab.
-- rewrite -2!not_in_char in Ha Hb.
-  rewrite -not_in_char -cap_and => Hab.
-  apply Ha.
-  by case Hab.
+rewrite -not_in_char -cap_and.
+case.
+by rewrite -not_in_char in Ha.
 Qed.
 
 Lemma sub_not X (A B: Ensemble X):
@@ -911,9 +902,11 @@ case (char_return_or B x) => Hb. (* ここで3パターンに場合分けされ�
   rewrite -in_char.
   rewrite -2!in_char in Ha Hb.
   by split.
-- rewrite cap_comm Nat.mul_comm.
+- rewrite Ha Hb.
+  rewrite cap_comm Nat.mul_comm.
   by apply char_cap_notin.
-- by apply char_cap_notin.
+- rewrite Ha Nat.mul_0_l.
+  by apply char_cap_notin.
 Qed.
 
 Open Scope nat_scope.
