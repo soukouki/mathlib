@@ -825,16 +825,6 @@ Qed.
 
 Section Problem15.
 
-Lemma char_cap_notin X (A B: Ensemble X) x:
-  Char A x = 0
-  -> Char (A \cap B) x = 0.
-Proof.
-move=> Ha.
-rewrite -not_in_char -cap_and.
-case.
-by rewrite -not_in_char in Ha.
-Qed.
-
 Lemma sub_not X (A B: Ensemble X):
   (A - B)^c = A^c \cup (A \cap B).
 Proof.
@@ -849,17 +839,6 @@ by rewrite compset_twice.
 Qed.
 
 Open Scope nat_scope.
-
-Lemma char_cup_lemma X (A B: Ensemble X) x:
-  x \in A -> x \notin B
-  -> Char (A \cup B) x = Char A x + Char B x - Char A x * Char B x.
-Proof.
-move=> Ha Hb.
-have: x \in A \cup B => [| Hcup ].
-  by left.
-rewrite 2!in_char not_in_char in Ha Hcup Hb.
-by rewrite Ha Hb Hcup.
-Qed.
 
 Variable X: Type.
 
@@ -891,6 +870,16 @@ Qed.
 
 Variable x: X.
 
+Lemma char_cap_notin (A B: Ensemble X):
+  Char A x = 0
+  -> Char (A \cap B) x = 0.
+Proof.
+move=> Ha.
+rewrite -not_in_char -cap_and.
+case.
+by rewrite -not_in_char in Ha.
+Qed.
+
 (* S4 問題15(a) *)
 Theorem char_cap (A B: Ensemble X):
   Char (A \cap B) x = Char A x * Char B x.
@@ -910,6 +899,17 @@ case (char_return_or B x) => Hb. (* ここで3パターンに場合分けされ�
 Qed.
 
 Open Scope nat_scope.
+
+Lemma char_cup_lemma (A B: Ensemble X):
+  x \in A -> x \notin B
+  -> Char (A \cup B) x = Char A x + Char B x - Char A x * Char B x.
+Proof.
+move=> Ha Hb.
+have: x \in A \cup B => [| Hcup ].
+  by left.
+rewrite 2!in_char not_in_char in Ha Hcup Hb.
+by rewrite Ha Hb Hcup.
+Qed.
 
 (* S4 問題15(b) *)
 Theorem char_cup (A B: Ensemble X):
