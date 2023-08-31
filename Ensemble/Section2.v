@@ -929,13 +929,6 @@ rewrite [B^c \cup B]cup_comm compset_cup.
 by rewrite cap_comm fullset_cap.
 Qed.
 
-Lemma singleton_cardinal x n: Cardinal (\emptyset \cup \{ x }) n <-> n = 1.
-Proof.
-split => [ Hn | Heq ].
-- move: (cardinal_invert Hn).
-  
-Admitted.
-
 Lemma notin_sub A x: x \notin A -> A - \{ x } = A.
 Proof.
 move=> Hx.
@@ -967,7 +960,13 @@ apply eq_split => a Ha.
 Qed.
 
 Lemma cardinal_in_le A x n: x \in A -> Cardinal A n -> 0 < n.
-Admitted.
+Proof.
+move=> Ha Hn.
+rewrite -Nat.neq_0_lt_0 => Hn_eq_0.
+subst.
+move: (iffRL (emptyset_cardinal Hn) eq_refl) => HA_eq_emp.
+by subst.
+Qed.
 
 Lemma cardinal_pred A n x:
   Cardinal A n ->
@@ -1109,6 +1108,26 @@ case (classic (a \in B)) => HaB.
     apply Hab.
     rewrite -eq_iff in Hcup.
     by apply (notin_cup_eq H H0).
+Qed.
+
+Lemma singleton_cardinal A n: Cardinal A n -> ((exists x, A = \{ x }) <-> n = 1).
+Proof.
+move=> Hn.
+split => [| Heq ].
+- case => x Heq.
+  subst.
+  suff: Cardinal \{ x } 1 => [ H1 |].
+    by apply (eq_cardinal Hn H1).
+  rewrite -[\{ x }]emptyset_cup.
+  apply cardinal_add => //.
+  apply cardinal_empty.
+- subst.
+  case (cardinal_invert Hn) => X [x [H1 [H2 H3]]].
+  exists x.
+  subst.
+  move: (cardinal_invert H3) => H4.
+  rewrite H4.
+  by rewrite emptyset_cup.
 Qed.
 
 Lemma subset_cardinal A B: A \subset B -> forall n m, Cardinal A n -> Cardinal B m -> n <= m.
