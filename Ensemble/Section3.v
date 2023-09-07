@@ -8,7 +8,7 @@ Require Import Coq.Logic.IndefiniteDescription.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Setoid.
 Add LoadPath "." as Local.
-Require Local.Classical.
+Require Import Local.Classical.
 Require Import Local.Ensemble.Section2.
 Import Classical.
 Open Scope ensemble_scope.
