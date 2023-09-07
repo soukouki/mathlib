@@ -38,7 +38,7 @@ Proof.
 exists (fun a b => X (pair a b)).
 split.
 - rewrite /Graph.
-  apply eq_axiom => x.
+  apply ensemble_extensionality => x.
   by rewrite /In -surjective_pairing.
 - move=> C HX.
   by rewrite HX.

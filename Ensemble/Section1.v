@@ -25,14 +25,14 @@ Inductive EmptySet: Ensemble := .
 Notation "\emptyset" := EmptySet.
 
 (* 外延性の公理 *)
-Axiom eq_axiom: forall (A B: Ensemble),
+Axiom ensemble_extensionality: forall (A B: Ensemble),
   (forall (x: T), (x \in A <-> x \in B)) -> A = B.
 
 Lemma eq_iff A B:
   (forall (x: T), (x \in A <-> x \in B)) <-> A = B.
 Proof.
 split.
-- by apply eq_axiom.
+- by apply ensemble_extensionality.
 - move=> HAB x.
   by rewrite HAB.
 Qed.
@@ -49,7 +49,7 @@ split.
   by rewrite /Subset.
 - case.
   move=> HA_subset_B HB_subset_A.
-  apply eq_axiom => x.
+  apply ensemble_extensionality => x.
   split.
   + by apply HA_subset_B.
   + by apply HB_subset_A.

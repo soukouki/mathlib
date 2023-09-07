@@ -336,9 +336,8 @@ Qed.
 (* (2.13) *)
 Theorem compset_twice A: A^c^c = A.
 Proof.
-apply eq_axiom => x.
-rewrite 2!compset_in.
-split.
+apply eq_split => x;
+  rewrite 2!compset_in.
 - by apply NNPP.
 - by move=> H.
 Qed.
@@ -412,7 +411,7 @@ Qed.
 
 Lemma sub_fullset A: A - FullSet = \emptyset.
 Proof.
-apply eq_axiom => x.
+apply ensemble_extensionality => x.
 rewrite sub_iff.
 rewrite -compset_in compset_fullset.
 rewrite cap_and.
@@ -421,7 +420,7 @@ Qed.
 
 Lemma fullset_sub A: FullSet - A = A^c.
 Proof.
-apply eq_axiom => x.
+apply ensemble_extensionality => x.
 rewrite sub_iff.
 rewrite -compset_in.
 rewrite cap_and.
@@ -430,7 +429,7 @@ Qed.
 
 Lemma sub_compset A: A - A^c = A.
 Proof.
-apply eq_axiom => x.
+apply ensemble_extensionality => x.
 rewrite sub_iff.
 rewrite -compset_in.
 rewrite compset_twice.
@@ -530,14 +529,14 @@ Qed.
 (* S2 問題3a-1 (A=D) *)
 Theorem sub_cap_compset A B: A - B = A \cap B^c.
 Proof.
-apply eq_axiom => x.
+apply ensemble_extensionality => x.
 by rewrite sub_iff -cap_and -compset_in.
 Qed.
 
 (* S2 問題3a-2 (A=B) *)
 Theorem sub_cup_sub A B: A - B = (A \cup B) - B.
 Proof.
-apply eq_axiom => x.
+apply ensemble_extensionality => x.
 rewrite 2!sub_cap_compset.
 rewrite cup_cap_distrib.
 rewrite compset_cap.
@@ -641,7 +640,7 @@ Qed.
 (* S2 問題5a *)
 Theorem sub_sub_eq_sub_cup A B C: (A - B) - C = A - (B \cup C).
 Proof.
-apply eq_axiom => x.
+apply ensemble_extensionality => x.
 rewrite sub_cap_compset -cap_and.
 rewrite sub_cap_compset -cap_and.
 rewrite and_assoc.
@@ -702,7 +701,7 @@ Qed.
 
 Lemma sub_comm A B C: (A - B) - C = (A - C) - B.
 Proof.
-apply eq_axiom => x.
+apply ensemble_extensionality => x.
 by rewrite !sub_iff !and_assoc [_ \notin _ /\ _ \notin _]and_comm.
 Qed.
 
