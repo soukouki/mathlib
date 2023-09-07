@@ -996,7 +996,7 @@ Qed.
 
 End Problem15.
 
-
+(* 問題16から19はすべて個数が必要なので、Cardinalの定義がまともにできてから考える *)
 
 End Section4.
 
