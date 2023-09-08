@@ -10,9 +10,8 @@ Require Import Coq.Logic.PropExtensionality.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import PeanoNat BinIntDef BinInt.
 Add LoadPath "." as Local.
-Require Local.Classical.
+Require Import Local.Classical.
 Require Import Local.Ensemble.Section3.
-Import Classical.
 Open Scope ensemble_scope.
 
 Module Ensemble.
@@ -999,6 +998,9 @@ End Problem15.
 (* 問題16から19はすべて個数が必要なので、Cardinalの定義がまともにできてから考える *)
 
 End Section4.
+
+Notation "f ^-1" := (InvMap f) (at level 30): ensemble_scope.
+Notation "f \comp g" := (Composite g f) (at level 50): ensemble_scope.
 
 End Ensemble.
 
