@@ -9,12 +9,12 @@ Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Setoid.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
-Require Import Local.Ensemble.Section2.
+Require Local.Ensemble.Section2.
 Open Scope ensemble_scope.
 
 Module Ensemble.
 
-Include Section2.Ensemble.
+Import Section1.Ensemble Section2.Ensemble.
 
 Section Section3.
 

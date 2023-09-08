@@ -14,7 +14,7 @@ Open Scope ensemble_scope.
 
 Module Ensemble.
 
-Include Section1.Ensemble.
+Import Section1.Ensemble.
 
 Section Section2.
 

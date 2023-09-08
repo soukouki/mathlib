@@ -11,12 +11,12 @@ Require Import Coq.Logic.FunctionalExtensionality.
 Require Import PeanoNat BinIntDef BinInt.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
-Require Import Local.Ensemble.Section3.
+Require Local.Ensemble.Section3.
 Open Scope ensemble_scope.
 
 Module Ensemble.
 
-Include Section3.Ensemble.
+Import Section1.Ensemble Section2.Ensemble Section3.Ensemble.
 
 Section Section4.
 
