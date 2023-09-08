@@ -444,51 +444,50 @@ Definition PowerSet {T} (X: Ensemble T): FamilyEnsemble T := fun A: Ensemble T =
 (* p.18の定理を証明するには、個数を定義する必要がありややこしいので、練習問題の後で解く *)
 
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別することにする *)
+(* ここではp.19(S2 F)の定義ではなく、より一般的なp.45(S5 C)を参考にした定義をする *)
+Definition BigCup (S: Type) (f: S -> Ensemble T) (lam: Ensemble S): Ensemble T :=
+  fun x => exists l, l \in lam -> x \in f l.
+Notation "\bigcup AA" := (BigCup (fun A => A) AA) (at level 50).
 
-Inductive BigCup AA: Ensemble T :=
-  | bigcup_intro: forall x: T, (exists A: Ensemble T, A \in AA -> x \in A) -> x \in BigCup AA.
-Notation "\bigcup AA" := (BigCup AA) (at level 50).
+Definition BigCap (S: Type) (f: S -> Ensemble T) (lam: Ensemble S): Ensemble T :=
+  fun x => forall l, l \in lam -> x \in f l.
+Notation "\bigcap AA" := (BigCap (fun A => A) AA) (at level 50).
 
-Inductive BigCap AA: Ensemble T :=
-  | bigcap_intro: forall x: T, (forall A: Ensemble T, A \in AA -> x \in A) -> x \in BigCap AA.
-Notation "\bigcap AA" := (BigCap AA) (at level 50).
+(* p.19の定義と等しいことの確認 *)
+Fact bigcup_definition_eq AA: \bigcup AA = (fun x => exists A, A \in AA -> x \in A).
+Proof. by []. Qed.
+Fact bigcap_definition_eq AA: \bigcap AA = (fun x => forall A, A \in AA -> x \in A).
+Proof. by []. Qed.
 
 (* (2.17) *)
 Theorem bigcup_in AA A: A \in AA -> A \subset \bigcup AA.
 Proof.
 move=> HA_in_AA.
-split.
 by exists A.
 Qed.
 
 (* (2.18) *)
-(* /\になってる部分は->だと思うんだけれど、->だと証明できなかった・・・ *)
-(* ->の場合、A \in AA までたどり着くけどそれ自体の証明ができない *)
 Theorem bigcup_subset AA C: (forall A, A \in AA /\ A \subset C) -> \bigcup AA \subset C.
 Proof.
-move=> HA_subset_C x1.
-case => x2.
-case => A Hx_in_A.
-move: (HA_subset_C A).
-case => HA_in_AA.
-apply.
-by apply Hx_in_A.
+move=> H1 x.
+case => A H2.
+case (H1 A) => H3 H4.
+by apply /H4 /H2.
 Qed.
 
 (* (2.17)' *)
 Theorem bigcap_in AA A: A \in AA -> \bigcap AA \subset A.
 Proof.
-move=> HA_in_AA x1.
-case => x2.
+move=> H1 x.
 by apply.
 Qed.
 
 (* (2.18)' *)
 Theorem bigcap_subset AA C: (forall A, A \in AA -> C \subset A) -> C \subset \bigcap AA.
 Proof.
-move=> HC_subset_A x1 Hx_in_C.
-split => A HA_in_AA.
-by apply HC_subset_A.
+move=> H1 x H2 A H3.
+apply H1 in H3.
+by apply H3.
 Qed.
 
 
