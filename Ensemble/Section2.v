@@ -446,7 +446,7 @@ Definition PowerSet {T} (X: Ensemble T): FamilyEnsemble T := fun A: Ensemble T =
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別することにする *)
 (* ここではp.19(S2 F)の定義ではなく、より一般的なp.45(S5 C)を参考にした定義をする *)
 Definition BigCup (S: Type) (f: S -> Ensemble T) (lam: Ensemble S): Ensemble T :=
-  fun x => exists l, l \in lam -> x \in f l.
+  fun x => exists l, l \in lam /\ x \in f l.
 Notation "\bigcup AA" := (BigCup (fun A => A) AA) (at level 50).
 
 Definition BigCap (S: Type) (f: S -> Ensemble T) (lam: Ensemble S): Ensemble T :=
@@ -454,7 +454,7 @@ Definition BigCap (S: Type) (f: S -> Ensemble T) (lam: Ensemble S): Ensemble T :
 Notation "\bigcap AA" := (BigCap (fun A => A) AA) (at level 50).
 
 (* p.19の定義と等しいことの確認 *)
-Fact bigcup_definition_eq AA: \bigcup AA = (fun x => exists A, A \in AA -> x \in A).
+Fact bigcup_definition_eq AA: \bigcup AA = (fun x => exists A, A \in AA /\ x \in A).
 Proof. by []. Qed.
 Fact bigcap_definition_eq AA: \bigcap AA = (fun x => forall A, A \in AA -> x \in A).
 Proof. by []. Qed.
@@ -467,12 +467,13 @@ by exists A.
 Qed.
 
 (* (2.18) *)
-Theorem bigcup_subset AA C: (forall A, A \in AA /\ A \subset C) -> \bigcup AA \subset C.
+Theorem bigcup_subset AA C: (forall A, A \in AA -> A \subset C) -> \bigcup AA \subset C.
 Proof.
 move=> H1 x.
 case => A H2.
-case (H1 A) => H3 H4.
-by apply /H4 /H2.
+case H2 => H3 H4.
+move: (H1 A H3).
+by apply.
 Qed.
 
 (* (2.17)' *)
@@ -882,8 +883,6 @@ Notation "A ^ 'c'" := (ComplementarySet A) (at level 30): ensemble_scope.
 Notation "A \triangle B" := (SymmetricDifference A B) (at level 50): ensemble_scope.
 
 Arguments FullSet {_}.
-Arguments BigCup {_} _ _.
-Arguments BigCap {_} _ _.
 
 Notation "\bigcup AA" := (BigCup AA) (at level 50): ensemble_scope.
 Notation "\bigcap AA" := (BigCap AA) (at level 50): ensemble_scope.
