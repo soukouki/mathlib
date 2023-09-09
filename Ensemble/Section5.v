@@ -30,6 +30,46 @@ case H2 => l [H3 H4].
 by apply (H1 l).
 Qed.
 
+(* p.45 *)
+Theorem bigcap_max (A: IndexedFamily) B lam:
+  (forall l, l \in lam -> B \subset A l) ->
+  B \subset BigCap (fun l => A l) lam.
+Proof.
+move=> H1 x H2 l H3.
+by apply H1.
+Qed.
+
+(* 5.1 *)
+Theorem bigcup_cap_distrib (A: IndexedFamily) B lam:
+  BigCup (fun l => A l) lam \cap B = BigCup (fun l => A l \cap B) lam.
+Proof.
+apply eq_split.
+- move=> _ [x [l [H1 H2] H3]].
+  by exists l.
+- move=> x [l [H1 [H2 H3]]].
+  split => //.
+  by exists l.
+Qed.
+
+(* 5.1' *)
+Theorem bigcap_cup_distrib (A: IndexedFamily) B lam:
+  BigCap (fun l => A l) lam \cup B = BigCap (fun l => A l \cup B) lam.
+Proof.
+apply eq_split.
+- move=> _ [x H1|x H1] l H2;
+  by [ left; by apply H1 | right ].
+- move=> x H1.
+  rewrite /BigCap.
+  rewrite /In /BigCap in H1.
+  
+
+
+
+
+
+
+
+
 End Section5.
 
 End Ensemble.
