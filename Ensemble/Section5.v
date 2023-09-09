@@ -20,10 +20,18 @@ Variables L T: Type.
 
 Definition IndexedFamily := L -> Ensemble T.
 
+Fact bigcup_fun_eq_in_indexed_family (A: IndexedFamily) lam:
+  BigCup (fun l => A l) lam = BigCup A lam.
+Proof. by []. Qed.
+
+Fact bigcap_fun_eq_in_indexed_family (A: IndexedFamily) lam:
+  BigCap (fun l => A l) lam = BigCap A lam.
+Proof. by []. Qed.
+
 (* p.45 *)
 Theorem bigcup_min (A: IndexedFamily) B lam:
   (forall l, l \in lam -> A l \subset B) ->
-  BigCup (fun l => A l) lam \subset B.
+  BigCup A lam \subset B.
 Proof.
 move=> H1 x H2.
 case H2 => l [H3 H4].
@@ -33,7 +41,7 @@ Qed.
 (* p.45 *)
 Theorem bigcap_max (A: IndexedFamily) B lam:
   (forall l, l \in lam -> B \subset A l) ->
-  B \subset BigCap (fun l => A l) lam.
+  B \subset BigCap A lam.
 Proof.
 move=> H1 x H2 l H3.
 by apply H1.
@@ -59,9 +67,11 @@ apply eq_split.
 - move=> _ [x H1|x H1] l H2;
   by [ left; by apply H1 | right ].
 - move=> x H1.
-  rewrite /BigCap.
-  rewrite /In /BigCap in H1.
-  
+  case (classic (x \in B)) => H2; [ by right |].
+  left => l H3.
+  move: H2.
+  by case (H1 l H3).
+Qed.
 
 
 
