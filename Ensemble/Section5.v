@@ -49,7 +49,7 @@ Qed.
 
 (* 5.1 *)
 Theorem bigcup_cap_distrib (A: IndexedFamily) B lam:
-  BigCup (fun l => A l) lam \cap B = BigCup (fun l => A l \cap B) lam.
+  BigCup A lam \cap B = BigCup (fun l => A l \cap B) lam.
 Proof.
 apply eq_split.
 - move=> _ [x [l [H1 H2] H3]].
@@ -61,7 +61,7 @@ Qed.
 
 (* 5.1' *)
 Theorem bigcap_cup_distrib (A: IndexedFamily) B lam:
-  BigCap (fun l => A l) lam \cup B = BigCap (fun l => A l \cup B) lam.
+  BigCap A lam \cup B = BigCap (fun l => A l \cup B) lam.
 Proof.
 apply eq_split.
 - move=> _ [x H1|x H1] l H2;
@@ -72,6 +72,38 @@ apply eq_split.
   move: H2.
   by case (H1 l H3).
 Qed.
+
+(* 5.2 *)
+Theorem bigcup_compset (A: IndexedFamily) lam:
+  (BigCup A lam)^c = BigCup (fun l => (A l)^c) lam.
+Proof.
+apply eq_split => x.
+- rewrite /BigCup.
+  rewrite compset_in.
+  rewrite {1}/In.
+  rewrite exists_iff_not_forall_not => H1.
+  apply NNPP in H1.
+  rewrite /In.
+  apply NNPP => H2.
+
+Restart.
+- apply eq_split => x.
+  move=> H1.
+  rewrite /In /BigCup.
+  rewrite compset_in in H1.
+  apply NNPP => H2.
+  apply H1.
+  rewrite /In /BigCup.
+  
+
+(* わからん *)
+Admitted.
+
+(* 5.2' *)
+Theorem bigcap_compset (A: IndexedFamily) lam:
+  (BigCup A lam)^c = BigCup (fun l => (A l)^c) lam.
+Admitted.
+
 
 
 
