@@ -75,47 +75,22 @@ Qed.
 
 (* 5.2 *)
 Theorem bigcup_compset (A: IndexedFamily) lam:
-  (BigCup A lam)^c = BigCup (fun l => (A l)^c) lam.
+  (BigCup A lam)^c = BigCap (fun l => (A l)^c) lam.
 Proof.
 apply eq_split => x.
-- rewrite compset_in /In /BigCup => H1.
-  Search BigCup.
-  have: (exists l, l \in lam).
-    admit.
-  case => l H2.
+- move=> H1 l H2.
+  rewrite compset_in => H3.
+  rewrite compset_in in H1.
+  apply H1.
   exists l.
-  rewrite exists_iff_not_forall_not in H1.
-  apply NNPP in H1.
-  move: (H1 l).
-  rewrite not_and_or.
-  case => H3.
-  + by move: (H3 H2).
-  + by split.
-Restart.
-apply eq_split => x.
-- rewrite compset_in.
-  rewrite [x \notin (\bigcup A) lam -> x \in (\bigcup (fun l : L => A l ^ c)) lam]contrapositive.
-  rewrite /In /BigCup => H1 H2.
-  rewrite 2!exists_iff_not_forall_not in H1 H2.
-  apply NNPP in H1.
-  apply NNPP in H2.
-  
-
-
-- rewrite compset_in /In /BigCup.
-  move=> H1.
-  move=> H2.
-  case H2 => l [H3 H4].
-  rewrite exists_iff_not_forall_not in H1.
-  apply H1 => l'.
-  apply not_and_or.
-  right.
+  by split.
+- move=> H1.
   rewrite compset_in.
-  apply.
-
-
-(* わからん *)
-Admitted.
+  case => l [H2].
+  move: (H1 l).
+  rewrite compset_in.
+  by apply.
+Qed.
 
 (* 5.2' *)
 Theorem bigcap_compset (A: IndexedFamily) lam:
