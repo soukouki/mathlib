@@ -94,8 +94,23 @@ Qed.
 
 (* 5.2' *)
 Theorem bigcap_compset (A: IndexedFamily) lam:
-  (BigCup A lam)^c = BigCup (fun l => (A l)^c) lam.
-Admitted.
+  (BigCap A lam)^c = BigCup (fun l => (A l)^c) lam.
+Proof.
+apply eq_split => x.
+- move=> H1.
+  rewrite compset_in /In /BigCap in H1.
+  rewrite [forall l, _ -> _]forall_iff_not_exists_not in H1.
+  apply NNPP in H1.
+  case H1 => l H2.
+  rewrite not_imply in H2.
+  exists l.
+  by rewrite compset_in.
+- move=> H1.
+  rewrite compset_in => H2.
+  case H1 => l [H3 H4].
+  rewrite compset_in in H4.
+  by move: (H2 l H3).
+Qed.
 
 
 
