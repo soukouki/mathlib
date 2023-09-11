@@ -66,6 +66,17 @@ split.
   by exists x.
 Qed.
 
+Lemma contrapositive {P Q: Prop}:
+  (P -> Q) <-> (~ Q -> ~ P).
+Proof.
+split.
+- move=> H1 HQ H2.
+  by apply /HQ /H1.
+- move=> H1 HP.
+  apply NNPP => HQ.
+  by move: (H1 HQ).
+Qed.
+
 
 
 
