@@ -16,20 +16,20 @@ Import Section1.Ensemble Section2.Ensemble Section3.Ensemble Section4.Ensemble.
 
 Section Section5.
 
-Variables L T: Type.
+Variable L: Type.
 
-Definition IndexedFamily := L -> Ensemble T.
+Definition IndexedFamily T := L -> Ensemble T.
 
-Fact bigcup_fun_eq_in_indexed_family (A: IndexedFamily) lam:
+Fact bigcup_fun_eq_in_indexed_family T (A: IndexedFamily T) lam:
   BigCup (fun l => A l) lam = BigCup A lam.
 Proof. by []. Qed.
 
-Fact bigcap_fun_eq_in_indexed_family (A: IndexedFamily) lam:
+Fact bigcap_fun_eq_in_indexed_family T (A: IndexedFamily T) lam:
   BigCap (fun l => A l) lam = BigCap A lam.
 Proof. by []. Qed.
 
 (* p.45 *)
-Theorem bigcup_min (A: IndexedFamily) B lam:
+Theorem bigcup_min T (A: IndexedFamily T) B lam:
   (forall l, l \in lam -> A l \subset B) ->
   BigCup A lam \subset B.
 Proof.
@@ -39,7 +39,7 @@ by apply (H1 l).
 Qed.
 
 (* p.45 *)
-Theorem bigcap_max (A: IndexedFamily) B lam:
+Theorem bigcap_max T (A: IndexedFamily T) B lam:
   (forall l, l \in lam -> B \subset A l) ->
   B \subset BigCap A lam.
 Proof.
@@ -48,7 +48,7 @@ by apply H1.
 Qed.
 
 (* 5.1 *)
-Theorem bigcup_cap_distrib (A: IndexedFamily) B lam:
+Theorem bigcup_cap_distrib T (A: IndexedFamily T) B lam:
   BigCup A lam \cap B = BigCup (fun l => A l \cap B) lam.
 Proof.
 apply eq_split.
@@ -60,7 +60,7 @@ apply eq_split.
 Qed.
 
 (* 5.1' *)
-Theorem bigcap_cup_distrib (A: IndexedFamily) B lam:
+Theorem bigcap_cup_distrib T (A: IndexedFamily T) B lam:
   BigCap A lam \cup B = BigCap (fun l => A l \cup B) lam.
 Proof.
 apply eq_split.
@@ -74,7 +74,7 @@ apply eq_split.
 Qed.
 
 (* 5.2 *)
-Theorem bigcup_compset (A: IndexedFamily) lam:
+Theorem bigcup_compset T (A: IndexedFamily T) lam:
   (BigCup A lam)^c = BigCap (fun l => (A l)^c) lam.
 Proof.
 apply eq_split => x.
@@ -93,7 +93,7 @@ apply eq_split => x.
 Qed.
 
 (* 5.2' *)
-Theorem bigcap_compset (A: IndexedFamily) lam:
+Theorem bigcap_compset T (A: IndexedFamily T) lam:
   (BigCap A lam)^c = BigCup (fun l => (A l)^c) lam.
 Proof.
 apply eq_split => x.
@@ -112,7 +112,18 @@ apply eq_split => x.
   by move: (H2 l H3).
 Qed.
 
-
+(* 5.3 *)
+Theorem image_bigcup A B (f: A -> B) (P: IndexedFamily A) lam:
+  Image f (BigCup P lam) = BigCup (fun l => Image f (P l)) lam.
+Proof.
+apply eq_split => [b [a [[l [H1 H2] <-]]]|b [l [H1 [a [H2 <-]]]]].
+- exists l.
+  split => //.
+  by exists a.
+- exists a.
+  split => //.
+  by exists l.
+Qed.
 
 
 
