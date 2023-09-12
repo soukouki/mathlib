@@ -125,6 +125,32 @@ apply eq_split => [b [a [[l [H1 H2] <-]]]|b [l [H1 [a [H2 <-]]]]].
   by exists l.
 Qed.
 
+(* 5.4 *)
+Theorem image_bigcap A B (f: A -> B) (P: IndexedFamily A) lam:
+  Image f (BigCap P lam) \subset BigCap (fun l => Image f (P l)) lam.
+Proof.
+move=> b [a [H1 <-]].
+exists a.
+split => //.
+by apply H1.
+Qed.
+
+(* 5.3' *)
+Theorem invimage_bigcup A B (f: A -> B) (Q: IndexedFamily B) lam:
+  InvImage f (BigCup Q lam) = BigCup (fun l => InvImage f (Q l)) lam.
+Proof.
+apply eq_split => [a [l [H1 H2]]|a [l [H1 H2]]];
+  exists l;
+  by split.
+Qed.
+
+(* 5.4' *)
+Theorem invimage_bigcap A B (f: A -> B) (Q: IndexedFamily B) lam:
+  InvImage f (BigCap Q lam) = BigCap (fun l => InvImage f (Q l)) lam.
+Proof. apply eq_split => a H1 l H2; by apply H1. Qed.
+
+
+
 
 
 
