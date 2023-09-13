@@ -444,12 +444,13 @@ Definition PowerSet {T} (X: Ensemble T): FamilyEnsemble T := fun A: Ensemble T =
 (* p.18の定理を証明するには、個数を定義する必要がありややこしいので、練習問題の後で解く *)
 
 (* ドイツ文字の変数は、AA, BBのように2文字つなげて区別することにする *)
+(* ΛはL、λはlと略記する *)
 (* ここではp.19(S2 F)の定義ではなく、より一般的なp.45(S5 C)を参考にした定義をする *)
-Definition BigCup (S: Type) (f: S -> Ensemble T) (lam: Ensemble S): Ensemble T :=
+Definition BigCup (L: Type) (f: L -> Ensemble T) (lam: Ensemble L): Ensemble T :=
   fun x => exists l, l \in lam /\ x \in f l.
 Notation "\bigcup AA" := (BigCup (fun A => A) AA) (at level 50).
 
-Definition BigCap (S: Type) (f: S -> Ensemble T) (lam: Ensemble S): Ensemble T :=
+Definition BigCap (L: Type) (f: L -> Ensemble T) (lam: Ensemble L): Ensemble T :=
   fun x => forall l, l \in lam -> x \in f l.
 Notation "\bigcap AA" := (BigCap (fun A => A) AA) (at level 50).
 
