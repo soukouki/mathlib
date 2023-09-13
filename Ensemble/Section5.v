@@ -149,6 +149,11 @@ Theorem invimage_bigcap A B (f: A -> B) (Q: IndexedFamily B) lam:
   InvImage f (BigCap Q lam) = BigCap (fun l => InvImage f (Q l)) lam.
 Proof. apply eq_split => a H1 l H2; by apply H1. Qed.
 
+Inductive Product (T: L -> Type) (lam: forall (l: L), Ensemble (T l)) (A: forall (l: L), Ensemble (T l))
+  : Ensemble (forall l, T l) :=
+  | Product_intro: forall (a: forall (l: L), T l),
+      (forall (l: L), a l \in A l) -> a \in Product T lam A.
+
 
 
 
