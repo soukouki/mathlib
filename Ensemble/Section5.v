@@ -18,18 +18,18 @@ Section Section5.
 
 Variable L: Type.
 
-Definition IndexedFamily T := L -> Ensemble T.
+Definition IndexedEnsemble T := L -> Ensemble T.
 
-Fact bigcup_fun_eq_in_indexed_family T (A: IndexedFamily T) lam:
+Fact bigcup_fun_eq_in_indexed_family T (A: IndexedEnsemble T) lam:
   BigCup (fun l => A l) lam = BigCup A lam.
 Proof. by []. Qed.
 
-Fact bigcap_fun_eq_in_indexed_family T (A: IndexedFamily T) lam:
+Fact bigcap_fun_eq_in_indexed_family T (A: IndexedEnsemble T) lam:
   BigCap (fun l => A l) lam = BigCap A lam.
 Proof. by []. Qed.
 
 (* p.45 *)
-Theorem bigcup_min T (A: IndexedFamily T) B lam:
+Theorem bigcup_min T (A: IndexedEnsemble T) B lam:
   (forall l, l \in lam -> A l \subset B) ->
   BigCup A lam \subset B.
 Proof.
@@ -39,7 +39,7 @@ by apply (H1 l).
 Qed.
 
 (* p.45 *)
-Theorem bigcap_max T (A: IndexedFamily T) B lam:
+Theorem bigcap_max T (A: IndexedEnsemble T) B lam:
   (forall l, l \in lam -> B \subset A l) ->
   B \subset BigCap A lam.
 Proof.
@@ -48,7 +48,7 @@ by apply H1.
 Qed.
 
 (* 5.1 *)
-Theorem bigcup_cap_distrib T (A: IndexedFamily T) B lam:
+Theorem bigcup_cap_distrib T (A: IndexedEnsemble T) B lam:
   BigCup A lam \cap B = BigCup (fun l => A l \cap B) lam.
 Proof.
 apply eq_split.
@@ -60,7 +60,7 @@ apply eq_split.
 Qed.
 
 (* 5.1' *)
-Theorem bigcap_cup_distrib T (A: IndexedFamily T) B lam:
+Theorem bigcap_cup_distrib T (A: IndexedEnsemble T) B lam:
   BigCap A lam \cup B = BigCap (fun l => A l \cup B) lam.
 Proof.
 apply eq_split.
@@ -74,7 +74,7 @@ apply eq_split.
 Qed.
 
 (* 5.2 *)
-Theorem bigcup_compset T (A: IndexedFamily T) lam:
+Theorem bigcup_compset T (A: IndexedEnsemble T) lam:
   (BigCup A lam)^c = BigCap (fun l => (A l)^c) lam.
 Proof.
 apply eq_split => x.
@@ -93,7 +93,7 @@ apply eq_split => x.
 Qed.
 
 (* 5.2' *)
-Theorem bigcap_compset T (A: IndexedFamily T) lam:
+Theorem bigcap_compset T (A: IndexedEnsemble T) lam:
   (BigCap A lam)^c = BigCup (fun l => (A l)^c) lam.
 Proof.
 apply eq_split => x.
@@ -113,7 +113,7 @@ apply eq_split => x.
 Qed.
 
 (* 5.3 *)
-Theorem image_bigcup A B (f: A -> B) (P: IndexedFamily A) lam:
+Theorem image_bigcup A B (f: A -> B) (P: IndexedEnsemble A) lam:
   Image f (BigCup P lam) = BigCup (fun l => Image f (P l)) lam.
 Proof.
 apply eq_split => [b [a [[l [H1 H2] <-]]]|b [l [H1 [a [H2 <-]]]]].
@@ -126,7 +126,7 @@ apply eq_split => [b [a [[l [H1 H2] <-]]]|b [l [H1 [a [H2 <-]]]]].
 Qed.
 
 (* 5.4 *)
-Theorem image_bigcap A B (f: A -> B) (P: IndexedFamily A) lam:
+Theorem image_bigcap A B (f: A -> B) (P: IndexedEnsemble A) lam:
   Image f (BigCap P lam) \subset BigCap (fun l => Image f (P l)) lam.
 Proof.
 move=> b [a [H1 <-]].
@@ -136,7 +136,7 @@ by apply H1.
 Qed.
 
 (* 5.3' *)
-Theorem invimage_bigcup A B (f: A -> B) (Q: IndexedFamily B) lam:
+Theorem invimage_bigcup A B (f: A -> B) (Q: IndexedEnsemble B) lam:
   InvImage f (BigCup Q lam) = BigCup (fun l => InvImage f (Q l)) lam.
 Proof.
 apply eq_split => [a [l [H1 H2]]|a [l [H1 H2]]];
@@ -145,16 +145,49 @@ apply eq_split => [a [l [H1 H2]]|a [l [H1 H2]]];
 Qed.
 
 (* 5.4' *)
-Theorem invimage_bigcap A B (f: A -> B) (Q: IndexedFamily B) lam:
+Theorem invimage_bigcap A B (f: A -> B) (Q: IndexedEnsemble B) lam:
   InvImage f (BigCap Q lam) = BigCap (fun l => InvImage f (Q l)) lam.
 Proof. apply eq_split => a H1 l H2; by apply H1. Qed.
 
 
-Inductive Product (T: L -> Type) (A: forall (l: L), Ensemble (T l)) (lam: forall (l: L), Ensemble (T l))
-  : Ensemble (forall l, T l) :=
-  | Product_intro: forall (a: forall (l: L), T l),
-      (forall (l: L), a l \in A l) -> a \in Product T A lam.
+Inductive Product (T: Type) (A: IndexedEnsemble T) (lam: Ensemble L)
+  : Ensemble T :=
+  | Product_intro: forall (a: forall l: L, T),
+      forall (l: L), a l \in A l -> a l \in Product A lam.
 
+(* p.47 *)
+Theorem exists_emptyset_to_product_emptyset T (A: IndexedEnsemble T) lam:
+  (exists l, l \in lam /\ A l = \emptyset) -> Product A lam = \emptyset.
+Proof.
+case => [l [H1 H2]].
+rewrite emptyset_not_in => x [a l' H3].
+
+
+Admitted.
+
+
+
+Definition IndexedEnsemble' (T: L -> Type) := forall l: L, Ensemble (T l).
+Definition IndexedMember (T: L -> Type) := forall l: L, T l.
+
+Inductive Product' {T: L -> Type} (A: IndexedEnsemble' T): Ensemble (IndexedMember T) :=
+  | Product_intro': forall (a: IndexedMember T),
+      (forall (l: L), a l \in A l) -> a \in Product' A.
+
+Inductive Product'' {T: L -> Type} (A: forall l: L, Ensemble (T l)): Ensemble (forall l: L, T l) :=
+  | Product_intro'': forall (a: forall l: L, T l),
+      (forall (l: L), a l \in A l) -> a \in Product'' A.
+
+(* p.47 *)
+Theorem exists_emptyset_to_product_emptyset' (T: L -> Type) (A: IndexedEnsemble' T):
+  (exists l, A l = \emptyset) -> Product' A = \emptyset.
+Proof.
+move=> [l H1].
+rewrite emptyset_not_in => _ [x H2].
+suff: x l \in A l.
+  by rewrite H1.
+by apply H2.
+Qed.
 
 
 
