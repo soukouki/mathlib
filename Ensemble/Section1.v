@@ -89,6 +89,8 @@ split.
   by apply HA.
 Qed.
 
+(* 問題2から問題5は飛ばす *)
+
 End Section1.
 
 Declare Scope ensemble_scope.

@@ -514,6 +514,9 @@ case (Hfor x) => H;
 - by rewrite /In.
 Qed.
 
+
+(* 問題1、問題2はすでに証明済み *)
+
 (* S4 問題3-1 *)
 Theorem invimage_image_injective A B (f: A -> B):
   Injective f -> forall P, P = InvImage f (Image f P).
@@ -995,7 +998,7 @@ Qed.
 
 End Problem15.
 
-(* 問題16から19はすべて個数が必要なので、Cardinalの定義がまともにできてから考える *)
+(* 問題16から19はすべて個数が必要なので、Cardinalの定義をするまで一旦飛ばす *)
 
 End Section4.
 

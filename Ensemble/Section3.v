@@ -183,6 +183,8 @@ rewrite -2!in_invcorr.
 by apply.
 Qed.
 
+(* 問題1から問題2は飛ばす *)
+
 (* S3 問題3 *)
 Theorem map_as_corr_invcorr A B (C: A ->c B):
   (exists! f: A -> B, MapAsCorr f = C) <->
@@ -303,6 +305,11 @@ split;
   case => a H;
   by exists a.
 Qed.
+
+(* S3 問題4 *)
+Theorem identity_graph A:
+  Graph (MapAsCorr (\I A)) = fun x => fst x = snd x.
+Proof. by apply eq_split. Qed.
 
 End Section3.
 
