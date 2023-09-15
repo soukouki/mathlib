@@ -150,43 +150,20 @@ Theorem invimage_bigcap A B (f: A -> B) (Q: IndexedEnsemble B) lam:
 Proof. apply eq_split => a H1 l H2; by apply H1. Qed.
 
 
-Inductive Product (T: Type) (A: IndexedEnsemble T) (lam: Ensemble L)
-  : Ensemble T :=
+Inductive Product (T: Type) (A: IndexedEnsemble T)
+  : Ensemble (L -> T) :=
   | Product_intro: forall (a: forall l: L, T),
-      forall (l: L), a l \in A l -> a l \in Product A lam.
+      (forall (l: L), a l \in A l) -> (fun l => a l) \in Product A.
 
 (* p.47 *)
-Theorem exists_emptyset_to_product_emptyset T (A: IndexedEnsemble T) lam:
-  (exists l, l \in lam /\ A l = \emptyset) -> Product A lam = \emptyset.
-Proof.
-case => [l [H1 H2]].
-rewrite emptyset_not_in => x [a l' H3].
-
-
-Admitted.
-
-
-
-Definition IndexedEnsemble' (T: L -> Type) := forall l: L, Ensemble (T l).
-Definition IndexedMember (T: L -> Type) := forall l: L, T l.
-
-Inductive Product' {T: L -> Type} (A: IndexedEnsemble' T): Ensemble (IndexedMember T) :=
-  | Product_intro': forall (a: IndexedMember T),
-      (forall (l: L), a l \in A l) -> a \in Product' A.
-
-Inductive Product'' {T: L -> Type} (A: forall l: L, Ensemble (T l)): Ensemble (forall l: L, T l) :=
-  | Product_intro'': forall (a: forall l: L, T l),
-      (forall (l: L), a l \in A l) -> a \in Product'' A.
-
-(* p.47 *)
-Theorem exists_emptyset_to_product_emptyset' (T: L -> Type) (A: IndexedEnsemble' T):
-  (exists l, A l = \emptyset) -> Product' A = \emptyset.
+Theorem exists_emptyset_to_product_emptyset T (A: IndexedEnsemble T):
+  (exists l, A l = \emptyset) -> Product A = \emptyset.
 Proof.
 move=> [l H1].
-rewrite emptyset_not_in => _ [x H2].
-suff: x l \in A l.
+rewrite emptyset_not_in => _ [a H2].
+suff: a l \in A l.
   by rewrite H1.
-by apply H2.
+apply H2.
 Qed.
 
 
