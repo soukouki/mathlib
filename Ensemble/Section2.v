@@ -491,7 +491,26 @@ by apply H3.
 Qed.
 
 
-(* S2 問題1についてはやろうかどうか迷ったけど、一旦置いとく *)
+(* S2 問題1a *)
+Theorem cup_cap_cup_compset A B: (A \cup B) \cap (A \cup B^c) = A.
+Proof.
+rewrite cup_cap_distrib.
+rewrite cap_comm cup_absorption.
+rewrite cap_comm cup_cap_distrib.
+rewrite [_^c \cap _]cap_comm compset_cap.
+rewrite [_ \cup \emptyset]cup_comm emptyset_cup.
+by rewrite cup_comm cap_absorption.
+Qed.
+
+(* S2 問題1b *)
+Theorem cup_cap_compset_cup_cap_cup_compset A B: (A \cup B) \cap (A^c \cup B) \cap (A \cup B^c) = A \cap B.
+Proof.
+rewrite cap_assoc [(A^c \cup B) \cap _]cap_comm -cap_assoc.
+rewrite cup_cap_cup_compset.
+rewrite cap_comm cup_cap_distrib.
+rewrite cap_comm compset_cap.
+by rewrite emptyset_cup cap_comm.
+Qed.
 
 Lemma emptyset_not_in A: A = \emptyset <-> forall x: T, x \notin A.
 Proof.
