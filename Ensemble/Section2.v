@@ -303,18 +303,16 @@ Inductive ComplementarySet (A: Ensemble T): Ensemble T :=
   | ComplementarySet_intro: forall x, x \in FullSet - A -> x \in ComplementarySet A.
 Notation "A ^ 'c'" := (ComplementarySet A) (at level 30).
 
-Lemma __compset A: A^c = fun x => x \notin A.
+Lemma compset_in A x: x \in A^c <-> x \notin A.
 Proof.
-apply eq_split.
-- move=> x1 HA.
-  case HA => x2.
-  by case.
-- split.
+split.
+- move=> H1.
+  case H1 => x1 H2.
+  by case H2.
+- move=> H1.
+  split.
   by split.
 Qed.
-
-Lemma compset_in A x: x \in A^c <-> x \notin A.
-Proof. by rewrite __compset. Qed.
 
 (* (2.12.1) *)
 Theorem compset_cup A: A \cup A^c = FullSet.
