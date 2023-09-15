@@ -166,6 +166,9 @@ suff: a l \in A l.
 apply H2.
 Qed.
 
+Axiom choice: forall (T: Type) (A: IndexedEnsemble T),
+  (forall (l: L), A l <> \emptyset) -> Product A <> \emptyset.
+
 
 
 
