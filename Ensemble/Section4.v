@@ -209,6 +209,7 @@ rewrite -eq_fullset.
 by rewrite image_defrange_eq_valuerange.
 Qed.
 
+(* p.33 *)
 Theorem surjective_exists A B (f: A -> B):
   Surjective f <-> forall b, exists a, f a = b.
 Proof.
@@ -219,7 +220,7 @@ split;
     (* 方向が違うだけ *)
 Qed.
 
-Theorem injective_uniqueness A B (f: A -> B):
+Lemma injective_uniqueness A B (f: A -> B):
   Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> uniqueness (fun a => f a = b).
 Proof.
 split.
@@ -234,6 +235,7 @@ split.
   by exists a.
 Qed.
 
+(* p.33 *)
 Theorem injective_exists_unique A B (f: A -> B):
   Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> exists! a, f a = b.
 Proof.
