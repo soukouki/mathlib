@@ -169,6 +169,10 @@ Qed.
 Axiom choice: forall (T: Type) (A: IndexedEnsemble T) (lam: Ensemble L),
   (forall (l: L), l \in lam -> A l <> \emptyset) -> Product A lam <> \emptyset.
 
+Inductive Proj (T: Type) (l: L) (A: IndexedEnsemble T): Ensemble T :=
+  | Proj_intro: forall (a: T), a \in A l -> a \in Proj l A.
+
+
 
 
 
