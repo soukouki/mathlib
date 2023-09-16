@@ -150,24 +150,24 @@ Theorem invimage_bigcap A B (f: A -> B) (Q: IndexedEnsemble B) lam:
 Proof. apply eq_split => a H1 l H2; by apply H1. Qed.
 
 
-Inductive Product (T: Type) (A: IndexedEnsemble T)
+Inductive Product (T: Type) (A: IndexedEnsemble T) (lam: Ensemble L)
   : Ensemble (L -> T) :=
   | Product_intro: forall (a: forall l: L, T),
-      (forall (l: L), a l \in A l) -> (fun l => a l) \in Product A.
+      (forall (l: L), l \in lam -> a l \in A l) -> (fun l => a l) \in Product A lam.
 
 (* p.47 *)
-Theorem exists_emptyset_to_product_emptyset T (A: IndexedEnsemble T):
-  (exists l, A l = \emptyset) -> Product A = \emptyset.
+Theorem exists_emptyset_to_product_emptyset T (A: IndexedEnsemble T) lam:
+  (exists l, l \in lam /\ A l = \emptyset) -> Product A lam = \emptyset.
 Proof.
-move=> [l H1].
-rewrite emptyset_not_in => _ [a H2].
+move=> [l [H1 H2]].
+rewrite emptyset_not_in => _ [a H3].
 suff: a l \in A l.
-  by rewrite H1.
-apply H2.
+  by rewrite H2.
+by apply H3.
 Qed.
 
-Axiom choice: forall (T: Type) (A: IndexedEnsemble T),
-  (forall (l: L), A l <> \emptyset) -> Product A <> \emptyset.
+Axiom choice: forall (T: Type) (A: IndexedEnsemble T) (lam: Ensemble L),
+  (forall (l: L), l \in lam -> A l <> \emptyset) -> Product A lam <> \emptyset.
 
 
 
