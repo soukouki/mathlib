@@ -192,8 +192,12 @@ Theorem hoge A B (f: A -> B): Surjective f <-> exists s, f \comp s = \I B.
 Proof.
 split.
 - move=> Hsurj.
-  have: forall b: B, InvImage f \{ b } <> \emptyset => [ b |].
-    admit.
+  have: forall b: B, InvImage f \{ b } <> \emptyset => [ b H1 | H1 ].
+    rewrite surjective_exists in Hsurj.
+    case (Hsurj b) => a H2.
+    subst.
+    rewrite emptyset_not_in in H1.
+    by case (H1 a).
 
   admit.
 - case => g H1.
