@@ -169,10 +169,43 @@ Qed.
 Axiom choice: forall (T: Type) (A: IndexedEnsemble T) (lam: Ensemble L),
   (forall (l: L), l \in lam -> A l <> \emptyset) -> Product A lam <> \emptyset.
 
+
 Inductive Proj (T: Type) (l: L) (A: IndexedEnsemble T): Ensemble T :=
   | Proj_intro: forall (a: T), a \in A l -> a \in Proj l A.
 
+Lemma identity_surjective A: Surjective (\I A).
+Proof.
+rewrite surjective_valuerange => a.
+rewrite valuerange_map_as_corr.
+by exists a.
+Qed.
 
+Lemma identity_injective A: Injective (\I A).
+Proof.
+rewrite injective_uniqueness => a _ a1 a2 Ha1 Ha2.
+subst.
+by rewrite /Identity in Ha2.
+Qed.
+
+(* S5 定理7(a) *)
+Theorem hoge A B (f: A -> B): Surjective f <-> exists s, f \comp s = \I B.
+Proof.
+split.
+- move=> Hsurj.
+  have: forall b: B, InvImage f \{ b } <> \emptyset => [ b |].
+    admit.
+
+  admit.
+- case => g H1.
+  apply surjective_composite_surjective with (f := g).
+  rewrite H1.
+  apply identity_surjective.
+Admitted.
+
+(* S5 定理7(b) *)
+Theorem huga A B (f: A -> B): Injective f <-> exists r, r \comp f = \I A.
+Proof.
+Admitted.
 
 
 
