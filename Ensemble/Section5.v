@@ -196,6 +196,13 @@ split.
     case (Hsurj b) => a H1.
     subst.
     by exists a.
+  have: exists Ab: IndexedEnsemble A B, forall (b: B), Ab b <> \emptyset => [| H2 ].
+    exists (fun b => InvImage f \{ b }) => b.
+    rewrite emptyset_not_in => H2.
+    case (constructive_indefinite_description _ (H1 b)) => a.
+    by apply H2.
+  case H2 => Ab H3.
+  move: (choice H3) => H4.
 
 
   have: B -> A.
