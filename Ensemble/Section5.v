@@ -4,6 +4,7 @@ Set Implicit Arguments.
 
 From mathcomp Require Import ssreflect.
 
+Require Import Coq.Logic.IndefiniteDescription.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
 Require Local.Ensemble.Section4.
@@ -16,20 +17,18 @@ Import Section1.Ensemble Section2.Ensemble Section3.Ensemble Section4.Ensemble.
 
 Section Section5.
 
-Variable L: Type.
+Definition IndexedEnsemble T L := L -> Ensemble T.
 
-Definition IndexedEnsemble T := L -> Ensemble T.
-
-Fact bigcup_fun_eq_in_indexed_family T (A: IndexedEnsemble T) lam:
+Fact bigcup_fun_eq_in_indexed_family T L (A: IndexedEnsemble T L) lam:
   BigCup (fun l => A l) lam = BigCup A lam.
 Proof. by []. Qed.
 
-Fact bigcap_fun_eq_in_indexed_family T (A: IndexedEnsemble T) lam:
+Fact bigcap_fun_eq_in_indexed_family T L (A: IndexedEnsemble T L) lam:
   BigCap (fun l => A l) lam = BigCap A lam.
 Proof. by []. Qed.
 
 (* p.45 *)
-Theorem bigcup_min T (A: IndexedEnsemble T) B lam:
+Theorem bigcup_min T L (A: IndexedEnsemble T L) B lam:
   (forall l, l \in lam -> A l \subset B) ->
   BigCup A lam \subset B.
 Proof.
@@ -39,7 +38,7 @@ by apply (H1 l).
 Qed.
 
 (* p.45 *)
-Theorem bigcap_max T (A: IndexedEnsemble T) B lam:
+Theorem bigcap_max T L (A: IndexedEnsemble T L) B lam:
   (forall l, l \in lam -> B \subset A l) ->
   B \subset BigCap A lam.
 Proof.
@@ -48,7 +47,7 @@ by apply H1.
 Qed.
 
 (* 5.1 *)
-Theorem bigcup_cap_distrib T (A: IndexedEnsemble T) B lam:
+Theorem bigcup_cap_distrib T L (A: IndexedEnsemble T L) B lam:
   BigCup A lam \cap B = BigCup (fun l => A l \cap B) lam.
 Proof.
 apply eq_split.
@@ -60,7 +59,7 @@ apply eq_split.
 Qed.
 
 (* 5.1' *)
-Theorem bigcap_cup_distrib T (A: IndexedEnsemble T) B lam:
+Theorem bigcap_cup_distrib T L (A: IndexedEnsemble T L) B lam:
   BigCap A lam \cup B = BigCap (fun l => A l \cup B) lam.
 Proof.
 apply eq_split.
@@ -74,7 +73,7 @@ apply eq_split.
 Qed.
 
 (* 5.2 *)
-Theorem bigcup_compset T (A: IndexedEnsemble T) lam:
+Theorem bigcup_compset T L (A: IndexedEnsemble T L) lam:
   (BigCup A lam)^c = BigCap (fun l => (A l)^c) lam.
 Proof.
 apply eq_split => x.
@@ -93,7 +92,7 @@ apply eq_split => x.
 Qed.
 
 (* 5.2' *)
-Theorem bigcap_compset T (A: IndexedEnsemble T) lam:
+Theorem bigcap_compset T L (A: IndexedEnsemble T L) lam:
   (BigCap A lam)^c = BigCup (fun l => (A l)^c) lam.
 Proof.
 apply eq_split => x.
@@ -113,7 +112,7 @@ apply eq_split => x.
 Qed.
 
 (* 5.3 *)
-Theorem image_bigcup A B (f: A -> B) (P: IndexedEnsemble A) lam:
+Theorem image_bigcup L A B (f: A -> B) (P: IndexedEnsemble A L) lam:
   Image f (BigCup P lam) = BigCup (fun l => Image f (P l)) lam.
 Proof.
 apply eq_split => [b [a [[l [H1 H2] <-]]]|b [l [H1 [a [H2 <-]]]]].
@@ -126,7 +125,7 @@ apply eq_split => [b [a [[l [H1 H2] <-]]]|b [l [H1 [a [H2 <-]]]]].
 Qed.
 
 (* 5.4 *)
-Theorem image_bigcap A B (f: A -> B) (P: IndexedEnsemble A) lam:
+Theorem image_bigcap L A B (f: A -> B) (P: IndexedEnsemble A L) lam:
   Image f (BigCap P lam) \subset BigCap (fun l => Image f (P l)) lam.
 Proof.
 move=> b [a [H1 <-]].
@@ -136,7 +135,7 @@ by apply H1.
 Qed.
 
 (* 5.3' *)
-Theorem invimage_bigcup A B (f: A -> B) (Q: IndexedEnsemble B) lam:
+Theorem invimage_bigcup L A B (f: A -> B) (Q: IndexedEnsemble B L) lam:
   InvImage f (BigCup Q lam) = BigCup (fun l => InvImage f (Q l)) lam.
 Proof.
 apply eq_split => [a [l [H1 H2]]|a [l [H1 H2]]];
@@ -145,32 +144,32 @@ apply eq_split => [a [l [H1 H2]]|a [l [H1 H2]]];
 Qed.
 
 (* 5.4' *)
-Theorem invimage_bigcap A B (f: A -> B) (Q: IndexedEnsemble B) lam:
+Theorem invimage_bigcap L A B (f: A -> B) (Q: IndexedEnsemble B L) lam:
   InvImage f (BigCap Q lam) = BigCap (fun l => InvImage f (Q l)) lam.
 Proof. apply eq_split => a H1 l H2; by apply H1. Qed.
 
 
-Inductive Product (T: Type) (A: IndexedEnsemble T) (lam: Ensemble L)
+Inductive Product (T L: Type) (A: IndexedEnsemble T L)
   : Ensemble (L -> T) :=
   | Product_intro: forall (a: forall l: L, T),
-      (forall (l: L), l \in lam -> a l \in A l) -> (fun l => a l) \in Product A lam.
+      (forall (l: L), a l \in A l) -> (fun l => a l) \in Product A.
 
 (* p.47 *)
-Theorem exists_emptyset_to_product_emptyset T (A: IndexedEnsemble T) lam:
-  (exists l, l \in lam /\ A l = \emptyset) -> Product A lam = \emptyset.
+Theorem exists_emptyset_to_product_emptyset T L (A: IndexedEnsemble T L):
+  (exists l, A l = \emptyset) -> Product A = \emptyset.
 Proof.
-move=> [l [H1 H2]].
-rewrite emptyset_not_in => _ [a H3].
+move=> [l H1].
+rewrite emptyset_not_in => _ [a H2].
 suff: a l \in A l.
-  by rewrite H2.
-by apply H3.
+  by rewrite H1.
+by apply H2.
 Qed.
 
-Axiom choice: forall (T: Type) (A: IndexedEnsemble T) (lam: Ensemble L),
-  (forall (l: L), l \in lam -> A l <> \emptyset) -> Product A lam <> \emptyset.
+Axiom choice: forall (T L: Type) (A: IndexedEnsemble T L),
+  (forall (l: L), A l <> \emptyset) -> Product A <> \emptyset.
 
 
-Inductive Proj (T: Type) (l: L) (A: IndexedEnsemble T): Ensemble T :=
+Inductive Proj (T L: Type) (l: L) (A: IndexedEnsemble T L): Ensemble T :=
   | Proj_intro: forall (a: T), a \in A l -> a \in Proj l A.
 
 Lemma identity_surjective A: Surjective (\I A).
@@ -192,12 +191,18 @@ Theorem hoge A B (f: A -> B): Surjective f <-> exists s, f \comp s = \I B.
 Proof.
 split.
 - move=> Hsurj.
-  have: forall b: B, InvImage f \{ b } <> \emptyset => [ b H1 | H1 ].
+  have: forall b: B, exists a, a \in InvImage f \{ b } => [ b | H1 ].
     rewrite surjective_exists in Hsurj.
-    case (Hsurj b) => a H2.
+    case (Hsurj b) => a H1.
     subst.
-    rewrite emptyset_not_in in H1.
-    by case (H1 a).
+    by exists a.
+
+
+  have: B -> A.
+    move=> b.
+    move: (constructive_indefinite_description _ (H1 b)) => Hsig.
+    by apply (get_value Hsig).
+  
 
   admit.
 - case => g H1.
