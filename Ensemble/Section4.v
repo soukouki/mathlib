@@ -846,28 +846,28 @@ Open Scope nat_scope.
 
 Variable X: Type.
 
+Lemma char_le_1 (A: Ensemble X) x:
+  Char A x <= 1.
+Proof. case (char_return_or A x) => H; rewrite H; auto. Qed.
+
 (* S4 問題15-1 *)
 Theorem char_le_subset (A B: Ensemble X):
   (forall x, Char A x <= Char B x) <-> A \subset B.
 Proof.
 split => [ Hle y | Hsubset x ].
 - rewrite 2!in_char => Hy.
-  move: (Hle y).
-  rewrite Hy => Hla.
-  case (char_return_or B y) => // Hb.
-  rewrite Hb in Hla.
-  by move: (Nat.nle_succ_0 _ Hla).
+  move: (Hle y) => Hla.
+  rewrite Hy in Hla.
+  apply Nat.le_antisymm => //.
+  by apply char_le_1.
 - case (char_return_or B x) => Hb.
   + rewrite Hb.
-    case (char_return_or A x) => H;
-      rewrite H;
-      by auto.
+    by apply char_le_1.
   + rewrite Hb.
     rewrite -not_in_char in Hb.
-    suff: x \notin A.
+    suff: x \notin A => [| Ha ].
       rewrite not_in_char => Ha.
       by rewrite Ha.
-    move=> Ha.
     apply Hb.
     by apply Hsubset.
 Qed.
