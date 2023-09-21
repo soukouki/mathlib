@@ -740,6 +740,12 @@ Qed.
 
 Section Problem14.
 
+Lemma identity_surjective A: Surjective (\I A).
+Proof. rewrite surjective_exists => a; by exists a. Qed.
+
+Lemma identity_injective A: Injective (\I A).
+Proof. by []. Qed.
+
 Variable A B: Type.
 Variable f: A -> B.
 Variable g g': B -> A.
@@ -754,8 +760,7 @@ Proof.
 split.
 - apply (surjective_composite_surjective (f := g')).
   rewrite H2.
-  rewrite surjective_exists => b.
-  by exists b.
+  apply identity_surjective.
 - apply (injective_composite_injective (g := g)).
   by rewrite H1.
 Qed.

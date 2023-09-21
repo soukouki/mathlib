@@ -169,20 +169,6 @@ Axiom choice: forall (T L: Type) (A: IndexedEnsemble T L),
   (forall (l: L), A l <> \emptyset) -> Product A <> \emptyset.
 
 
-Lemma identity_surjective A: Surjective (\I A).
-Proof.
-rewrite surjective_valuerange => a.
-rewrite valuerange_map_as_corr.
-by exists a.
-Qed.
-
-Lemma identity_injective A: Injective (\I A).
-Proof.
-rewrite injective_uniqueness => a _ a1 a2 Ha1 Ha2.
-subst.
-by rewrite /Identity in Ha2.
-Qed.
-
 Lemma not_emptyset_exists T A: A <> \emptyset <-> exists a: T, a \in A.
 Proof.
 rewrite emptyset_not_in.
