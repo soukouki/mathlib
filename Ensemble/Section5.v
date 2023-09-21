@@ -169,9 +169,6 @@ Axiom choice: forall (T L: Type) (A: IndexedEnsemble T L),
   (forall (l: L), A l <> \emptyset) -> Product A <> \emptyset.
 
 
-Inductive Proj (T L: Type) (l: L) (A: IndexedEnsemble T L): Ensemble T :=
-  | Proj_intro: forall (a: T), a \in A l -> a \in Proj l A.
-
 Lemma identity_surjective A: Surjective (\I A).
 Proof.
 rewrite surjective_valuerange => a.
@@ -184,6 +181,15 @@ Proof.
 rewrite injective_uniqueness => a _ a1 a2 Ha1 Ha2.
 subst.
 by rewrite /Identity in Ha2.
+Qed.
+
+Lemma not_emptyset_exists T A: A <> \emptyset <-> exists a: T, a \in A.
+Proof.
+rewrite emptyset_not_in.
+split => [ Hneq | Hexi ].
+- by rewrite exists_iff_not_forall_not.
+- case Hexi => x H1 H2.
+  by apply H2 in H1.
 Qed.
 
 (* S5 定理7(a) *)
@@ -201,15 +207,11 @@ split.
     rewrite emptyset_not_in => H2.
     case (constructive_indefinite_description _ (H1 b)) => a.
     by apply H2.
-  case H2 => Ab H3.
-  move: (choice H3) => H4.
-
-
-  have: B -> A.
-    move=> b.
-    move: (constructive_indefinite_description _ (H1 b)) => Hsig.
-    by apply (get_value Hsig).
-  
+  case H2 => Ab H2'.
+  move: (choice H2') => H3.
+  rewrite not_emptyset_exists in H3.
+  case H3 => s H3'.
+  exists s.
 
   admit.
 - case => g H1.
