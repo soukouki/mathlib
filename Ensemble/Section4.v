@@ -690,16 +690,6 @@ suff: (g \comp f) a = c <-> h a = c => //.
 by rewrite Heq.
 Qed.
 
-Lemma comp_eq_iff' A B C (f: A -> B) (g: B -> C) (h: A -> C):
-  g \comp f = h
-  -> forall a c, c = g (f a) <-> c = h a.
-Proof.
-move=> H.
-split;
-  symmetry;
-  by [rewrite -(comp_eq_iff H) | rewrite (comp_eq_iff H)].
-Qed.
-
 (* S4 問題11 *)
 Theorem surjective_composite_eq A B C (f: A -> B) (Hf: Surjective f) (g g': B -> C):
   g \comp f = g' \comp f -> g = g'.
@@ -777,11 +767,13 @@ Proof.
 apply functional_extensionality => b.
 case identity_to_bijective => Hfsur Hfinj.
 apply Hfinj.
-rewrite (comp_eq_iff' H2).
+symmetry.
+rewrite (comp_eq_iff H2).
 have: Injective g => [| Hg ].
   apply (composite_injective_to_injective (f := f)) => //.
   by rewrite H1.
 apply Hg.
+symmetry.
 by rewrite (comp_eq_iff H1).
 Qed.
 
@@ -810,11 +802,12 @@ apply corr_eq => b a.
 rewrite -in_invcorr.
 split => H;
   rewrite H;
-  rewrite /In /MapAsCorr.
+  rewrite /In /MapAsCorr;
+  symmetry.
 - move: H2 => H2'.
   rewrite -identity_to_eq in H2'.
-  by rewrite (comp_eq_iff' H2').
-- by rewrite (comp_eq_iff' H1).
+  by rewrite (comp_eq_iff H2').
+- by rewrite (comp_eq_iff H1).
 Qed.
 
 End Problem14.
