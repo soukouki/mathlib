@@ -5,6 +5,7 @@ Set Implicit Arguments.
 From mathcomp Require Import ssreflect.
 
 Require Import Coq.Logic.IndefiniteDescription.
+Require Import Coq.Logic.FunctionalExtensionality.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
 Require Local.Ensemble.Section4.
@@ -183,12 +184,12 @@ Theorem hoge A B (f: A -> B): Surjective f <-> exists s, f \comp s = \I B.
 Proof.
 split.
 - move=> Hsurj.
-  have: forall b: B, exists a, a \in InvImage f \{ b } => [ b | H1 ].
+  have: forall b: B, exists a, a \in InvImage f \{ b } => [b | H1].
     rewrite surjective_exists in Hsurj.
     case (Hsurj b) => a H1.
     subst.
     by exists a.
-  have: exists Ab: IndexedEnsemble A B, forall (b: B), Ab b <> \emptyset => [| H2 ].
+  have: exists Ab: IndexedEnsemble A B, forall (b: B), Ab b <> \emptyset => [| H2].
     exists (fun b => InvImage f \{ b }) => b.
     rewrite emptyset_not_in => H2.
     case (constructive_indefinite_description _ (H1 b)) => a.
@@ -198,6 +199,23 @@ split.
   rewrite not_emptyset_exists in H3.
   case H3 => s H3'.
   exists s.
+  apply functional_extensionality => b.
+  rewrite /Composite /Identity.
+  have: exists a, s b = a.
+    case (H1 b) => a Ha.
+    exists a.
+    rewrite /In /InvImage singleton_eq in Ha.
+    
+
+    admit.
+  case => a Heq.
+  rewrite Heq.
+
+  case (H1 b) => a.
+  rewrite /In /InvImage /In /Singleton => Heq.
+  suff: s b = a => [H |].
+    by rewrite H.
+  
 
   admit.
 - case => g H1.
