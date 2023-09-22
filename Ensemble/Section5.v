@@ -189,40 +189,27 @@ split.
     case (Hsurj b) => a H1.
     subst.
     by exists a.
-  have: exists Ab: IndexedEnsemble A B, forall (b: B), Ab b <> \emptyset => [| H2].
-    exists (fun b => InvImage f \{ b }) => b.
+  have: exists Ab: IndexedEnsemble A B,
+    (forall (b: B), Ab b = InvImage f \{ b }) /\ (forall (b: B), Ab b <> \emptyset) => [| H2].
+    exists (fun b => InvImage f \{ b }).
+    split => // b.
     rewrite emptyset_not_in => H2.
     case (constructive_indefinite_description _ (H1 b)) => a.
     by apply H2.
-  case H2 => Ab H2'.
-  move: (choice H2') => H3.
+  case H2 => Ab [H2'1 H2'2].
+  apply choice in H2'2 as H3.
   rewrite not_emptyset_exists in H3.
-  case H3 => s H3'.
+  case H3 => _ [s H3'].
   exists s.
   apply functional_extensionality => b.
   rewrite /Composite /Identity.
-  have: exists a, s b = a.
-    case (H1 b) => a Ha.
-    exists a.
-    rewrite /In /InvImage singleton_eq in Ha.
-    
-
-    admit.
-  case => a Heq.
-  rewrite Heq.
-
-  case (H1 b) => a.
-  rewrite /In /InvImage /In /Singleton => Heq.
-  suff: s b = a => [H |].
-    by rewrite H.
-  
-
-  admit.
+  move: (H3' b).
+  by rewrite H2'1.
 - case => g H1.
   apply surjective_composite_surjective with (f := g).
   rewrite H1.
   apply identity_surjective.
-Admitted.
+Qed.
 
 (* S5 定理7(b) *)
 Theorem huga A B (f: A -> B): Injective f <-> exists r, r \comp f = \I A.
