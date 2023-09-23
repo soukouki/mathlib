@@ -180,7 +180,7 @@ split => [ Hneq | Hexi ].
 Qed.
 
 (* S5 定理7(a) *)
-Theorem hoge A B (f: A -> B): Surjective f <-> exists s, f \comp s = \I B.
+Theorem surjective_exists_right_invmap A B (f: A -> B): Surjective f <-> exists s, f \comp s = \I B.
 Proof.
 split.
 - move=> Hsurj.
@@ -194,7 +194,7 @@ split.
     exists (fun b => InvImage f \{ b }).
     split => // b.
     rewrite emptyset_not_in => H2.
-    case (constructive_indefinite_description _ (H1 b)) => a.
+    case (H1 b) => a.
     by apply H2.
   case H2 => Ab [H2'1 H2'2].
   apply choice in H2'2 as H3.
@@ -205,15 +205,24 @@ split.
   rewrite /Composite /Identity.
   move: (H3' b).
   by rewrite H2'1.
-- case => g H1.
+- case => g H.
   apply surjective_composite_surjective with (f := g).
-  rewrite H1.
-  apply identity_surjective.
+  rewrite H.
+  by apply identity_surjective.
 Qed.
 
 (* S5 定理7(b) *)
-Theorem huga A B (f: A -> B): Injective f <-> exists r, r \comp f = \I A.
+Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, r \comp f = \I A.
 Proof.
+split.
+- move=> Hinj.
+  have: exists f': A -> Ensemble B, f' = fun a => ValueRange (MapAsCorr f).
+    
+
+- case => r H.
+  apply injective_composite_injective with (g := r).
+  rewrite H.
+  by apply identity_injective.
 Admitted.
 
 
