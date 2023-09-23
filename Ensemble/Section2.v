@@ -50,15 +50,15 @@ Proof.
 move=> HA_subset_C HB_subset_C.
 rewrite /Subset => x1.
 case => x2.
-- by apply /HA_subset_C.
-- by apply /HB_subset_C.
+- by apply HA_subset_C.
+- by apply HB_subset_C.
 Qed.
 
 (* (2.4) *)
 Theorem cup_diag A: A \cup A = A.
 Proof.
 apply eq_split.
-- by apply subsets_cup => //.
+- by apply subsets_cup.
 - by apply subset_cup_l.
 Qed.
 
@@ -84,7 +84,7 @@ Proof.
 split.
 - move=> HA_subset_B.
   apply eq_split.
-  + by apply subsets_cup => //.
+  + by apply subsets_cup.
   + by apply subset_cup_r.
 - move=> H; rewrite -H.
   by apply subset_cup_l.
@@ -172,7 +172,7 @@ split.
 - move=> HA_subset_B.
   apply eq_split.
   + by apply cap_subset_l.
-  + by apply subsets_cap => //.
+  + by apply subsets_cap.
 - move=> H; rewrite -H.
   by apply cap_subset_r.
 Qed.
@@ -198,7 +198,7 @@ apply eq_split => x1.
 - case => x2.
   by case => x3 H HC;
     [left | right];
-    split => //.
+    split.
 - case => x2;
     case => x3;
     [move=> HA | move=> HB];
@@ -219,7 +219,7 @@ apply eq_split => x1.
     move: HBC H.
     case => x4 H HA.
     * left.
-      split => //.
+      by split.
     * by right.
   + by right.
 Qed.
@@ -385,7 +385,7 @@ apply eq_split => x1.
 - case => x2.
   rewrite 3!compset_in => HA HB HAB.
   move: HAB HA HB.
-  by case => x3 //.
+  by case => x3.
 Qed.
 
 (* (2.16)' *)
@@ -431,7 +431,8 @@ apply ensemble_extensionality => x.
 rewrite sub_iff.
 rewrite -compset_in.
 rewrite compset_twice.
-by split => //; case.
+split => //.
+by case.
 Qed.
 
 Definition FamilyEnsemble T := (Ensemble (Ensemble T)).
@@ -537,9 +538,8 @@ split.
 - move=> HA_subset_Bc.
   rewrite emptyset_not_in => x.
   case => x' HA.
-  suff: x' \notin B. by [].
-  rewrite -compset_in.
-  by apply HA_subset_Bc.
+  move: (HA_subset_Bc _ HA).
+  by rewrite compset_in.
 Qed.
 
 (* S2 問題3a 本ではA=B=C=Dと4つの式を等号でつないでいるが、今回はA=D, A=B, A=Cの3つの定理として順番に証明していく *)
@@ -603,8 +603,7 @@ rewrite [A \cap (B^c \cap C^c)]cap_comm.
 rewrite cap_assoc.
 rewrite -[A \cap _]cap_assoc.
 rewrite [C^c \cap A]cap_comm.
-rewrite -2!sub_cap_compset.
-apply eq_refl.
+by rewrite -2!sub_cap_compset.
 Qed.
 
 (* S2 問題4b *)
@@ -659,8 +658,7 @@ Qed.
 Theorem sub_sub_eq_sub_cup A B C: (A - B) - C = A - (B \cup C).
 Proof.
 apply ensemble_extensionality => x.
-rewrite sub_cap_compset -cap_and.
-rewrite sub_cap_compset -cap_and.
+rewrite 2!sub_cap_compset -2!cap_and.
 rewrite and_assoc.
 rewrite 2!cap_and.
 rewrite -de_morgan_cup.
@@ -787,16 +785,16 @@ apply eq_trans_r with
   (y := (A \cap B \cap C^c) \cup (A \cap C \cap B^c)).
 - rewrite sym_diff_compset.
   rewrite cap_comm cup_cap_distrib.
-  rewrite [B \cap C^c]cap_comm [(C^c \cap B) \cap A]cap_assoc [C^c \cap (B \cap A)]cap_comm [B \cap A]cap_comm.
-  rewrite [(B^c \cap C) \cap A]cap_assoc [B^c \cap (C \cap A)]cap_comm [C \cap A]cap_comm.
-  by [].
+  rewrite [B \cap C^c]cap_comm [(C^c \cap B) \cap A]cap_assoc.
+  rewrite [C^c \cap (B \cap A)]cap_comm [B \cap A]cap_comm.
+  rewrite [(B^c \cap C) \cap A]cap_assoc.
+  by rewrite [B^c \cap (C \cap A)]cap_comm [C \cap A]cap_comm.
 - rewrite sym_diff_compset.
   rewrite 2!de_morgan_cap.
   rewrite [(A \cap B) \cap (A^c \cup C^c)]cap_comm 2!cup_cap_distrib.
   rewrite -2![A^c \cap (A \cap _)]cap_assoc.
   rewrite [A^c \cap A]cap_comm compset_cap 2!emptyset_cap 2!emptyset_cup.
-  rewrite 2![_^c \cap _]cap_comm.
-  by [].
+  by rewrite 2![_^c \cap _]cap_comm.
 Qed.
 
 (* S2 問題8a *)
