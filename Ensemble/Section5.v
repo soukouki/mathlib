@@ -216,7 +216,14 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
-  have: exists f': A -> Ensemble B, f' = fun a => ValueRange (MapAsCorr f).
+  have: forall f': A -> {b | b \in ValueRange (MapAsCorr f)}, fun a => .
+
+  have: fun a: A => b = f a /\ b \in ValueRange (MapAsCorr f) => [a | Hsig].
+    apply constructive_indefinite_description.
+    exists (f a).
+    split => //.
+    by exists a.
+  have: Bijective Hsig => [| H1].
     
 
 - case => r H.
