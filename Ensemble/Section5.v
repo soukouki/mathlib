@@ -4,6 +4,7 @@ Set Implicit Arguments.
 
 From mathcomp Require Import ssreflect.
 
+Require Import Coq.Logic.ClassicalDescription.
 Require Import Coq.Logic.IndefiniteDescription.
 Require Import Coq.Logic.FunctionalExtensionality.
 Add LoadPath "." as Local.
@@ -216,15 +217,16 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
-  have: forall f': A -> {b | b \in ValueRange (MapAsCorr f)}, fun a => .
-
-  have: fun a: A => b = f a /\ b \in ValueRange (MapAsCorr f) => [a | Hsig].
-    apply constructive_indefinite_description.
-    exists (f a).
-    split => //.
-    by exists a.
-  have: Bijective Hsig => [| H1].
-    
+  have: exists f': A -> {b | b \in ValueRange (MapAsCorr f)}, forall a, f a = get_value (f' a).
+    admit.
+  case => f' H1.
+  have: Bijective f' => [| H2].
+    admit. (* 多分f'の情報足りてない感じがする・・・うーん *)
+  Search Bijective InvMap.
+  have: {f': A -> B | Bijective f' /\ True } => [| f'sig]. (* このTrueの部分にfとの関係とか入れそう *)
+    admit.
+  move: (f'sig ^-1) => r'sig.
+  
 
 - case => r H.
   apply injective_composite_injective with (g := r).
