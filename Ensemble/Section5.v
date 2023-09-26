@@ -223,9 +223,14 @@ split.
     by exists a.
   have: Bijective f'.
     split.
-    + rewrite surjective_exists => [[b Hb]].
-      case Hb => a Hb'.
+    + rewrite surjective_exists.
+      move=> bsig.
+      case (get_proof bsig) => a Heq.
       exists a.
+      rewrite /Graph /In /MapAsCorr /snd /fst in Heq.
+      admit. (* わからん・・・・・・・ *)
+    + move=> a a' Ha.
+      admit.
 
 
 
