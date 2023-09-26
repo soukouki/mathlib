@@ -217,6 +217,18 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
+  have: A -> {b: B | b \in ValueRange (MapAsCorr f)} => [a | f'].
+    apply constructive_indefinite_description.
+    exists (f a).
+    by exists a.
+  have: Bijective f'.
+    split.
+    + rewrite surjective_exists => [[b Hb]].
+      case Hb => a Hb'.
+      exists a.
+
+
+
   have: exists f': A -> {b | b \in ValueRange (MapAsCorr f)}, forall a, f a = get_value (f' a).
     admit.
   case => f' H1.
