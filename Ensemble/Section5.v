@@ -217,20 +217,32 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
-  have: A -> {b: B | b \in ValueRange (MapAsCorr f)} => [a | f'].
-    apply constructive_indefinite_description.
-    exists (f a).
-    by exists a.
-  have: Bijective f'.
-    split.
-    + rewrite surjective_exists.
-      move=> bsig.
-      case (get_proof bsig) => a Heq.
-      exists a.
-      rewrite /Graph /In /MapAsCorr /snd /fst in Heq.
-      admit. (* わからん・・・・・・・ *)
-    + move=> a a' Ha.
-      admit.
+  case (classic (exists a: A, a \in FullSet)).
+  + case => a _.
+    have: forall b, b \in ValueRange (MapAsCorr f) -> {a: A | f a = b} => [b H | H1].
+      case (constructive_indefinite_description _ H) => a' Hg.
+      by exists a'.
+    exists (
+      fun b => 
+        match excluded_middle_informative (b \in ValueRange (MapAsCorr f)) with
+        | left H => get_value (H1 b H)
+        | right _ => a
+        end).
+    rewrite /Composite /Identity.
+    apply functional_extensionality => a'.
+    case excluded_middle_informative.
+    * case => a'' H2.
+      clear a.
+      
+
+    * rewrite /ValueRange /MapAsCorr /Graph /snd /fst /In.
+      rewrite exists_iff_not_forall_not => H.
+      apply NNPP in H.
+      by move: (H a').
+  + rewrite exists_iff_not_forall_not => H1.
+    apply NNPP in H1.
+    (* これAが∅だから、単射なfは∅->∅の1通りしかありえない *)
+    admit.
 
 
 
