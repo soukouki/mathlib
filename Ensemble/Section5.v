@@ -217,44 +217,10 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
-  case (classic (exists a: A, a \in FullSet)).
-  + case => a _.
-    have: forall b, b \in ValueRange (MapAsCorr f) -> {a: A | f a = b} => [b H | H1].
-      case (constructive_indefinite_description _ H) => a' Hg.
-      by exists a'.
-    exists (
-      fun b => 
-        match excluded_middle_informative (b \in ValueRange (MapAsCorr f)) with
-        | left H => get_value (H1 b H)
-        | right _ => a
-        end).
-    rewrite /Composite /Identity.
-    apply functional_extensionality => a'.
-    case excluded_middle_informative.
-    * case => a'' H2.
-      clear a.
-      
-
-    * rewrite /ValueRange /MapAsCorr /Graph /snd /fst /In.
-      rewrite exists_iff_not_forall_not => H.
-      apply NNPP in H.
-      by move: (H a').
-  + rewrite exists_iff_not_forall_not => H1.
-    apply NNPP in H1.
-    (* これAが∅だから、単射なfは∅->∅の1通りしかありえない *)
-    admit.
-
-
-
-  have: exists f': A -> {b | b \in ValueRange (MapAsCorr f)}, forall a, f a = get_value (f' a).
-    admit.
-  case => f' H1.
-  have: Bijective f' => [| H2].
-    admit. (* 多分f'の情報足りてない感じがする・・・うーん *)
-  Search Bijective InvMap.
-  have: {f': A -> B | Bijective f' /\ True } => [| f'sig]. (* このTrueの部分にfとの関係とか入れそう *)
-    admit.
-  move: (f'sig ^-1) => r'sig.
+  suff: exists r: B -> A, forall a b, f a = b -> r b = a => [[r Hr] |].
+    exists r.
+    apply functional_extensionality => a.
+    by apply Hr.
   
 
 - case => r H.
