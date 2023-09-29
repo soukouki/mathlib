@@ -196,7 +196,7 @@ split.
   move: (constructive_definite_description _ Hf).
   clear Hf => Hf.
   split.
-  + move => a.
+  + move=> a.
     case Hf => f Hfeq.
     exists (f a).
     by rewrite -Hfeq.
@@ -277,12 +277,10 @@ split.
     apply functional_extensionality => a.
     have: get_value F a \in C a => [| Hin ].
       by apply (get_proof F a (get_value F a)).
-    apply eq_split.
-    + move=> b H.
-      rewrite /In /MapAsCorr in H.
+    apply eq_split => b H.
+    + rewrite /In /MapAsCorr in H.
       by rewrite H.
-    + move=> b Hb.
-      rewrite /In /MapAsCorr.
+    + rewrite /In /MapAsCorr.
       by apply (Huniq a).
   + move=> f1 f2 Heq1 Heq2.
     apply functional_extensionality => a.
