@@ -365,8 +365,7 @@ split.
 - move=> HB_subset_A.
   rewrite -[A]compset_twice -[B]compset_twice => x.
   rewrite 2!(compset_in (_^c) _) => HA HB.
-  apply HA.
-  by apply HB_subset_A.
+  by apply /HA /HB_subset_A.
 Qed.
 
 
@@ -375,13 +374,10 @@ Theorem de_morgan_cup A B: (A \cup B)^c = A^c \cap B^c.
 Proof.
 apply eq_split => x1.
 - rewrite compset_in => HA_cup_B.
-  split.
-  + rewrite compset_in => HA.
-    apply HA_cup_B.
-    by left.
-  + rewrite compset_in => HB.
-    apply HA_cup_B.
-    by right.
+  split;
+    rewrite compset_in => H;
+    apply HA_cup_B;
+    by [left | right].
 - case => x2.
   rewrite 3!compset_in => HA HB HAB.
   move: HAB HA HB.
@@ -398,13 +394,10 @@ apply eq_split => x1.
   apply HA_cap_B.
   by case HA_and_B.
 - rewrite compset_in.
-  case => x2.
-  + rewrite compset_in => HA HA_cap_B.
-    apply HA.
-    by case HA_cap_B.
-  + rewrite compset_in => HB HA_cap_B.
-    apply HB.
-    by case HA_cap_B.
+  case => x2;
+    rewrite compset_in => H1 H2;
+    apply H1;
+    by case H2.
 Qed.
 
 Lemma sub_fullset A: A - FullSet = \emptyset.
