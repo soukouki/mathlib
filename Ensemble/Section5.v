@@ -221,7 +221,18 @@ split.
     exists r.
     apply functional_extensionality => a.
     by apply Hr.
-  
+  have: exists (rcorr: B ->c A), forall a b, f a = b -> rcorr b = \{ a }.
+    exists (fun b => InvImage f \{b}) => a b Heq.
+    apply eq_split => a' H.
+    + rewrite /In /InvImage singleton_eq in H.
+      suff: a' = a => //.
+      apply Hinj.
+      by rewrite Heq H.
+    + rewrite singleton_eq in H.
+      by subst.
+  case => rcorr Hrcorr.
+  have: A => [| a].
+    admit.
 
 - case => r H.
   apply injective_composite_injective with (g := r).
