@@ -217,6 +217,15 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
+  case (classic (exists a: A, a \in FullSet)).
+  + case => a Ha.
+    admit.
+  + rewrite exists_iff_not_forall_not => H.
+    apply NNPP in H.
+    rewrite /Injective in Hinj.
+    
+
+- move=> Hinj.
   suff: exists r: B -> A, forall a b, f a = b -> r b = a => [[r Hr] |].
     exists r.
     apply functional_extensionality => a.
@@ -231,8 +240,6 @@ split.
     + rewrite singleton_eq in H.
       by subst.
   case => rcorr Hrcorr.
-  have: A => [| a].
-    admit.
 
 - case => r H.
   apply injective_composite_injective with (g := r).
