@@ -217,10 +217,26 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
-  Search Injective.
-  rewrite injective_exists_unique in Hinj.
+  move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
+  (* rについて、b \in ValueRange (MapAsCorr f)ならaが存在するし、そうでないならrが呼ばれることもない
+  つまり、rの定義域は全域でないのだから、関数よりも関係のほうが良い？ *)
+  have: exists rcorr: B ->c A, forall a, rcorr (f a) = \{ a }.
+    exists (fun b =>
+      match excluded_middle_informative (b \in ValueRange(MapAsCorr f)) with
+      | left H => \{ get_value (constructive_definite_description _ (Hinj' b H)) }
+      | right _ => \emptyset
+      end).
+    move=> a.
+    case excluded_middle_informative.
+    + move=> Ha.
+      apply f_equal.
+      move: (get_proof (constructive_definite_description (fun a0 : A => f a0 = f a) (Hinj' (f a) Ha))) => H1.
+      by apply Hinj in H1.
+    + rewrite valuerange_map_as_corr.
+      rewrite exists_iff_not_forall_not => H2.
+      apply NNPP in H2.
+      by move: (H2 a).
   
-
 
 - move=> Hinj.
   case (classic (exists a: A, a \in FullSet)).
