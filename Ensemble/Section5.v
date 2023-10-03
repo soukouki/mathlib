@@ -217,13 +217,29 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
+  Search Injective.
+  rewrite injective_exists_unique in Hinj.
+  
+
+
+- move=> Hinj.
   case (classic (exists a: A, a \in FullSet)).
   + case => a Ha.
     admit.
   + rewrite exists_iff_not_forall_not => H.
     apply NNPP in H.
-    rewrite /Injective in Hinj.
-    
+    Search Injective.
+    rewrite injective_exists_unique in Hinj.
+    have: forall b: B, b \in ValueRange (MapAsCorr f) -> {a: A | f a = b}.
+      move=> b Hb.
+      apply constructive_definite_description.
+      case (Hinj _ Hb) => a Ha.
+      exists a.
+      by apply Ha.
+    move=> rsig.
+    exists (fun b => get_value (rsig b)).
+
+
 
 - move=> Hinj.
   suff: exists r: B -> A, forall a b, f a = b -> r b = a => [[r Hr] |].
