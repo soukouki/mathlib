@@ -98,11 +98,9 @@ Qed.
 Theorem image_cap A B (f: A -> B) P1 P2:
   Image f (P1 \cap P2) \subset Image f P1 \cap Image f P2.
 Proof.
-apply subsets_cap.
-- apply image_subset.
-  by apply cap_subset_l.
-- apply image_subset.
-  by apply cap_subset_r.
+apply subsets_cap;
+  apply image_subset;
+  by [apply cap_subset_l | apply cap_subset_r].
 Qed.
 
 (* 4.4 *)
