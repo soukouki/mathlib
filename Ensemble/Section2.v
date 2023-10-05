@@ -133,7 +133,7 @@ Qed.
 (* (2.3)' *)
 Theorem subsets_cap A B C: C \subset A -> C \subset B -> C \subset A \cap B.
 Proof.
-move=> HC_subset_A HC_subset_B x.
+move=> HC_subset_A HC_subset_B x HC.
 split.
 - by apply HC_subset_A.
 - by apply HC_subset_B.
