@@ -941,7 +941,7 @@ case (char_return_or B x) => Hb. (* ここで4パターンに場合分けされ�
 Qed.
 
 (* S4 問題15(c) *)
-Theorem char_comp (A B: Ensemble X):
+Theorem char_comp (A: Ensemble X):
   Char (A^c) x = 1 - Char A x.
 Proof.
 case (char_return_or A x) => Ha.
@@ -962,17 +962,10 @@ Theorem char_sub (A B: Ensemble X):
   Char (Sub A B) x = Char A x * (1 - Char B x).
 Proof.
 case (char_return_or A x) => Ha.
-- case (char_return_or B x) => Hb.
-  + suff: x \notin (Sub A B) => [ Hsub |].
-      rewrite not_in_char in Hsub.
-      by rewrite Ha Hb Hsub.
-    rewrite -2!in_char in Ha Hb.
-    rewrite -compset_in sub_not.
-    by right.
-  + suff: x \in (Sub A B) => [ Hsub |].
-      rewrite in_char in Hsub.
-      by rewrite Ha Hb Hsub.
-    by rewrite -in_char -not_in_char in Ha Hb.
+- rewrite sub_cap_compset.
+  rewrite char_cap.
+  rewrite Ha 2!Nat.mul_1_l.
+  by rewrite char_comp.
 - suff: x \notin (Sub A B) => [ Hsub |].
     rewrite not_in_char in Hsub.
     by rewrite Ha Hsub.
