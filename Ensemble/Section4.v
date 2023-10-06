@@ -870,32 +870,25 @@ Qed.
 
 Variable x: X.
 
-Lemma char_cap_notin (A B: Ensemble X):
-  Char A x = 0
-  -> Char (A \cap B) x = 0.
-Proof.
-move=> Ha.
-rewrite -not_in_char -cap_and.
-case.
-by rewrite -not_in_char in Ha.
-Qed.
-
 (* S4 問題15(a) *)
 Theorem char_cap (A B: Ensemble X):
   Char (A \cap B) x = Char A x * Char B x.
 Proof.
 case (char_return_or A x) => Ha.
-case (char_return_or B x) => Hb. (* ここで3パターンに場合分けされる *)
-- rewrite Ha Hb.
-  suff: Char (A \cap B) x = 1 => //.
-  rewrite -in_char.
-  rewrite -2!in_char in Ha Hb.
-  by split.
-- rewrite Ha Hb.
-  rewrite cap_comm Nat.mul_comm.
-  by apply char_cap_notin.
+- rewrite Ha Nat.mul_1_l.
+  case (char_return_or B x) => Hb.
+  + rewrite Hb -in_char.
+    rewrite -2!in_char in Ha Hb.
+    by split.
+  + rewrite Hb -not_in_char => Hcap.
+    rewrite -not_in_char in Hb.
+    move: Hb.
+    by case Hcap.
 - rewrite Ha Nat.mul_0_l.
-  by apply char_cap_notin.
+  rewrite -not_in_char => Hcap.
+  rewrite -not_in_char in Ha.
+  apply Ha.
+  by case Hcap.
 Qed.
 
 Open Scope nat_scope.
