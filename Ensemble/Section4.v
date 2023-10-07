@@ -850,22 +850,20 @@ Proof. case (char_return_or A x) => H; rewrite H; auto. Qed.
 Theorem char_le_subset (A B: Ensemble X):
   (forall x, Char A x <= Char B x) <-> A \subset B.
 Proof.
-split => [ Hle y | Hsubset x ].
+split => [ Hle x | Hsubset x ].
 - rewrite 2!in_char => Hy.
-  move: (Hle y) => Hla.
-  rewrite Hy in Hla.
-  apply Nat.le_antisymm => //.
-  by apply char_le_1.
+  apply Nat.le_antisymm.
+  + apply char_le_1.
+  + move: (Hle x).
+    by rewrite Hy.
 - case (char_return_or B x) => Hb.
   + rewrite Hb.
     by apply char_le_1.
   + rewrite Hb.
+    rewrite Nat.le_0_r.
     rewrite -not_in_char in Hb.
-    suff: x \notin A => [| Ha ].
-      rewrite not_in_char => Ha.
-      by rewrite Ha.
-    apply Hb.
-    by apply Hsubset.
+    rewrite -not_in_char => Ha.
+    by apply /Hb /Hsubset.
 Qed.
 
 Variable x: X.
