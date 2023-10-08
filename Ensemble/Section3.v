@@ -172,14 +172,12 @@ Lemma invcorr_cap_emptyset_unique A B (C: A ->c B):
   (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset) ->
   forall a, uniqueness (fun b => b \in C a).
 Proof.
-move=> Hinv a b1 b2 HB HB'.
+move=> Hinv a b1 b2 Hb1 Hb2.
 apply NNPP => H1.
-move: (Hinv b1 b2 H1).
-rewrite cap_eq_emptyset.
-rewrite /Subset => H2.
+move: (Hinv _ _ H1).
+rewrite cap_eq_emptyset => H2.
 move: (H2 a).
 rewrite compset_in.
-rewrite -2!in_invcorr.
 by apply.
 Qed.
 
