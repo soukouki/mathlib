@@ -236,8 +236,10 @@ split.
       rewrite exists_iff_not_forall_not => H2.
       apply NNPP in H2.
       by move: (H2 a).
-  
+  case => rcorr Hr.
 
+Restart.
+split.
 - move=> Hinj.
   case (classic (exists a: A, a \in FullSet)).
   + case => a Ha.
@@ -253,10 +255,11 @@ split.
       exists a.
       by apply Ha.
     move=> rsig.
-    exists (fun b => get_value (rsig b)).
 
 
 
+Restart.
+split.
 - move=> Hinj.
   suff: exists r: B -> A, forall a b, f a = b -> r b = a => [[r Hr] |].
     exists r.
@@ -273,11 +276,17 @@ split.
       by subst.
   case => rcorr Hrcorr.
 
+
+
+  admit.
 - case => r H.
   apply injective_composite_injective with (g := r).
   rewrite H.
   by apply identity_injective.
 Admitted.
+
+(* 問題1は飛ばす。問題2-4はすでに証明済み *)
+
 
 
 
