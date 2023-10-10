@@ -683,9 +683,8 @@ Lemma comp_eq_iff A B C (f: A -> B) (g: B -> C) (h: A -> C):
   g \comp f = h
   -> forall a c, g (f a) = c <-> h a = c.
 Proof.
-move=> Heq a c.
-suff: (g \comp f) a = c <-> h a = c => //.
-by rewrite Heq.
+move=> Heq.
+by rewrite -Heq.
 Qed.
 
 (* S4 問題11 *)
