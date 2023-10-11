@@ -782,8 +782,8 @@ Qed.
 Lemma identity_to_bijective_sig:
   {f': A -> B | Bijective f' /\ f' = f}.
 Proof.
-suff: ((fun f' : A -> B => Bijective f' /\ f' = f) f) => [ He |].
-  apply (exist _ f He).
+apply constructive_indefinite_description.
+exists f.
 split => //.
 by apply identity_to_bijective.
 Qed.
