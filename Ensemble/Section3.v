@@ -20,6 +20,11 @@ Section Section3.
 
 Implicit Types A B: Type.
 
+Inductive EnsembleProd TA TB (A: Ensemble TA) (B: Ensemble TB)
+  : Ensemble (TA * TB) :=
+  | EnsembleProd_pair a b: a \in A -> b \in B -> pair a b \in EnsembleProd A B.
+Notation "A * B" := (EnsembleProd A B).
+
 (* Corr = Correspondence *)
 Definition Corr A B := A -> Ensemble B.
 Notation "A ->c B" := (Corr A B) (at level 99).
@@ -310,6 +315,7 @@ Proof. by apply eq_split. Qed.
 End Section3.
 
 
+Notation "A * B" := (EnsembleProd A B): ensemble_scope.
 Notation "A ->c B" := (Corr A B) (at level 99): ensemble_scope.
 Notation "\I A" := (Identity: A -> A) (at level 30): ensemble_scope.
 

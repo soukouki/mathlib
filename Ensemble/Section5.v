@@ -287,8 +287,25 @@ Admitted.
 
 (* 問題1は飛ばす。問題2-4はすでに証明済み *)
 
+(* S5 問題5(a) *)
+Theorem bigcups_cap_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
+  BigCup A lamA \cap BigCup B lamB = BigCup (fun l => A (fst l) \cap B (snd l)) (lamA * lamB).
+Admitted.
 
+(* S5 問題5(b) *)
+Theorem bigcaps_cup_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
+  BigCap A lamA \cup BigCap B lamB = BigCap (fun l => A (fst l) \cup B (snd l)) (lamA * lamB).
+Admitted.
 
+(* S5 問題5(c) *)
+Theorem bigcups_prod_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
+  BigCup A lamA * BigCap B lamB = BigCup (fun l => A (fst l) * B (snd l)) (lamA * lamB).
+Admitted.
+
+(* S5 問題5(d) *)
+Theorem bigcaps_prod_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
+  BigCap A lamA * BigCap B lamB = BigCap (fun l => A (fst l) * B (snd l)) (lamA * lamB).
+Admitted.
 
 
 
