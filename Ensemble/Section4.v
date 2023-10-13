@@ -61,9 +61,7 @@ Definition InvImage A B (f: A -> B) (Q: Ensemble B): Ensemble A :=
 (* p.31 *)
 Theorem invimage_fullset A B f:
   InvImage f (FullSet: Ensemble B) = (FullSet: Ensemble A).
-Proof.
-by apply eq_split => //.
-Qed.
+Proof. by apply eq_split. Qed.
 
 (* 4.1 *)
 Theorem image_subset A B (f: A -> B) P1 P2:
@@ -90,7 +88,7 @@ apply eq_split.
     exists a;
     by split.
 - apply subsets_cup;
-  apply /image_subset;
+  apply image_subset;
   by [apply subset_cup_l | apply subset_cup_r].
 Qed.
 
