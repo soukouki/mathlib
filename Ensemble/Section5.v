@@ -197,8 +197,7 @@ split.
     rewrite emptyset_not_in => H2.
     case (H1 b) => a.
     by apply H2.
-  case H2 => Ab [H2'1 H2'2].
-  apply choice in H2'2 as H3.
+  case H2 => Ab [H2'1 /choice-H3].
   rewrite not_emptyset_exists in H3.
   case H3 => _ [s H3'].
   exists s.
@@ -230,11 +229,9 @@ split.
     case excluded_middle_informative.
     + move=> Ha.
       apply f_equal.
-      move: (get_proof (constructive_definite_description (fun a0 : A => f a0 = f a) (Hinj' (f a) Ha))) => H1.
-      by apply Hinj in H1.
+      by move: (get_proof (constructive_definite_description (fun a0 : A => f a0 = f a) (Hinj' (f a) Ha))) => /Hinj-H1.
     + rewrite valuerange_map_as_corr.
-      rewrite exists_iff_not_forall_not => H2.
-      apply NNPP in H2.
+      rewrite exists_iff_not_forall_not => /NNPP-H2.
       by move: (H2 a).
   case => rcorr Hr.
 
@@ -244,8 +241,7 @@ split.
   case (classic (exists a: A, a \in FullSet)).
   + case => a Ha.
     admit.
-  + rewrite exists_iff_not_forall_not => H.
-    apply NNPP in H.
+  + rewrite exists_iff_not_forall_not => /NNPP-H.
     Search Injective.
     rewrite injective_exists_unique in Hinj.
     have: forall b: B, b \in ValueRange (MapAsCorr f) -> {a: A | f a = b}.
