@@ -22,7 +22,7 @@ Implicit Types A B: Type.
 
 Inductive EnsembleProd TA TB (A: Ensemble TA) (B: Ensemble TB)
   : Ensemble (TA * TB) :=
-  | EnsembleProd_pair a b: a \in A -> b \in B -> pair a b \in EnsembleProd A B.
+  | EnsembleProd_pair x: fst x \in A -> snd x \in B -> x \in EnsembleProd A B.
 Notation "A * B" := (EnsembleProd A B).
 
 (* Corr = Correspondence *)

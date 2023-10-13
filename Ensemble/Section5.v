@@ -290,7 +290,17 @@ Admitted.
 (* S5 問題5(a) *)
 Theorem bigcups_cap_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
   BigCup A lamA \cap BigCup B lamB = BigCup (fun l => A (fst l) \cap B (snd l)) (lamA * lamB).
-Admitted.
+Proof.
+apply eq_split.
+- move=> _ [x [la [HA1 HA2]] [lb [HB1 HB2]]].
+  by exists (pair la lb).
+- move=> _ [_ [[l HLA HLB] [x HA HB]]].
+  split.
+  + exists (fst l).
+    by split.
+  + exists (snd l).
+    by split.
+Qed.
 
 (* S5 問題5(b) *)
 Theorem bigcaps_cup_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
