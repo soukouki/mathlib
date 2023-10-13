@@ -79,15 +79,12 @@ Theorem bigcup_compset T L (A: IndexedEnsemble T L) lam:
   (BigCup A lam)^c = BigCap (fun l => (A l)^c) lam.
 Proof.
 apply eq_split => x.
-- move=> H1 l H2.
+- move=> /compset_in => H1 l H2.
   rewrite compset_in => H3.
-  rewrite compset_in in H1.
   apply H1.
-  exists l.
-  by split.
+  by exists l.
 - move=> H1.
-  rewrite compset_in.
-  case => l [H2].
+  rewrite compset_in => [[l [H2 H3]]].
   move: (H1 l).
   rewrite compset_in.
   by apply.
@@ -103,14 +100,11 @@ apply eq_split => x.
   rewrite [forall l, _ -> _]forall_iff_not_exists_not in H1.
   apply NNPP in H1.
   case H1 => l H2.
-  rewrite not_imply in H2.
-  exists l.
-  by rewrite compset_in.
-- move=> H1.
-  rewrite compset_in => H2.
-  case H1 => l [H3 H4].
-  rewrite compset_in in H4.
-  by move: (H2 l H3).
+  rewrite not_imply -compset_in in H2.
+  by exists l.
+- move=> [l [H1 /compset_in H2]].
+  rewrite compset_in => H3.
+  by apply /H2 /H3.
 Qed.
 
 (* 5.3 *)
@@ -162,9 +156,8 @@ Theorem exists_emptyset_to_product_emptyset T L (A: IndexedEnsemble T L):
 Proof.
 move=> [l H1].
 rewrite emptyset_not_in => _ [a H2].
-suff: a l \in A l.
-  by rewrite H1.
-by apply H2.
+move: (H2 l).
+by rewrite H1.
 Qed.
 
 Axiom choice: forall (T L: Type) (A: IndexedEnsemble T L),
@@ -197,7 +190,8 @@ split.
     rewrite emptyset_not_in => H2.
     case (H1 b) => a.
     by apply H2.
-  case H2 => Ab [H2'1 /choice-H3].
+  case H2 => Ab [H2'1 H3].
+  apply choice in H3.
   rewrite not_emptyset_exists in H3.
   case H3 => _ [s H3'].
   exists s.
