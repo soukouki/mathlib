@@ -295,7 +295,19 @@ Qed.
 (* S5 問題5(b) *)
 Theorem bigcaps_cup_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
   BigCap A lamA \cup BigCap B lamB = BigCap (fun l => A (fst l) \cup B (snd l)) (lamA * lamB).
-Admitted.
+Proof.
+apply eq_split.
+- move=> _ [] x H1 [_ _ [l HA HB]];
+    [ left | right ];
+    by apply H1.
+- move=> x H1.
+  rewrite /BigCap /In in H1.
+  rewrite bigcap_cup_distrib => la HLA.
+  rewrite cup_comm.
+  rewrite bigcap_cup_distrib => lb HLB.
+  case (H1 (pair la lb)) => // x' H;
+    by [ right | left ].
+Qed.
 
 (* S5 問題5(c) *)
 Theorem bigcups_prod_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
