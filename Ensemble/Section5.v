@@ -311,14 +311,31 @@ Qed.
 
 (* S5 問題5(c) *)
 Theorem bigcups_prod_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
-  BigCup A lamA * BigCap B lamB = BigCup (fun l => A (fst l) * B (snd l)) (lamA * lamB).
-Admitted.
+  BigCup A lamA * BigCup B lamB = BigCup (fun l => A (fst l) * B (snd l)) (lamA * lamB).
+Proof.
+apply eq_split.
+- move=> _ [x [la [HLA1 HLA2]] [lb [HLB1 HLB2]]].
+  by exists (pair la lb).
+- move=> _ [_ [[[la lb] HLA HLB] [x HXA HXB]]].
+  split;
+    by [ exists la | exists lb ].
+Qed.
 
 (* S5 問題5(d) *)
 Theorem bigcaps_prod_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
   BigCap A lamA * BigCap B lamB = BigCap (fun l => A (fst l) * B (snd l)) (lamA * lamB).
-Admitted.
+Proof.
+apply eq_split.
+- move=> _ [[a b] HA HB] _ [[la lb] HLA HLB].
+  split;
+    by [ apply HA | apply HB ].
+- move=> [a b] H.
+  rewrite /BigCap /In in H.
+  split.
+  + move=> la HLA.
 
+
+Admitted.
 
 
 
