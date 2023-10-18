@@ -310,7 +310,7 @@ apply eq_split.
 Qed.
 
 (* S5 問題5(c) *)
-Theorem bigcups_prod_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
+Theorem bigcups_prod_distrib TA TB LA LB (A: IndexedEnsemble TA LA) (B: IndexedEnsemble TB LB) lamA lamB:
   BigCup A lamA * BigCup B lamB = BigCup (fun l => A (fst l) * B (snd l)) (lamA * lamB).
 Proof.
 apply eq_split.
@@ -322,7 +322,7 @@ apply eq_split.
 Qed.
 
 (* S5 問題5(d) *)
-Theorem bigcaps_prod_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
+Theorem bigcaps_prod_distrib TA TB LA LB (A: IndexedEnsemble TA LA) (B: IndexedEnsemble TB LB) lamA lamB:
   BigCap A lamA * BigCap B lamB = BigCap (fun l => A (fst l) * B (snd l)) (lamA * lamB).
 Proof.
 apply eq_split.
@@ -331,9 +331,16 @@ apply eq_split.
     by [ apply HA | apply HB ].
 - move=> [a b] H.
   rewrite /BigCap /In in H.
+  case (classic (lamA = \emptyset)) => [-> | /not_emptyset_exists [la HLA]].
+    apply NNPP => H2.
+    admit.
+  case (classic (lamB = \emptyset)) => [-> | /not_emptyset_exists [lb HLB]].
+    admit.
+  case (H (pair la lb)) => // x HA HB.
+  case x.
   split.
-  + move=> la HLA.
-
+  + move=> la' HLA'.
+    
 
 Admitted.
 
