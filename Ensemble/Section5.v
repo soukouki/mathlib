@@ -321,6 +321,16 @@ apply eq_split.
     by [ exists la | exists lb ].
 Qed.
 
+Lemma bigcap_emptyset T L (A: IndexedEnsemble T L): BigCap A \emptyset = \emptyset.
+Proof.
+rewrite emptyset_not_in => x.
+rewrite /BigCap /In forall_iff_not_exists_not.
+apply.
+
+
+Admitted.
+
+
 (* S5 問題5(d) *)
 Theorem bigcaps_prod_distrib TA TB LA LB (A: IndexedEnsemble TA LA) (B: IndexedEnsemble TB LB) lamA lamB:
   BigCap A lamA * BigCap B lamB = BigCap (fun l => A (fst l) * B (snd l)) (lamA * lamB).
