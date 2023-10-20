@@ -138,11 +138,8 @@ split.
   rewrite HG.
   by split.
 - move=> HinG.
-  have: (forall a: A, {b: B | (a, b) \in G}) => [| Sigb ].
-    move=> a.
-    apply constructive_definite_description.
-    by apply HinG.
-  exists (fun a: A => get_value (Sigb a)).
+  move: (fun a => constructive_definite_description _ (HinG a)) => Sigb.
+  exists (fun a => get_value (Sigb a)).
   apply eq_split.
   + move=> x Hx.
     rewrite /Graph /MapAsCorr /In.
