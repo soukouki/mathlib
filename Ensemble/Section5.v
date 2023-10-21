@@ -285,10 +285,8 @@ apply eq_split.
 - move=> _ [x [la [HA1 HA2]] [lb [HB1 HB2]]].
   by exists (pair la lb).
 - move=> _ [_ [[l HLA HLB] [x HA HB]]].
-  split.
-  + exists (fst l).
-    by split.
-  + exists (snd l).
+  split;
+    [ exists (fst l) | exists (snd l) ];
     by split.
 Qed.
 
@@ -321,16 +319,6 @@ apply eq_split.
     by [ exists la | exists lb ].
 Qed.
 
-Lemma bigcap_emptyset T L (A: IndexedEnsemble T L): BigCap A \emptyset = \emptyset.
-Proof.
-rewrite emptyset_not_in => x.
-rewrite /BigCap /In forall_iff_not_exists_not.
-apply.
-
-
-Admitted.
-
-
 (* S5 問題5(d) *)
 Theorem bigcaps_prod_distrib TA TB LA LB (A: IndexedEnsemble TA LA) (B: IndexedEnsemble TB LB) lamA lamB:
   BigCap A lamA * BigCap B lamB = BigCap (fun l => A (fst l) * B (snd l)) (lamA * lamB).
@@ -341,16 +329,7 @@ apply eq_split.
     by [ apply HA | apply HB ].
 - move=> [a b] H.
   rewrite /BigCap /In in H.
-  case (classic (lamA = \emptyset)) => [-> | /not_emptyset_exists [la HLA]].
-    apply NNPP => H2.
-    admit.
-  case (classic (lamB = \emptyset)) => [-> | /not_emptyset_exists [lb HLB]].
-    admit.
-  case (H (pair la lb)) => // x HA HB.
-  case x.
-  split.
-  + move=> la' HLA'.
-    
+  
 
 Admitted.
 
