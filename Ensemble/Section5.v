@@ -34,8 +34,7 @@ Theorem bigcup_min T L (A: IndexedEnsemble T L) B lam:
   (forall l, l \in lam -> A l \subset B) ->
   BigCup A lam \subset B.
 Proof.
-move=> H1 x H2.
-case H2 => l [H3 H4].
+move=> H1 x [l [H2 H3]].
 by apply (H1 l).
 Qed.
 
@@ -79,7 +78,7 @@ Theorem bigcup_compset T L (A: IndexedEnsemble T L) lam:
   (BigCup A lam)^c = BigCap (fun l => (A l)^c) lam.
 Proof.
 apply eq_split => x.
-- move=> /compset_in => H1 l H2.
+- rewrite compset_in => H1 l H2.
   rewrite compset_in => H3.
   apply H1.
   by exists l.
