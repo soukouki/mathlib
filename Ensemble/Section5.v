@@ -67,10 +67,11 @@ apply eq_split.
 - move=> _ [x H1|x H1] l H2;
   by [ left; by apply H1 | right ].
 - move=> x H1.
-  case (classic (x \in B)) => H2; [ by right |].
-  left => l H3.
-  move: H2.
-  by case (H1 l H3).
+  case (classic (x \in B)) => H2.
+  + by right.
+  + left => l H3.
+    move: H2.
+    by case (H1 l H3).
 Qed.
 
 (* 5.2 *)
