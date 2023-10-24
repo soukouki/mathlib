@@ -158,16 +158,16 @@ split.
 Qed.
 
 Lemma singleton_unique_eq A a (P: Ensemble A):
-  a \in P -> uniqueness (fun a' => a' \in P) -> \{a} = P.
+  a \in P -> uniqueness (fun a' => a' \in P) -> P = \{a}.
 Proof.
 move=> Hin Huniq.
 apply eq_split.
 - move=> a' HA'.
-  rewrite singleton_eq in HA'.
-  by rewrite HA'.
-- move=> a' HA'.
   rewrite singleton_eq.
   by apply Huniq.
+- move=> a' HA'.
+  rewrite singleton_eq in HA'.
+  by rewrite HA'.
 Qed.
 
 Lemma invcorr_cap_emptyset_unique A B (C: A ->c B):
@@ -184,6 +184,16 @@ by apply.
 Qed.
 
 (* 問題1から問題2は飛ばす *)
+
+Lemma corr_to_map A B {C: A ->c B}:
+  (forall b, exists a, C b = \{ a }) ->
+  {f: A -> B | forall a, \{ f a } = C a}.
+Proof.
+move=> H1.
+move: (fun a => constructive_indefinite_description _ (H1 a)) => Hsigb.
+exists (fun a => get_value (Hsigb a)) => a.
+by move: (get_proof (Hsigb a)) => H2.
+Qed.
 
 (* S3 問題3 *)
 Theorem map_as_corr_invcorr A B (C: A ->c B):
@@ -210,25 +220,24 @@ split.
     by rewrite Heq' in HB. (* ここまでは古い証明と同じ *)
 - case => Hdef Hinv.
   move: (invcorr_cap_emptyset_unique Hinv) => Huniq.
-  have: forall a: A, exists b, \{b} = C a => [ a | Hsig ].
+  have: forall a: A, exists b, C a = \{ b } => [ a | Hsig ].
     rewrite /In defrange_exists in Hdef.
     move: (constructive_indefinite_description _ (Hdef a)) => Bsig.
     exists (get_value Bsig).
     apply singleton_unique_eq => //.
     by apply (get_proof Bsig).
-  move: (fun a => constructive_indefinite_description _ (Hsig a)) => fsig.
+  move: (corr_to_map Hsig) => Hf.
   rewrite -unique_existence.
   split.
-  + exists (fun a => get_value (fsig a)).
+  + exists (fun a => get_value Hf a).
     apply functional_extensionality => a.
     case (Hsig a) => b HB.
-    rewrite -HB.
-    symmetry.
+    rewrite HB.
     apply singleton_unique_eq.
     * rewrite /MapAsCorr /In.
       apply (Huniq a).
-      - by rewrite -HB.
-      - move: (get_proof (fsig a)) => H.
+      - by rewrite HB.
+      - move: (get_proof Hf a) => H.
         rewrite -eq_iff in H.
         by rewrite -H.
     * rewrite /MapAsCorr /In => b1 b2 HB1 HB2.
