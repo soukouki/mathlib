@@ -211,64 +211,23 @@ Proof.
 split.
 - move=> Hinj.
   move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
-  (* rについて、b \in ValueRange (MapAsCorr f)ならaが存在するし、そうでないならrが呼ばれることもない
-  つまり、rの定義域は全域でないのだから、関数よりも関係のほうが良い？ *)
-  have: exists rcorr: B ->c A, forall a, rcorr (f a) = \{ a }.
-    exists (fun b =>
-      match excluded_middle_informative (b \in ValueRange(MapAsCorr f)) with
-      | left H => \{ get_value (constructive_definite_description _ (Hinj' b H)) }
-      | right _ => \emptyset
-      end).
-    move=> a.
-    case excluded_middle_informative.
-    + move=> Ha.
-      apply f_equal.
-      by move: (get_proof (constructive_definite_description (fun a0 : A => f a0 = f a) (Hinj' (f a) Ha))) => /Hinj-H1.
-    + rewrite valuerange_map_as_corr.
-      rewrite exists_iff_not_forall_not => /NNPP-H2.
-      by move: (H2 a).
-  case => rcorr Hr.
-
-Restart.
-split.
-- move=> Hinj.
-  case (classic (exists a: A, a \in FullSet)).
-  + case => a Ha.
+  have: A => [| a0 ].
     admit.
-  + rewrite exists_iff_not_forall_not => /NNPP-H.
-    Search Injective.
-    rewrite injective_exists_unique in Hinj.
-    have: forall b: B, b \in ValueRange (MapAsCorr f) -> {a: A | f a = b}.
-      move=> b Hb.
-      apply constructive_definite_description.
-      case (Hinj _ Hb) => a Ha.
-      exists a.
-      by apply Ha.
-    move=> rsig.
-
-
-
-Restart.
-split.
-- move=> Hinj.
-  suff: exists r: B -> A, forall a b, f a = b -> r b = a => [[r Hr] |].
-    exists r.
-    apply functional_extensionality => a.
-    by apply Hr.
-  have: exists (rcorr: B ->c A), forall a b, f a = b -> rcorr b = \{ a }.
-    exists (fun b => InvImage f \{b}) => a b Heq.
-    apply eq_split => a' H.
-    + rewrite /In /InvImage singleton_eq in H.
-      suff: a' = a => //.
-      apply Hinj.
-      by rewrite Heq H.
-    + rewrite singleton_eq in H.
-      by subst.
-  case => rcorr Hrcorr.
-
-
-
-  admit.
+  move: (fun b H => constructive_definite_description _ (Hinj' b H)) => Hsig.
+  exists (fun b =>
+    match excluded_middle_informative (b \in ValueRange(MapAsCorr f)) with
+    | left H => get_value (Hsig b H)
+    | right _ => a0
+    end).
+  rewrite /Composite /Identity.
+  apply functional_extensionality => a.
+  case excluded_middle_informative.
+  + move=> H1.
+    apply Hinj.
+    by apply get_proof.
+  + move=> /valuerange_map_as_corr /exists_iff_not_forall_not /NNPP H2.
+    apply Hinj.
+    by move: (H2 a).
 - case => r H.
   apply injective_composite_injective with (g := r).
   rewrite H.
@@ -331,7 +290,12 @@ apply eq_split.
   rewrite /BigCap /In in H.
   
 
+
 Admitted.
+
+(* 問題6は関数の拡大が必要なので飛ばす *)
+
+
 
 
 
