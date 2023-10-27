@@ -286,9 +286,16 @@ apply eq_split.
 - move=> _ [[a b] HA HB] _ [[la lb] HLA HLB].
   split;
     by [ apply HA | apply HB ].
-- move=> [a b] H.
-  rewrite /BigCap /In in H.
-  
+- move=> x H1.
+  rewrite /BigCap /In in H1.
+  case (classic (exists l: LA * LB, l \in EnsembleProd lamA lamB)) => H2.
+  + case H2 => [[la lb] Hl].
+    case (H1 (pair la lb) Hl) => [[xa xb]] HxA HxB.
+    clear x H1.
+    split.
+    * move=> la' Hla.
+      rewrite /fst.
+      rewrite /fst in HxA.
 
 
 Admitted.
