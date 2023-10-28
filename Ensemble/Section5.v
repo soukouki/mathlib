@@ -288,14 +288,14 @@ apply eq_split.
     by [ apply HA | apply HB ].
 - move=> x H1.
   rewrite /BigCap /In in H1.
-  case (classic (exists l: LA * LB, l \in EnsembleProd lamA lamB)) => H2.
-  + case H2 => [[la lb] Hl].
-    case (H1 (pair la lb) Hl) => [[xa xb]] HxA HxB.
-    clear x H1.
-    split.
-    * move=> la' Hla.
-      rewrite /fst.
-      rewrite /fst in HxA.
+  + split.
+    move=> la Hla.
+    case (classic (exists lb, lb \in lamB)) => H2.
+    -- case: H2 => lb Hlb.
+       by case (H1 (pair la lb)).
+    -- rewrite exists_iff_not_forall_not in H2.
+       apply NNPP in H2.
+       
 
 
 Admitted.
