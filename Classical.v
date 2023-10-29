@@ -77,6 +77,13 @@ split.
   by move: (H1 HQ).
 Qed.
 
+Lemma nnpp (P: Prop): ~ ~ P <-> P.
+Proof.
+split.
+- by apply NNPP.
+- move=> H.
+  by apply.
+Qed.
 
 
 

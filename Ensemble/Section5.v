@@ -290,7 +290,15 @@ apply eq_split.
   rewrite /BigCap /In in H1.
   + split.
     move=> la Hla.
-    case (classic (exists lb, lb \in lamB)) => H2.
+    case (classic ((exists la, la \in lamA) /\ (exists lb, lb \in lamB))) => H2.
+    -- move: H2 => [[la' Hla'] [lb Hlb]].
+       by case (H1 (pair la lb)).
+    -- rewrite not_and_or in H2.
+       rewrite 2!exists_iff_not_forall_not 2!nnpp in H2.
+       case H2 => H3.
+       ++ by move: (H3 la).
+       ++ 
+
     -- case: H2 => lb Hlb.
        by case (H1 (pair la lb)).
     -- rewrite exists_iff_not_forall_not in H2.
