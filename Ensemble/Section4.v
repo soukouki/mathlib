@@ -165,9 +165,9 @@ Theorem invimage_sub A B (f: A -> B) Q:
 Proof.
 rewrite 2!fullset_sub.
 apply eq_split.
-- rewrite /InvImage => a Hin.
-  rewrite compset_in => Hout.
-  by rewrite {1}/In compset_in in Hin.
+- rewrite /InvImage /Subset {1}/In => a Hin.
+  rewrite compset_in {1}/In => Hout.
+  by rewrite compset_in in Hin.
 - rewrite /InvImage => a.
   rewrite compset_in => Hout.
   by rewrite {1}/In compset_in => Hin.
