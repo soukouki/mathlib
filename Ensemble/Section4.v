@@ -220,9 +220,8 @@ Lemma injective_uniqueness A B (f: A -> B):
   Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> uniqueness (fun a => f a = b).
 Proof.
 split.
-- move=> Hinj b Hb.
+- move=> Hinj b Hb a a' Heqa Heqa'.
   rewrite valuerange_map_as_corr in Hb.
-  rewrite /uniqueness => a a' Heqa Heqa'.
   apply Hinj.
   by rewrite Heqa Heqa'.
 - move=> Hb a a' Heq.
