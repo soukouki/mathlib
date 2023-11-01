@@ -211,6 +211,18 @@ Proof.
 split.
 - move=> Hinj.
   move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
+  case (classic (exists a0: A, True)).
+  + case => a0 _.
+    admit.
+  rewrite exists_iff_not_forall_not => H.
+  apply NNPP in H.
+  Search Injective.
+
+  have: (B -> False) => [b | H2].
+    move: (Hinj' b).
+  exists (fun b => match (H2 b) with end).
+    admit.
+
   have: A => [| a0 ].
     admit.
   move: (fun b H => constructive_definite_description _ (Hinj' b H)) => Hsig.
