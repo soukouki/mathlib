@@ -234,6 +234,22 @@ split.
   by apply identity_injective.
 Admitted.
 
+(* S5 系 *)
+Corollary injective_surjective A B: (exists f: A -> B, Injective f) <-> (exists g: B -> A, Surjective g).
+Proof.
+split => [[f Hf] | [g Hg]].
+- rewrite injective_exists_left_invmap in Hf.
+  case Hf => g Hg.
+  exists g.
+  rewrite surjective_exists_right_invmap.
+  by exists f.
+- rewrite surjective_exists_right_invmap in Hg.
+  case Hg => f Hf.
+  exists f.
+  rewrite injective_exists_left_invmap.
+  by exists g.
+Qed.
+
 (* 問題1は飛ばす。問題2-4はすでに証明済み *)
 
 (* S5 問題5(a) *)
