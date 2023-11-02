@@ -211,18 +211,6 @@ Proof.
 split.
 - move=> Hinj.
   move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
-  case (classic (exists a0: A, True)).
-  + case => a0 _.
-    admit.
-  rewrite exists_iff_not_forall_not => H.
-  apply NNPP in H.
-  Search Injective.
-
-  have: (B -> False) => [b | H2].
-    move: (Hinj' b).
-  exists (fun b => match (H2 b) with end).
-    admit.
-
   have: A => [| a0 ].
     admit.
   move: (fun b H => constructive_definite_description _ (Hinj' b H)) => Hsig.
@@ -318,20 +306,10 @@ apply eq_split.
   rewrite /BigCap /In in H1.
   + split.
     move=> la Hla.
-    case (classic ((exists la, la \in lamA) /\ (exists lb, lb \in lamB))) => H2.
-    -- move: H2 => [[la' Hla'] [lb Hlb]].
-       by case (H1 (pair la lb)).
-    -- rewrite not_and_or in H2.
-       rewrite 2!exists_iff_not_forall_not 2!nnpp in H2.
-       case H2 => H3.
-       ++ by move: (H3 la).
-       ++ 
-
-    -- case: H2 => lb Hlb.
-       by case (H1 (pair la lb)).
-    -- rewrite exists_iff_not_forall_not in H2.
-       apply NNPP in H2.
-       
+(* 
+1. bの存在で場合分け=>失敗
+2. aの存在/\bの存在で場合分け=>失敗
+ *)
 
 
 Admitted.
