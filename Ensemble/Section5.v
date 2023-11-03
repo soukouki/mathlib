@@ -205,19 +205,21 @@ split.
   by apply identity_surjective.
 Qed.
 
+Theorem hoge: exists n: nat, 1=1.
+by exists 0.
+Qed.
+
 (* S5 定理7(b) *)
 Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, r \comp f = \I A.
 Proof.
 split.
 - move=> Hinj.
   move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
-  have: A => [| a0 ].
-    admit.
   move: (fun b H => constructive_definite_description _ (Hinj' b H)) => Hsig.
-  exists (fun b =>
+  eexists (fun b =>
     match excluded_middle_informative (b \in ValueRange(MapAsCorr f)) with
     | left H => get_value (Hsig b H)
-    | right _ => a0
+    | right _ => _?[a0]
     end).
   rewrite /Composite /Identity.
   apply functional_extensionality => a.
@@ -232,6 +234,35 @@ split.
   apply injective_composite_injective with (g := r).
   rewrite H.
   by apply identity_injective.
+[a0]: {
+  case.
+}.
+Restart.
+split.
+- move=> Hinj.
+  move: (Hinj) => Hinj'.
+  rewrite injective_exists_unique in Hinj'.
+  move: (fun b H => constructive_definite_description _ (Hinj' b H)) => Hsig.
+  refine (ex_intro _ (fun b =>
+    match excluded_middle_informative (b \in ValueRange(MapAsCorr f)) with
+    | left H => get_value (Hsig b H)
+    | right _ => _
+    end) _).
+  rewrite /Composite /Identity.
+  apply functional_extensionality => a.
+  case excluded_middle_informative.
+  + move=> H1.
+    apply Hinj.
+    by apply get_proof.
+  + move=> /valuerange_map_as_corr /exists_iff_not_forall_not /NNPP H2.
+    
+- case => r H.
+  apply injective_composite_injective with (g := r).
+  rewrite H.
+  by apply identity_injective.
+
+
+
 Admitted.
 
 (* S5 系 *)
