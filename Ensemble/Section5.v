@@ -215,11 +215,24 @@ Proof.
 split.
 - move=> Hinj.
   move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
+
+  case (classic (exists a0: A, True)).
+  (* Trueの否定~ Trueからは何でも導けるので、ここをいじっても無理 *)
+  + admit.
+  + move=> H.
+    rewrite exists_iff_not_forall_not in H.
+    apply NNPP in H.
+    have: A -> ~ False.
+      move=> a0.
+      by move: (H a0).
+
+  have: A => [| a0].
+    admit.
   move: (fun b H => constructive_definite_description _ (Hinj' b H)) => Hsig.
-  eexists (fun b =>
+  exists (fun b =>
     match excluded_middle_informative (b \in ValueRange(MapAsCorr f)) with
     | left H => get_value (Hsig b H)
-    | right H => ?[a0] H
+    | right H => a0
     end).
   rewrite /Composite /Identity.
   apply functional_extensionality => a.
@@ -227,19 +240,12 @@ split.
   + move=> H1.
     apply Hinj.
     by apply get_proof.
-  + move=> H2.
-    move: (H2) => H2'.
-    rewrite valuerange_map_as_corr exists_iff_not_forall_not nnpp in H2.
-    admit.
+  + move=> /valuerange_map_as_corr /exists_iff_not_forall_not /NNPP H2.
+    by move: (H2 a).
 - case => r H.
   apply injective_composite_injective with (g := r).
   rewrite H.
   by apply identity_injective.
-[a0]: {
-  move=> _.
-  無理でね？
-  move: (
-}.
 Admitted.
 
 (* S5 系 *)
