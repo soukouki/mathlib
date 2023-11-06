@@ -205,28 +205,26 @@ split.
   by apply identity_surjective.
 Qed.
 
-Theorem hoge: exists n: nat, 1=1.
-by exists 0.
-Qed.
-
 (* S5 定理7(b) *)
 Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, r \comp f = \I A.
 Proof.
 split.
 - move=> Hinj.
+  have: A => [| a0]. admit.
   move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
   move: (fun b H => constructive_definite_description _ (Hinj' b H)) => Hsig.
-  eexists (fun b =>
-    match excluded_middle_informative (b \in ValueRange(MapAsCorr f)) with
-    | left H => get_value (Hsig b H)
+  rewrite /Composite /Identity.
+
+  (* 矛盾させるために仮定を入れたいが、そもそもゴールがB -> Aで仮定を入れられない・・・ *)
+  eexists (fun b: {b: B | exists a, f a = b} =>
+    match excluded_middle_informative (get_value b \in ValueRange(MapAsCorr f)) with
+    | left H => get_value (Hsig (get_value b) H)
     | right H => ?[a0]
     end).
   [a0]: {
-    case H.
-    rewrite valuerange_map_as_corr.
-    refine (ex_intro _ _ (get_proof (Hsig _ _))).
     (* 戻った・・・orz *)
     (* そもそもここは結局呼ばれることはないのだから、そこからうまく仮定を矛盾させるしか無い。つまり仮定が足りない *)
+    admit.
   }
   rewrite /Composite /Identity.
   apply functional_extensionality => a.
