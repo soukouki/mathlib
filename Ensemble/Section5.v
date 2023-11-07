@@ -180,8 +180,7 @@ split.
 - move=> Hsurj.
   have: forall b: B, exists a, a \in InvImage f \{ b } => [b | H1].
     rewrite surjective_exists in Hsurj.
-    case (Hsurj b) => a H1.
-    subst.
+    case (Hsurj b) => a <-.
     by exists a.
   have: exists Ab: IndexedEnsemble A B,
     (forall (b: B), Ab b = InvImage f \{ b }) /\ (forall (b: B), Ab b <> \emptyset) => [| H2].

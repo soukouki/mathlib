@@ -296,13 +296,12 @@ Theorem invcorr_is_map_iff_bijective A B (f: A -> B):
   Bijective f <-> (forall gcorr: B ->c A, gcorr = InvCorr (MapAsCorr f) -> exists g, gcorr = MapAsCorr g).
 Proof.
 split => [| Hg ].
-- case => Hsur Hinj g Hgeq.
+- case => Hsur Hinj g ->.
   have: forall b : B, {x : A | f x = b} => [ b | Hsig ].
     move: (iffLR (surjective_valuerange _) Hsur b) => H1.
     move: (iffLR (injective_exists_unique _) Hinj b H1) => H2.
     apply (constructive_definite_description _ H2).
   exists (fun b => get_value (Hsig b)).
-  subst.
   apply corr_eq => b a.
   split => [ Hinv | Hmap ].
   + rewrite /InvCorr /MapAsCorr /In in Hinv.
@@ -326,8 +325,7 @@ split => [| Hg ].
     by exists (g b).
   + rewrite injective_exists_unique => b Hval.
     exists (g b).
-    split => // a Haeq.
-    by rewrite -Haeq.
+    by split => // a <-.
 Qed.
 
 (* S4 定理4 後半 *)
