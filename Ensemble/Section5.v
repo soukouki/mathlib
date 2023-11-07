@@ -163,6 +163,8 @@ Qed.
 Axiom choice: forall (T L: Type) (A: IndexedEnsemble T L),
   (forall (l: L), A l <> \emptyset) -> Product A <> \emptyset.
 
+Definition Proj T L (l: L) (A: IndexedEnsemble T L): Ensemble T := A l.
+
 
 Lemma not_emptyset_exists T A: A <> \emptyset <-> exists a: T, a \in A.
 Proof.
@@ -321,6 +323,15 @@ Admitted.
 
 (* 問題6は関数の拡大が必要なので飛ばす *)
 
+(* S5 問題7 *)
+Theorem proj_surjective T L (A: IndexedEnsemble T L):
+  (forall l: L, A l <> \emptyset)
+  -> forall l: L, Surjective (Proj l A).
+Proof.
+move=> /choice /not_emptyset_exists H1 l.
+case H1 => f H2.
+rewrite surjective_exists => b.
+(* なんかおかしい。Proj l AがEnsemble A = A -> Propで、これの全射調べるのは変 *)
 
 
 
