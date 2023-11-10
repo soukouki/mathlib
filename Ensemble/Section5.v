@@ -328,12 +328,11 @@ Theorem proj_surjective T L (A: IndexedEnsemble T L):
   (forall l: L, A l <> \emptyset)
   -> forall l: L, Surjective (B := T) (Proj l).
 Proof.
-move=> /choice /not_emptyset_exists H1 l.
-case H1 => a H2.
+move=> /choice /not_emptyset_exists [_ [f Hf]] l.
 rewrite surjective_exists => b.
-exists a.
-rewrite /Proj.
-case H2 => a' H3.
+by exists (fun _ => b).
+Qed.
+
 
 
 
