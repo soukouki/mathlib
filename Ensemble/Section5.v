@@ -333,6 +333,21 @@ rewrite surjective_exists => b.
 by exists (fun _ => b).
 Qed.
 
+(* S5 問題8 *)
+Theorem product_subset_iff_forall_subset T L (A B: IndexedEnsemble T L):
+  (forall l, A l <> \emptyset)
+  -> Product A \subset Product B <-> (forall l, A l \subset B l).
+Proof.
+move=> /choice /not_emptyset_exists [_ [f Hf]].
+split.
+- move=> H1 l x HA.
+  move: (H1 f) => H2.
+  have: f \in Product A => [| H3].
+    split => l'.
+    by apply Hf.
+  case (H2 H3) => f' Hf'.
+  
+
 
 
 
