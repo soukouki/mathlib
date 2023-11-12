@@ -342,12 +342,22 @@ move=> /choice /not_emptyset_exists [_ [f Hf]].
 split.
 - move=> H1 l x HA.
   move: (H1 f) => H2.
+  case H2.
+    split => l'.
+    by apply Hf.
+  move=> f' H3.
+
+
+  move: (H1 f) => H2.
   have: f \in Product A => [| H3].
     split => l'.
     by apply Hf.
   case (H2 H3) => f' Hf'.
-  
-
+  admit.
+- move=> H1 _ [x H2].
+  split => l.
+  apply H1.
+  apply H2.
 
 
 
