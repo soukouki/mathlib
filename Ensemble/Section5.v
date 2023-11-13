@@ -341,18 +341,17 @@ Proof.
 move=> /choice /not_emptyset_exists [_ [f Hf]].
 split.
 - move=> H1 l x HA.
-  move: (H1 f) => H2.
+  move: (H1 (fun l' => f l')) => H2.
   case H2.
     split => l'.
     by apply Hf.
   move=> f' H3.
 
+(* H1に渡すのはf lの形じゃないとHfで処理できない
+けれど、ゴールはxの形じゃないといけない
+つまり、どこかで変換してやる必要がある *)
 
-  move: (H1 f) => H2.
-  have: f \in Product A => [| H3].
-    split => l'.
-    by apply Hf.
-  case (H2 H3) => f' Hf'.
+
   admit.
 - move=> H1 _ [x H2].
   split => l.
