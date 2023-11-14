@@ -341,6 +341,20 @@ Proof.
 move=> /choice /not_emptyset_exists [_ [f Hf]].
 split.
 - move=> H1 l x HA.
+
+
+  move: (H1 (fun l' => x)) => H2.
+  case H2.
+    split => l'.
+    admit.
+  move=> f' H3.
+  
+
+  move: (H1 (fun _ => x)) => H2.
+  case H2.
+    split => l'.
+    
+
   move: (H1 (fun l' => f l')) => H2.
   case H2.
     split => l'.
