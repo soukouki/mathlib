@@ -124,7 +124,7 @@ Definition Identity {A}: A -> A := fun a: A => a.
 Notation "\I A" := (Identity: A -> A) (at level 30).
 
 
-(* 分かりづらいんじゃ！ *)
+(* 分かりづらいので別名を定義 *)
 Definition get_value := proj1_sig.
 Definition get_proof := proj2_sig.
 
