@@ -6,7 +6,6 @@ From mathcomp Require Import ssreflect.
 
 Require Import Coq.Logic.ClassicalDescription.
 Require Import Coq.Logic.IndefiniteDescription.
-Require Import Coq.Logic.PropExtensionality.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import PeanoNat BinIntDef BinInt.
 Add LoadPath "." as Local.
@@ -279,16 +278,6 @@ remember (g b).
 suff: b \in MapAsCorr f a => //.
 rewrite -[MapAsCorr f]invcorr_twice.
 by rewrite Heq.
-Qed.
-
-Lemma corr_eq A B (f g: A ->c B):
-  (forall a b, b \in f a <-> b \in g a) -> f = g.
-Proof.
-move=> H.
-apply functional_extensionality => a.
-apply functional_extensionality => b.
-apply propositional_extensionality.
-by apply H.
 Qed.
 
 (* S4 定理4 前半 *)

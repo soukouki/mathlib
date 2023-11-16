@@ -6,6 +6,7 @@ From mathcomp Require Import ssreflect.
 
 Require Import Coq.Logic.IndefiniteDescription.
 Require Import Coq.Logic.FunctionalExtensionality.
+Require Import Coq.Logic.PropExtensionality.
 Require Import Setoid.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
@@ -28,6 +29,16 @@ Notation "A * B" := (EnsembleProd A B).
 (* Corr = Correspondence *)
 Definition Corr A B := A -> Ensemble B.
 Notation "A ->c B" := (Corr A B) (at level 99).
+
+Lemma corr_extensionality A B (f g: A ->c B):
+  (forall a b, b \in f a <-> b \in g a) -> f = g.
+Proof.
+move=> H.
+apply functional_extensionality => a.
+apply functional_extensionality => b.
+apply propositional_extensionality.
+by apply H.
+Qed.
 
 Definition Graph A B (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => (snd x) \in C (fst x)).
 
@@ -127,6 +138,38 @@ Notation "\I A" := (Identity: A -> A) (at level 30).
 (* 分かりづらいので別名を定義 *)
 Definition get_value := proj1_sig.
 Definition get_proof := proj2_sig.
+
+(* 関数が、本での定義とCoqの定義で等しいことを確認する *)
+Lemma map_def A B (C: A ->c B):
+  (forall a: A, exists! b: B, C a = \{ b }) <-> exists f, C = MapAsCorr f.
+Proof.
+split => [H1 | [f ->] a].
+- move: (fun a => constructive_definite_description _ (H1 a)) => H1sig.
+  exists (fun a => get_value (H1sig a)).
+  apply corr_extensionality => a b.
+  by rewrite (get_proof (H1sig a)) singleton_eq.
+- Search (exists! _, _).
+  exists (f a).
+  split.
+  + by apply ensemble_extensionality.
+  + move=> b H1.
+
+  rewrite -unique_existence.
+  split.
+  + exists (f a).
+    by apply ensemble_extensionality.
+  + move=> b b' H1 H2.
+    suff: \{ b } = \{ b' }.
+
+  exists (f a).
+  split.
+  + by apply ensemble_extensionality.
+  + move=> b' H1.
+    rewrite /MapAsCorr in H1.
+    
+
+
+Admitted.
 
 (* S3 定理2 *)
 Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):

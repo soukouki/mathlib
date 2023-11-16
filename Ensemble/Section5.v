@@ -211,6 +211,10 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
+  case (classic (A = Empty_set)) => H1.
+  - admit.
+  - 
+
   have: A => [| a0]. admit.
   move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
   move: (fun b H => constructive_definite_description _ (Hinj' b H)) => Hsig.

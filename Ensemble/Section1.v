@@ -21,7 +21,7 @@ Notation "a \notin A" := (~ In a A) (at level 55).
 Definition Singleton (a: T): Ensemble := fun a' => a = a'.
 Notation "\{ a }" := (Singleton a).
 
-Inductive EmptySet: Ensemble := .
+Inductive EmptySet := .
 Notation "\emptyset" := EmptySet.
 
 (* 外延性の公理 *)
