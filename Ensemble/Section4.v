@@ -291,7 +291,7 @@ split => [| Hg ].
     move: (iffLR (injective_exists_unique _) Hinj b H1) => H2.
     apply (constructive_definite_description _ H2).
   exists (fun b => get_value (Hsig b)).
-  apply corr_eq => b a.
+  apply corr_extensionality => b a.
   split => [ Hinv | Hmap ].
   + rewrite /InvCorr /MapAsCorr /In in Hinv.
     rewrite /MapAsCorr /In.
@@ -783,7 +783,7 @@ case (get_proof (identity_to_bijective_sig)) => _ Heq'.
 fold get_value in Heq'.
 rewrite Heq'.
 clear Heq Heq'.
-apply corr_eq => b a.
+apply corr_extensionality => b a.
 rewrite -in_invcorr.
 split => H;
   rewrite H;

@@ -148,28 +148,12 @@ split => [H1 | [f ->] a].
   exists (fun a => get_value (H1sig a)).
   apply corr_extensionality => a b.
   by rewrite (get_proof (H1sig a)) singleton_eq.
-- Search (exists! _, _).
+- clear C.
   exists (f a).
-  split.
+  split => [| b H2].
   + by apply ensemble_extensionality.
-  + move=> b H1.
-
-  rewrite -unique_existence.
-  split.
-  + exists (f a).
-    by apply ensemble_extensionality.
-  + move=> b b' H1 H2.
-    suff: \{ b } = \{ b' }.
-
-  exists (f a).
-  split.
-  + by apply ensemble_extensionality.
-  + move=> b' H1.
-    rewrite /MapAsCorr in H1.
-    
-
-
-Admitted.
+  + by rewrite -singleton_eq -H2.
+Qed.
 
 (* S3 定理2 *)
 Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
