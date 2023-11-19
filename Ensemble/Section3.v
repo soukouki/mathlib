@@ -141,18 +141,28 @@ Definition get_proof := proj2_sig.
 
 (* 関数が、本での定義とCoqの定義で等しいことを確認する *)
 Lemma map_def A B (C: A ->c B):
-  (forall a: A, exists! b: B, C a = \{ b }) <-> exists f, C = MapAsCorr f.
+  (forall a: A, exists! b: B, C a = \{ b }) <-> exists! f, C = MapAsCorr f.
 Proof.
-split => [H1 | [f ->] a].
+split => [H1 | [f H1 a]].
 - move: (fun a => constructive_definite_description _ (H1 a)) => H1sig.
   exists (fun a => get_value (H1sig a)).
-  apply corr_extensionality => a b.
-  by rewrite (get_proof (H1sig a)) singleton_eq.
-- clear C.
-  exists (f a).
-  split => [| b H2].
-  + by apply ensemble_extensionality.
-  + by rewrite -singleton_eq -H2.
+  split.
+  + apply corr_extensionality => a b.
+    by rewrite (get_proof (H1sig a)) singleton_eq.
+  + move=> f H2.
+    subst.
+    apply functional_extensionality => a.
+    move: (get_proof (H1sig a)) => H3.
+    symmetry.
+    rewrite -singleton_eq.
+    by rewrite -H3.
+- exists (f a).
+  case H1 => H2 _.
+  split.
+  + rewrite H2.
+    by apply ensemble_extensionality.
+  + move=> b H3.
+    by rewrite -singleton_eq -H3 H2.
 Qed.
 
 (* S3 定理2 *)
