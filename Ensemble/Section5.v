@@ -206,38 +206,12 @@ split.
   by apply identity_surjective.
 Qed.
 
-Lemma hoge A:
-  (exists a: A, True) \/ ~ (exists a: A, True).
-Proof.
-by apply classic.
-Qed.
-
-Lemma hoge2 A B (f: A -> B):
-  Injective f -> ~ (exists a: A, True).
-Proof.
-move=> H1 H2.
-rewrite exists_iff_not_forall_not in H2.
-apply H2 => a.
-move: (H1 a a).
-Admitted.
-
-Lemma hoge3 A B (f: A -> B):
-  Injective f -> A = Empty_set -> B = Empty_set.
-Proof.
-move=> H1 H2.
-subst.
-rewrite /Injective in H1.
-
-
 (* S5 定理7(b) *)
 Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, r \comp f = \I A.
 Proof.
 split.
 - move=> Hinj.
-  case (hoge A).
-  + case => a _.
-    admit.
-  + 
+  
 
   have: A => [| a0]. admit.
   move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
