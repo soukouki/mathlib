@@ -141,9 +141,16 @@ Definition get_proof := proj2_sig.
 
 (* 関数が、本での定義とCoqの定義で等しいことを確認する *)
 Lemma map_def A B (C: A ->c B):
-  (forall a: A, exists! b: B, C a = \{ b }) <-> exists! f, C = MapAsCorr f.
+  (exists! f, C = MapAsCorr f) <-> (forall a: A, exists! b: B, C a = \{ b }).
 Proof.
-split => [H1 | [f H1 a]].
+split => [[f H1 a] | H1].
+- exists (f a).
+  case H1 => H2 _.
+  split.
+  + rewrite H2.
+    by apply ensemble_extensionality.
+  + move=> b H3.
+    by rewrite -singleton_eq -H3 H2.
 - move: (fun a => constructive_definite_description _ (H1 a)) => H1sig.
   exists (fun a => get_value (H1sig a)).
   split.
