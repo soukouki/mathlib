@@ -163,40 +163,17 @@ split => [[f H1 a] | H1].
     symmetry.
     rewrite -singleton_eq.
     by rewrite -H3.
-- exists (f a).
-  case H1 => H2 _.
-  split.
-  + rewrite H2.
-    by apply ensemble_extensionality.
-  + move=> b H3.
-    by rewrite -singleton_eq -H3 H2.
 Qed.
 
 (* S3 定理2 *)
 Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
-  (exists! f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
+  (exists f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
 Proof.
 split.
-- case => f.
-  case => HG1 HG2 a.
-  rewrite HG1 /Graph /In.
-  rewrite -map_def.
-
+- case => f HG a.
   exists (f a).
-  split.
-  + by rewrite HG1.
-  + move=> b Hb.
-    
-
-  rewrite -unique_existence.
-  split.
-  + exists (f a).
-    by rewrite HGeq.
-  + move=> b1 b2 HB1 HB2.
-    rewrite -singleton_eq.
-- move=> HinG.
-  rewrite map_def.
-
+  rewrite HG.
+  by split.
 - move=> HinG.
   move: (fun a => constructive_definite_description _ (HinG a)) => Sigb.
   exists (fun a => get_value (Sigb a)).
