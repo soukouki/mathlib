@@ -222,16 +222,6 @@ Qed.
 
 (* 問題1から問題2は飛ばす *)
 
-Lemma corr_to_map A B {C: A ->c B}:
-  (forall b, exists a, C b = \{ a }) ->
-  {f: A -> B | forall a, \{ f a } = C a}.
-Proof.
-move=> H1.
-move: (fun a => constructive_indefinite_description _ (H1 a)) => Hsigb.
-exists (fun a => get_value (Hsigb a)) => a.
-by move: (get_proof (Hsigb a)) => H2.
-Qed.
-
 Lemma in_graph A B (C: A ->c B) a b:
   (a, b) \in Graph C = b \in C a.
 Proof. by []. Qed.
