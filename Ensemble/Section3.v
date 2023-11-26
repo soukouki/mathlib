@@ -165,30 +165,6 @@ split => [[f H1 a] | H1].
     by rewrite -H3.
 Qed.
 
-Lemma in_graph_pair A B (C: A ->c B) a b:
-  b \in C a <-> (a, b) \in Graph C.
-Proof. by []. Qed.
-
-Lemma graph_eq_corr_eq A B (C C': A ->c B): Graph C = Graph C' -> C = C'.
-Proof.
-move=> Heq.
-apply corr_extensionality => a b.
-rewrite 2![b \in _]in_graph_pair.
-by rewrite Heq.
-Qed.
-
-Theorem exist_one_map_equivalent_to_graphs' A B (G: Ensemble (A * B)):
-  (exists! f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
-Proof.
-split.
-- case => f [HGeq HGuniq] a.
-  exists (f a).
-  rewrite HGeq.
-  by split.
-- move=> HinG.
-  rewrite graph_eq_corr_eq.
-  have: exists! f, 
-
 (* S3 定理2 *)
 Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
   (exists f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
