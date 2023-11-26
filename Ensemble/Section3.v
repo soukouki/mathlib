@@ -232,106 +232,42 @@ exists (fun a => get_value (Hsigb a)) => a.
 by move: (get_proof (Hsigb a)) => H2.
 Qed.
 
+Lemma in_graph A B (C: A ->c B) a b:
+  (a, b) \in Graph C = b \in C a.
+Proof. by []. Qed.
+
 (* S3 問題3 *)
 Theorem map_as_corr_invcorr A B (C: A ->c B):
-  (exists! f: A -> B, MapAsCorr f = C) <->
+  (exists! f: A -> B, C = MapAsCorr f) <->
   (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
 Proof.
 rewrite -eq_fullset.
 split.
 - move=> Hf.
-  move: (constructive_definite_description _ Hf).
-  clear Hf => Hf.
+  rewrite map_def in Hf.
   split.
   + move=> a.
-    case Hf => f Hfeq.
-    exists (f a).
-    by rewrite -Hfeq.
-  + move=> b b' HB.
-    rewrite cap_eq_emptyset.
-    case Hf => f Hf' a.
-    rewrite -Hf' => Heq.
-    rewrite compset_in => Heq'.
-    rewrite /InvCorr /MapAsCorr /In in Heq.
-    rewrite /InvCorr /MapAsCorr /In in Heq'.
-    by rewrite Heq' in HB. (* ここまでは古い証明と同じ *)
+    case (Hf a) => b [Hbeq Hbuni].
+    exists b.
+    by rewrite in_graph Hbeq.
+  + move=> b b' Hneq.
+    rewrite cap_eq_emptyset => a HA.
+    rewrite compset_in => HA'.
+    apply Hneq.
+    rewrite /In /InvCorr in HA HA'.
+    case (Hf a) => b'' [Heq Huniq].
+    rewrite Heq 2!singleton_eq in HA HA'.
+    by subst.
 - case => Hdef Hinv.
+  rewrite /In defrange_exists in Hdef.
   move: (invcorr_cap_emptyset_unique Hinv) => Huniq.
-  have: forall a: A, exists b, C a = \{ b } => [ a | Hsig ].
-    rewrite /In defrange_exists in Hdef.
-    move: (constructive_indefinite_description _ (Hdef a)) => Bsig.
-    exists (get_value Bsig).
-    apply singleton_unique_eq => //.
-    by apply (get_proof Bsig).
-  move: (corr_to_map Hsig) => Hf.
-  rewrite -unique_existence.
+  rewrite map_def => a.
+  case (Hdef a) => b Hb.
+  exists b.
   split.
-  + exists (fun a => get_value Hf a).
-    apply functional_extensionality => a.
-    case (Hsig a) => b HB.
-    rewrite HB.
-    apply singleton_unique_eq.
-    * rewrite /MapAsCorr /In.
-      apply (Huniq a).
-      - by rewrite HB.
-      - move: (get_proof Hf a) => H.
-        rewrite -eq_iff in H.
-        by rewrite -H.
-    * rewrite /MapAsCorr /In => b1 b2 HB1 HB2.
-      by subst.
-  + move=> f f' Hfeq Hfeq'.
-    apply functional_extensionality => a.
-    apply (Huniq a);
-      by [ rewrite -Hfeq | rewrite -Hfeq' ].
-Qed.
-
-(* 別証明 *)
-Goal forall A B (C: A ->c B),
-  (exists! f: A -> B, MapAsCorr f = C) <->
-  (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
-Proof.
-split.
-- move=> Hf.
-  move: (constructive_definite_description _ Hf).
-  clear Hf => Hf.
-  split.
-  + rewrite -eq_fullset => a.
-    case Hf => f Hfeq.
-    exists (f a).
-    by rewrite -Hfeq.
-  + move=> b b' HB.
-    rewrite cap_eq_emptyset.
-    case Hf => f Hf' a.
-    rewrite -Hf' => Heq.
-    rewrite compset_in => Heq'.
-    rewrite /InvCorr /MapAsCorr /In in Heq.
-    rewrite /InvCorr /MapAsCorr /In in Heq'.
-    by rewrite Heq' in HB.
-- case.
-  rewrite -eq_fullset.
-  rewrite /In defrange_exists => Hdef Hinv.
-  move: (invcorr_cap_emptyset_unique Hinv) => Huniq.
-  rewrite -unique_existence.
-  split.
-  + have: { f: A -> B | forall a b, f a = b -> b \in C a } => [| F ].
-      apply constructive_indefinite_description.
-      move: (fun a => constructive_indefinite_description _ (Hdef a)) => sigB.
-      exists (fun a => get_value (sigB a)) => a b Heq.
-      rewrite -Heq.
-      by apply (get_proof (sigB a)).
-    exists (get_value F).
-    apply functional_extensionality => a.
-    have: get_value F a \in C a => [| Hin ].
-      by apply (get_proof F a (get_value F a)).
-    apply eq_split => b H.
-    + rewrite /In /MapAsCorr in H.
-      by rewrite H.
-    + rewrite /In /MapAsCorr.
-      by apply (Huniq a).
-  + move=> f1 f2 Heq1 Heq2.
-    apply functional_extensionality => a.
-    apply (Huniq a);
-      by [ rewrite -Heq1 | rewrite -Heq2 ].
+  + by apply singleton_unique_eq.
+  + move=> b' Hb'.
+    by rewrite Hb' in Hb.
 Qed.
 
 Lemma defrange_map_as_corr A B (f: A -> B) a:
