@@ -245,7 +245,8 @@ split.
     rewrite compset_in => HA'.
     apply Hneq.
     rewrite /In /InvCorr in HA HA'.
-    case (Hf a) => b'' [Heq Huniq].
+    case (Hf a) => b''.
+    case => Heq _.
     rewrite Heq 2!singleton_eq in HA HA'.
     by subst.
 - case => Hdef Hinv.
