@@ -165,6 +165,39 @@ split => [[f H1 a] | H1].
     by rewrite -H3.
 Qed.
 
+Lemma singleton_unique T (A: Ensemble T) a:
+  a \in A -> (forall a', a' \in A -> a = a') -> A = \{ a }.
+Proof.
+move=> Hin Huniq.
+apply eq_split.
+- move=> a' Ha'.
+  rewrite singleton_eq.
+  symmetry.
+  by apply Huniq.
+- by rewrite -singleton_subset.
+Qed.
+
+Lemma singleton_in A B (c: A->c B):
+  (forall a, exists! b, c a = \{b}) <-> (forall a, exists! b, b \in c a).
+Proof.
+split => H1 a.
+- case (H1 a) => b.
+  case => Hbeq Hbuniq.
+  exists b.
+  split.
+  + by rewrite Hbeq.
+  + move=> b' Hb'.
+    by rewrite Hbeq in Hb'.
+- case (H1 a) => b.
+  case => Hbeq Hbuniq.
+  exists b.
+  split.
+  + by apply singleton_unique.
+  + move=> b' Hb'.
+    apply Hbuniq.
+    by rewrite Hb'.
+Qed.
+
 (* S3 定理2 *)
 Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
   (exists f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
