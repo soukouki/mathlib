@@ -165,8 +165,8 @@ split => [[f H1 a] | H1].
     by rewrite -H3.
 Qed.
 
-Lemma singleton_unique T (A: Ensemble T) a:
-  a \in A -> (forall a', a' \in A -> a = a') -> A = \{ a }.
+Lemma singleton_uniqueness T (A: Ensemble T) a:
+  a \in A -> uniqueness (fun a => a \in A) -> A = \{ a }.
 Proof.
 move=> Hin Huniq.
 apply eq_split.
@@ -177,8 +177,8 @@ apply eq_split.
 - by rewrite -singleton_subset.
 Qed.
 
-Lemma singleton_in A B (c: A->c B):
-  (forall a, exists! b, c a = \{b}) <-> (forall a, exists! b, b \in c a).
+Lemma singleton_in A B (C: A->c B):
+  (forall a, exists! b, C a = \{b}) <-> (forall a, exists! b, b \in C a).
 Proof.
 split => H1 a.
 - case (H1 a) => b.
@@ -192,11 +192,31 @@ split => H1 a.
   case => Hbeq Hbuniq.
   exists b.
   split.
-  + by apply singleton_unique.
+  + apply singleton_uniqueness => // b1 b2 Hb1 Hb2.
+    by rewrite -(Hbuniq b1 Hb1) -(Hbuniq b2 Hb2).
   + move=> b' Hb'.
     apply Hbuniq.
     by rewrite Hb'.
 Qed.
+
+(* S3 定理2 *)
+Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
+  (exists! f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
+Proof.
+split.
+- case => f.
+  case => Heq Huniq a.
+  exists (f a).
+  split.
+  + by rewrite Heq.
+  + move=> b Hb.
+    by rewrite Heq in Hb.
+- move=> HinG.
+  (* Gと同じ形のCを作って、それの性質を見て証明する？ *)
+  have: exists C: (A ->c B), forall a, exists! b, b \in C a.
+    move: (fun a => constructive_definite_description _ (HinG a)) => Sigb.
+    exists (fun a => \{ get_value (Sigb a) }) => a.
+    
 
 (* S3 定理2 *)
 Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
