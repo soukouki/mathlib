@@ -216,7 +216,26 @@ split.
   have: exists C: (A ->c B), forall a, exists! b, b \in C a.
     move: (fun a => constructive_definite_description _ (HinG a)) => Sigb.
     exists (fun a => \{ get_value (Sigb a) }) => a.
-    
+    by exists (get_value (Sigb a)).
+  case => C HC.
+  have: (forall a : A, exists ! b : B, C a = \{ b}).
+    move=> a.
+    case (HC a) => b.
+    case => Hbin Hbuniq.
+    exists b.
+    split.
+    * apply singleton_uniqueness => //.
+      move=> b1 b2 Hb1 Hb2.
+      by rewrite -(Hbuniq b1 Hb1) -(Hbuniq b2 Hb2).
+    * move=> b' Hb'.
+      rewrite Hb' in Hbin.
+      by rewrite singleton_eq in Hbin.
+  rewrite -map_def.
+  case => f.
+  case => Hfeq Hfuniq.
+  exists f.
+  split.
+  + rewrite -Hfeq.
 
 (* S3 定理2 *)
 Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
