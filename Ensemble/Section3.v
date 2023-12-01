@@ -212,58 +212,28 @@ split.
   + move=> b Hb.
     by rewrite Heq in Hb.
 - move=> HinG.
-  (* Gと同じ形のCを作って、それの性質を見て証明する？ *)
-  have: exists C: (A ->c B), forall a, exists! b, b \in C a.
-    move: (fun a => constructive_definite_description _ (HinG a)) => Sigb.
-    exists (fun a => \{ get_value (Sigb a) }) => a.
-    by exists (get_value (Sigb a)).
-  case => C HC.
-  have: (forall a : A, exists ! b : B, C a = \{ b}).
-    move=> a.
-    case (HC a) => b.
-    case => Hbin Hbuniq.
-    exists b.
-    split.
-    * apply singleton_uniqueness => //.
-      move=> b1 b2 Hb1 Hb2.
-      by rewrite -(Hbuniq b1 Hb1) -(Hbuniq b2 Hb2).
-    * move=> b' Hb'.
-      rewrite Hb' in Hbin.
-      by rewrite singleton_eq in Hbin.
-  rewrite -map_def.
-  case => f.
-  case => Hfeq Hfuniq.
-  exists f.
-  split.
-  + rewrite -Hfeq.
-
-(* S3 定理2 *)
-Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
-  (exists f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
-Proof.
-split.
-- case => f HG a.
-  exists (f a).
-  rewrite HG.
-  by split.
-- move=> HinG.
-  move: (fun a => constructive_definite_description _ (HinG a)) => Sigb.
+  move: (fun a => constructive_indefinite_description _ (HinG a)) => Sigb.
   exists (fun a => get_value (Sigb a)).
-  apply eq_split.
-  + move=> x Hx.
-    rewrite /Graph /MapAsCorr /In.
-    (* bからグラフ上の(a, b)は一意に求められることを示す。
-       uniqueness = forall x y: A, P x -> P y -> x = y という定義で、_ = _ を処理するのに使える *)
-    have: (uniqueness (fun b: B => (fst x, b) \in G)).
-      by apply unique_existence.
-    apply.
-    * by rewrite -surjective_pairing.
-    * by apply get_proof.
-  + move=> x Hx.
-    rewrite /MapAsCorr /Graph /In in Hx.
-    rewrite (surjective_pairing x).
-    rewrite Hx.
-    by apply get_proof.
+  split.
+  + apply eq_split.
+    * move=> x Hx.
+      rewrite /Graph /MapAsCorr /In.
+      (* bからグラフ上の(a, b)は一意に求められることを示す。
+         uniqueness = forall x y: A, P x -> P y -> x = y という定義で、_ = _ を処理するのに使える *)
+      have: (uniqueness (fun b: B => (fst x, b) \in G)).
+        by apply unique_existence.
+      apply.
+      -- by rewrite -surjective_pairing.
+      -- by case (get_proof (Sigb (fst x))).
+    * move=> x Hx.
+      rewrite /MapAsCorr /Graph /In in Hx.
+      rewrite (surjective_pairing x) Hx.
+      by case (get_proof (Sigb (fst x))).
+  + move=> f Heq.
+    apply functional_extensionality => a.
+    case (get_proof (Sigb a)) => _ H.
+    apply H.
+    by rewrite Heq.
 Qed.
 
 Lemma singleton_unique_eq A a (P: Ensemble A):
