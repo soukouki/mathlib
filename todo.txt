@@ -1,5 +1,6 @@
 Todo
 
 - \emptyset, \cap, \cupを∅, ∩, ∪に置換
+  - 入力方法は https://github.com/coq/coq/blob/b881f18bb571ce1aaf41ee74cb51fd2731aabfb1/ide/coqide/default_bindings_src.ml を参照
 - CorrのCをcに置換(fと合わせる)
 - move=>とcase =>をどっちかに統一する
