@@ -10,14 +10,14 @@ Require Import Coq.Logic.PropExtensionality.
 Require Import Setoid.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
-Require Local.Ensemble.Section2.
+Require Local.Ensemble.Section1_2.
 Open Scope ensemble_scope.
 
 Module Ensemble.
 
-Import Section1.Ensemble Section2.Ensemble.
+Import Section1_1.Ensemble Section1_2.Ensemble.
 
-Section Section3.
+Section Section1_3.
 
 Implicit Types A B: Type.
 
@@ -324,7 +324,7 @@ Theorem identity_graph A:
   Graph (MapAsCorr (\I A)) = fun x => fst x = snd x.
 Proof. by apply eq_split. Qed.
 
-End Section3.
+End Section1_3.
 
 
 Notation "A * B" := (EnsembleProd A B): ensemble_scope.

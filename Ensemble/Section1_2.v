@@ -9,14 +9,14 @@ Require Import PeanoNat.
 
 Add LoadPath "." as Local.
 Require Import Local.Classical.
-Require Import Local.Ensemble.Section1.
+Require Import Local.Ensemble.Section1_1.
 Open Scope ensemble_scope.
 
 Module Ensemble.
 
-Import Section1.Ensemble.
+Import Section1_1.Ensemble.
 
-Section Section2.
+Section Section1_2.
 
 Variable T: Type.
 
@@ -882,7 +882,7 @@ split.
     by apply (sub_sym_diff Hsub).
 Qed.
 
-End Section2.
+End Section1_2.
 
 
 Notation "A \cup B" := (Cup A B) (at level 50): ensemble_scope.

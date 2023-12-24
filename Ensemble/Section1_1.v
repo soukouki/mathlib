@@ -7,7 +7,7 @@ Require Import Setoid.
 
 Module Ensemble.
 
-Section Section1.
+Section Section1_1.
 
 Variable T: Type.
 
@@ -91,7 +91,7 @@ Qed.
 
 (* 問題2から問題5は飛ばす *)
 
-End Section1.
+End Section1_1.
 
 Declare Scope ensemble_scope.
 

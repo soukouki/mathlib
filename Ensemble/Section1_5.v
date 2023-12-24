@@ -9,15 +9,15 @@ Require Import Coq.Logic.IndefiniteDescription.
 Require Import Coq.Logic.FunctionalExtensionality.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
-Require Local.Ensemble.Section4.
+Require Local.Ensemble.Section1_4.
 
 Open Scope ensemble_scope.
 
 Module Ensemble.
 
-Import Section1.Ensemble Section2.Ensemble Section3.Ensemble Section4.Ensemble.
+Import Section1_1.Ensemble Section1_2.Ensemble Section1_3.Ensemble Section1_4.Ensemble.
 
-Section Section5.
+Section Section1_5.
 
 Definition IndexedEnsemble T L := L -> Ensemble T.
 
@@ -359,6 +359,6 @@ Qed.
 
 
 
-End Section5.
+End Section1_5.
 
 End Ensemble.

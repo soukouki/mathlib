@@ -5,7 +5,7 @@ Set Implicit Arguments.
 
 Add LoadPath "." as Local.
 
-Require Import Local.Ensemble.Section1.
+Require Import Local.Ensemble.Section1_1.
 
 Module Ensembles.
 

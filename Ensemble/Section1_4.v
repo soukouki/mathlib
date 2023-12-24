@@ -10,14 +10,14 @@ Require Import Coq.Logic.FunctionalExtensionality.
 Require Import PeanoNat BinIntDef BinInt.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
-Require Local.Ensemble.Section3.
+Require Local.Ensemble.Section1_3.
 Open Scope ensemble_scope.
 
 Module Ensemble.
 
-Import Section1.Ensemble Section2.Ensemble Section3.Ensemble.
+Import Section1_1.Ensemble Section1_2.Ensemble Section1_3.Ensemble.
 
-Section Section4.
+Section Section1_4.
 
 Implicit Types A B: Type.
 
@@ -949,7 +949,7 @@ End Problem15.
 
 (* 問題16から19はすべて個数が必要なので、Cardinalの定義をするまで一旦飛ばす *)
 
-End Section4.
+End Section1_4.
 
 Notation "f ^-1" := (InvMap f) (at level 30): ensemble_scope.
 Notation "f \comp g" := (Composite g f) (at level 50): ensemble_scope.
