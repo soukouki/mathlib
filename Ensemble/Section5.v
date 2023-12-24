@@ -336,6 +336,24 @@ move=> /choice /not_emptyset_exists [_ [f Hf]].
 split.
 Admitted.
 
+(* S5 問題9 *)
+Theorem product_cap_product T L (A B: IndexedEnsemble T L):
+  Product A \cap Product B = Product (fun l => A l \cap B l).
+Proof.
+apply eq_split.
+- move=> _ [x HA HB].
+  split => l.
+  split.
+  + by case HA.
+  + by case HB.
+- move=> _ [f] H.
+  split;
+    split => l;
+    by case (H l).
+Qed.
+
+
+
 
 
 
