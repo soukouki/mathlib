@@ -206,16 +206,6 @@ split.
   by apply identity_surjective.
 Qed.
 
-Lemma hoge A B (f: A -> B):
-  A = Empty_set -> forall b, ~(exists a, f a = b).
-Proof.
-move=> H1 b H2.
-case H2 => a H3.
-suff: Empty_set => //.
-rewrite -H1.
-
-
-
 (* S5 定理7(b) *)
 Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, r \comp f = \I A.
 Proof.
@@ -344,37 +334,7 @@ Theorem product_subset_iff_forall_subset T L (A B: IndexedEnsemble T L):
 Proof.
 move=> /choice /not_emptyset_exists [_ [f Hf]].
 split.
-- move=> H1 l x HA.
-
-
-  move: (H1 (fun l' => x)) => H2.
-  case H2.
-    split => l'.
-    admit.
-  move=> f' H3.
-  
-
-  move: (H1 (fun _ => x)) => H2.
-  case H2.
-    split => l'.
-    
-
-  move: (H1 (fun l' => f l')) => H2.
-  case H2.
-    split => l'.
-    by apply Hf.
-  move=> f' H3.
-
-(* H1に渡すのはf lの形じゃないとHfで処理できない
-けれど、ゴールはxの形じゃないといけない
-つまり、どこかで変換してやる必要がある *)
-
-
-  admit.
-- move=> H1 _ [x H2].
-  split => l.
-  apply H1.
-  apply H2.
+Admitted.
 
 
 
