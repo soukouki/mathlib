@@ -352,6 +352,8 @@ apply eq_split.
     by case (H l).
 Qed.
 
+(* S5 問題10(a) *)
+Theorem hoge T L: (A B: IndexedEnsemble T L) (fl: L -> T -> T) (f: 
 
 
 
