@@ -352,8 +352,21 @@ apply eq_split.
     by case (H l).
 Qed.
 
+(* 
+S5 問題10はfを定義することが難しそう
+Ensemble TA -> Ensemble TBみたいな型が求められる？
+ *)
+
 (* S5 問題10(a) *)
-Theorem hoge T L: (A B: IndexedEnsemble T L) (fl: L -> T -> T) (f: 
+Theorem hoge TA TB L (A: IndexedEnsemble TA L) (B: IndexedEnsemble TB L) (fl: L -> TA -> TB) (f: TA -> TB):
+  (forall l, f l = fl) ->
+  Surjective f <-> (forall l, Surjective (fl l)).
+Proof.
+split.
+- move=> Hsur l.
+  Search Surjective.
+  rewrite surjective_exists => b.
+  exists b.
 
 
 
