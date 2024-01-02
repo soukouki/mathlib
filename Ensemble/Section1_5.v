@@ -357,17 +357,19 @@ S5 問題10はfを定義することが難しそう
 Ensemble TA -> Ensemble TBみたいな型が求められる？
  *)
 
-(* S5 問題10(a) *)
-Theorem hoge TA TB L (A: IndexedEnsemble TA L) (B: IndexedEnsemble TB L) (fl: L -> TA -> TB) (f: TA -> TB):
-  (forall l, f l = fl) ->
-  Surjective f <-> (forall l, Surjective (fl l)).
+(* S5 問題11 *)
+Theorem hoge A B (f: A -> B) (s s': B -> A):
+  Surjective f ->
+  f \comp s = \I B ->
+  f \comp s' = \I B ->
+  ValueRange (MapAsCorr s) \subset ValueRange (MapAsCorr s') \/ ValueRange (MapAsCorr s') \subset ValueRange (MapAsCorr s)
+  <-> s = s'.
 Proof.
+move=> Hsurj HI HI'.
 split.
-- move=> Hsur l.
-  Search Surjective.
-  rewrite surjective_exists => b.
-  exists b.
-
+- move=> [] H.
+  + rewrite surjective_exists in Hsurj.
+Admitted.
 
 
 
