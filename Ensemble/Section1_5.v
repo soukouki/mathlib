@@ -367,8 +367,20 @@ Theorem hoge A B (f: A -> B) (s s': B -> A):
 Proof.
 move=> Hsurj HI HI'.
 split.
-- move=> [] H.
+(* wlogとかなんかなかったっけ。それ使いたい *)
+- move=> [] Hsubset.
   + rewrite surjective_exists in Hsurj.
+    apply functional_extensionality => b.
+    case (Hsurj b) => a <-.
+    clear Hsurj b.
+    move: (Hsubset a).
+    rewrite 2!valuerange_map_as_corr.
+    case.
+      exists (f a).
+
+
+
+
 Admitted.
 
 
