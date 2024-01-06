@@ -358,7 +358,7 @@ Ensemble TA -> Ensemble TBみたいな型が求められる？
  *)
 
 (* S5 問題11 *)
-Theorem hoge A B (f: A -> B) (s s': B -> A):
+Theorem right_invmap_valuerange_subset_valuerange A B (f: A -> B) (s s': B -> A):
   Surjective f ->
   f \comp s = \I B ->
   f \comp s' = \I B ->
@@ -367,6 +367,9 @@ Theorem hoge A B (f: A -> B) (s s': B -> A):
 Proof.
 move=> Hsurj HI HI'.
 split.
+- rewrite surjective_exists_right_invmap in Hsurj.
+  これを入れたところであまり意味ない・・・!がついてればなぁ
+
 (* wlogとかなんかなかったっけ。それ使いたい *)
 - move=> [] Hsubset.
   + rewrite surjective_exists in Hsurj.
@@ -377,6 +380,15 @@ split.
     rewrite 2!valuerange_map_as_corr.
     case.
       exists (f a).
+      Search Composite (_ (_ _)) eq.
+      s (f a) = a
+      s (f (s (f a))) = a
+      
+
+
+
+
+
 
 
 
