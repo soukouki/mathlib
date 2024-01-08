@@ -367,22 +367,38 @@ Theorem right_invmap_valuerange_subset_valuerange A B (f: A -> B) (s s': B -> A)
 Proof.
 move=> Hsurj HI HI'.
 split.
-- rewrite surjective_exists_right_invmap in Hsurj.
-  これを入れたところであまり意味ない・・・!がついてればなぁ
-
 (* wlogとかなんかなかったっけ。それ使いたい *)
 - move=> [] Hsubset.
+  + apply identity_to_eq with f => //.
+    apply functional_extensionality => a.
+    rewrite /Identity /Composite.
+    move: (Hsubset a).
+    case.
+    * admit.
+    * move=> b.
+      rewrite /In /Graph /MapAsCorr /In /fst /snd => H.
+      rewrite H.
+      s (f (s' b) = s' b
+      s b = s' b
+      ???????????
+
+
+
   + rewrite surjective_exists in Hsurj.
     apply functional_extensionality => b.
     case (Hsurj b) => a <-.
     clear Hsurj b.
+    have: Injective s => [| Hsinj ].
+      admit.
     move: (Hsubset a).
     rewrite 2!valuerange_map_as_corr.
     case.
-      exists (f a).
+    * exists (f a).
       Search Composite (_ (_ _)) eq.
-      s (f a) = a
-      s (f (s (f a))) = a
+      admit.
+    * move=> b Ha.
+      rewrite -Ha.
+      Search Composite.
       
 
 
