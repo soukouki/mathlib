@@ -5,7 +5,7 @@ Set Implicit Arguments.
 From mathcomp Require Import ssreflect.
 
 Require Import Coq.Logic.ClassicalDescription.
-Require Import PeanoNat.
+Require Import Coq.Arith.PeanoNat.
 
 Add LoadPath "." as Local.
 Require Import Local.Classical.

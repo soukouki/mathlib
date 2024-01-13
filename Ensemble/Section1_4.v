@@ -7,7 +7,7 @@ From mathcomp Require Import ssreflect.
 Require Import Coq.Logic.ClassicalDescription.
 Require Import Coq.Logic.IndefiniteDescription.
 Require Import Coq.Logic.FunctionalExtensionality.
-Require Import PeanoNat BinIntDef BinInt.
+Require Import Coq.Arith.PeanoNat Coq.ZArith.BinIntDef Coq.ZArith.BinInt.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
 Require Local.Ensemble.Section1_3.

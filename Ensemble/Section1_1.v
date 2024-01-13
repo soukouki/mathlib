@@ -3,7 +3,7 @@
 Set Implicit Arguments.
 
 From mathcomp Require Import ssreflect.
-Require Import Setoid.
+Require Import Coq.Setoids.Setoid.
 
 Module Ensemble.
 
