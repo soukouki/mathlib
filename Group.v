@@ -78,14 +78,23 @@ Qed.
 Definition inv A (M : Monoid A) (G : Group M) : A -> A :=
   fun x => proj1_sig (constructive_indefinite_description _ (group_exists_unique_inv G x)).
 
-Lemma inv_sort A (M : Monoid A) (G : Group M) : forall x xi, xi = inv G x -> op xi x = e /\ op x xi = e.
+Lemma inv_sort A (M : Monoid A) (G : Group M) : forall x xi, xi = inv G x <-> op xi x = e /\ op x xi = e.
 Proof.
 move=> x xi.
 unfold inv.
 move: (constructive_indefinite_description _ (group_exists_unique_inv G x)) => He.
-case (proj2_sig He) => [[Hel Her] _] ->.
-by split.
+split.
+- case (proj2_sig He) => [[Hel Her] _] ->.
+  by split.
+- move => Hxe.
+  move: (group_exists_unique_inv G x).
+  rewrite -unique_existence => [[_ Huniq]].
+  apply Huniq => //.
+  by apply (proj2_sig He).
 Qed.
+
+
+
 
 End Group.
 
