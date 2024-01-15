@@ -93,6 +93,25 @@ split.
   by apply (proj2_sig He).
 Qed.
 
+Lemma op_inv_left A (M : Monoid A) (G : Group M) : forall x, op (inv G x) x = e.
+Proof. move=> x. by apply (inv_sort G x (inv G x)). Qed.
+
+Lemma op_inv_right A (M : Monoid A) (G : Group M) : forall x, op x (inv G x) = e.
+Proof. move=> x. by apply (inv_sort G x (inv G x)). Qed.
+
+Theorem a_b_inv_eq_b_inv_a_inv A (M : Monoid A) (G : Group M) : forall a b, inv G (op a b) = op (inv G b) (inv G a).
+Proof.
+move=> a b.
+symmetry.
+rewrite inv_sort.
+split.
+- rewrite -monoid_assoc [op (inv G a) _]monoid_assoc.
+  by rewrite op_inv_left monoid_e_left op_inv_left.
+- rewrite -monoid_assoc [op b _]monoid_assoc.
+  by rewrite op_inv_right monoid_e_left op_inv_right.
+Qed.
+
+
 
 
 
