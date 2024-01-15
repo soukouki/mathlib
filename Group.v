@@ -111,9 +111,15 @@ split.
   by rewrite op_inv_right monoid_e_left op_inv_right.
 Qed.
 
-
-
-
+Theorem inv_twice A (M : Monoid A) (G : Group M) : forall x, inv G (inv G x) = x.
+Proof.
+move=> x.
+symmetry.
+rewrite inv_sort.
+split.
+- by rewrite op_inv_right.
+- by rewrite op_inv_left.
+Qed.
 
 End Group.
 
