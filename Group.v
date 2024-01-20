@@ -11,6 +11,7 @@ Module Algebra.
 
 Section Monoid.
 
+(* ここのeもinvみたいに後で付け加える形にしようと思ってやってみたが、そうすると群をインスタンス化する際に単位元をそのまま扱えなくて非常に不便だったのでこのままにする *)
 Class Monoid (A : Type) : Type :=
 {
   op : A -> A -> A;
