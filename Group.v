@@ -52,7 +52,7 @@ Lemma xorb_inv : forall x, exists xi, xorb xi x = false /\ xorb x xi = false.
 Proof.
 move=> x.
 exists x.
-split;
+by split;
   apply xorb_nilpotent.
 Qed.
 
@@ -76,10 +76,10 @@ split.
   by rewrite Hal monoid_e_left.
 Qed.
 
-Definition inv A (M : Monoid A) (G : Group M) : A -> A :=
+Definition inv A {M : Monoid A} {G : Group M} : A -> A :=
   fun x => proj1_sig (constructive_indefinite_description _ (group_exists_unique_inv G x)).
 
-Lemma inv_sort A (M : Monoid A) (G : Group M) : forall x xi, xi = inv G x <-> op xi x = e /\ op x xi = e.
+Lemma inv_sort A (M : Monoid A) (G : Group M) : forall x xi, xi = inv x <-> op xi x = e /\ op x xi = e.
 Proof.
 move=> x xi.
 unfold inv.
@@ -94,32 +94,30 @@ split.
   by apply (proj2_sig He).
 Qed.
 
-Lemma op_inv_left A (M : Monoid A) (G : Group M) : forall x, op (inv G x) x = e.
-Proof. move=> x. by apply (inv_sort G x (inv G x)). Qed.
+Lemma op_inv_left A (M : Monoid A) (G : Group M) : forall x, op (inv x) x = e.
+Proof. move=> x. by apply (inv_sort G x (inv x)). Qed.
 
-Lemma op_inv_right A (M : Monoid A) (G : Group M) : forall x, op x (inv G x) = e.
-Proof. move=> x. by apply (inv_sort G x (inv G x)). Qed.
+Lemma op_inv_right A (M : Monoid A) (G : Group M) : forall x, op x (inv x) = e.
+Proof. move=> x. by apply (inv_sort G x (inv x)). Qed.
 
-Theorem a_b_inv_eq_b_inv_a_inv A (M : Monoid A) (G : Group M) : forall a b, inv G (op a b) = op (inv G b) (inv G a).
+Theorem a_b_inv_eq_b_inv_a_inv A (M : Monoid A) (G : Group M) : forall a b, inv (op a b) = op (inv b) (inv a).
 Proof.
 move=> a b.
 symmetry.
 rewrite inv_sort.
 split.
-- rewrite -monoid_assoc [op (inv G a) _]monoid_assoc.
+- rewrite -monoid_assoc [op (inv a) _]monoid_assoc.
   by rewrite op_inv_left monoid_e_left op_inv_left.
 - rewrite -monoid_assoc [op b _]monoid_assoc.
   by rewrite op_inv_right monoid_e_left op_inv_right.
 Qed.
 
-Theorem inv_twice A (M : Monoid A) (G : Group M) : forall x, inv G (inv G x) = x.
+Theorem inv_twice A (M : Monoid A) (G : Group M) : forall x, inv (inv x) = x.
 Proof.
 move=> x.
 symmetry.
 rewrite inv_sort.
-split.
-- by rewrite op_inv_right.
-- by rewrite op_inv_left.
+by rewrite op_inv_right op_inv_left.
 Qed.
 
 End Group.
