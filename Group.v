@@ -4,7 +4,7 @@ From mathcomp Require Import ssreflect.
 
 Require Import Coq.Setoids.Setoid.
 Require Import Coq.Bool.Bool.
-Require Import Coq.Logic.IndefiniteDescription.
+Require Import Coq.Logic.Description.
 
 Module Algebra.
 
@@ -77,15 +77,15 @@ split.
 Qed.
 
 Definition inv A {M : Monoid A} {G : Group M} : A -> A :=
-  fun x => proj1_sig (constructive_indefinite_description _ (group_exists_unique_inv G x)).
+  fun x => proj1_sig (constructive_definite_description _ (group_exists_unique_inv G x)).
 
 Lemma inv_sort A (M : Monoid A) (G : Group M) : forall x xi, xi = inv x <-> op xi x = e /\ op x xi = e.
 Proof.
 move=> x xi.
 unfold inv.
-move: (constructive_indefinite_description _ (group_exists_unique_inv G x)) => He.
+move: (constructive_definite_description _ (group_exists_unique_inv G x)) => He.
 split.
-- case (proj2_sig He) => [[Hel Her] _] ->.
+- case (proj2_sig He) => [Hel Her] ->.
   by split.
 - move => Hxe.
   move: (group_exists_unique_inv G x).
