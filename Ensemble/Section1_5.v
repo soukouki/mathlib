@@ -211,7 +211,30 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
+  case (classic (exists a: A, True)).
+  - case => a _.
+    admit.
+  - rewrite exists_iff_not_forall_not.
+    move=> HA.
+    apply NNPP in HA.
+    rewrite /Injective in Hinj.
+    
+
+    exists (fun b => 
+
+
+  case (classic (A = Empty_set)).
+  + move=> Heq.
+    subst.
+    admit.
+  + move=> Hneq.
+    Search Empty_set.
+    
+
   have: A => [| a0]. admit.
+
+
+  (* DateTypesの方のempty_setを使って、更にinversionタクティックを使えば良いらしい？ *)
   move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
   move: (fun b H => constructive_definite_description _ (Hinj' b H)) => Hsig.
   rewrite /Composite /Identity.
