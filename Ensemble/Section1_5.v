@@ -220,9 +220,6 @@ split.
     rewrite /Injective in Hinj.
     
 
-    exists (fun b => 
-
-
   case (classic (A = Empty_set)).
   + move=> Heq.
     subst.
@@ -327,12 +324,14 @@ apply eq_split.
   split;
     by [ apply HA | apply HB ].
 - move=> x H1.
-  rewrite /BigCap /In in H1.
-  + split.
-    move=> la Hla.
+  move: (EnsembleProd lamA lamB).
+  rewrite /In /BigCap in H1.
+  なんかこう・・・Ensemble (LA * LB)からlを引き出すような形に・・・
+
 (* 
-1. bの存在で場合分け=>失敗
-2. aの存在/\bの存在で場合分け=>失敗
+1. bの存在で場合分け => 失敗
+2. aの存在/\bの存在で場合分け => 失敗
+3. EnsembleProdの定義を->から/\に => 失敗
  *)
 
 
