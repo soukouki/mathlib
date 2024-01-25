@@ -324,9 +324,12 @@ apply eq_split.
   split;
     by [ apply HA | apply HB ].
 - move=> x H1.
-  move: (EnsembleProd lamA lamB).
   rewrite /In /BigCap in H1.
-  なんかこう・・・Ensemble (LA * LB)からlを引き出すような形に・・・
+  have: x \in BigCap (fun l => A (fst l) * B (snd l)) (lamA * lamB) -> x \in (\bigcap A) lamA * (\bigcap B) lamB.
+    
+    admit.
+  apply.
+  by rewrite /In /BigCap.
 
 (* 
 1. bの存在で場合分け => 失敗
