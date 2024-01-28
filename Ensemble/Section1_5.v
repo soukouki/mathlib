@@ -392,6 +392,14 @@ Theorem right_invmap_valuerange_subset_valuerange A B (f: A -> B) (s s': B -> A)
 Proof.
 move=> Hsurj HI HI'.
 split.
+- admit.
+- move=> H.
+  subst.
+  by left.
+
+
+move=> Hsurj HI HI'.
+split.
 (* wlogとかなんかなかったっけ。それ使いたい *)
 - move=> [] Hsubset.
   + apply identity_to_eq with f => //.
