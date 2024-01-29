@@ -325,24 +325,9 @@ apply eq_split.
     by [ apply HA | apply HB ].
 - move=> x H1.
   rewrite /In /BigCap in H1.
-  case (classic ((exists la lb, la \in lamA /\ lb \in lamB))) => H2.
-  + case H2 => la.
-    case => lb.
-    case => HLA HLB.
-    move: (H1 (pair la lb)).
-    move=> H3.
-    case H3 => // x' H4 H5.
-    clear H1 H3 x.
-    split.
-    * move=> la' HLA'.
-      
-
-  have: x \in BigCap (fun l => A (fst l) * B (snd l)) (lamA * lamB) -> x \in (\bigcap A) lamA * (\bigcap B) lamB.
-    clear H1 => H2.
-    rewrite /In /BigCap in H2.
-    admit.
-  apply.
-  by rewrite /In /BigCap.
+  split.
+  + move=> la HLA.
+    
 
 (* 
 1. bの存在で場合分け => 失敗
@@ -403,60 +388,21 @@ Theorem right_invmap_valuerange_subset_valuerange A B (f: A -> B) (s s': B -> A)
   Surjective f ->
   f \comp s = \I B ->
   f \comp s' = \I B ->
-  ValueRange (MapAsCorr s) \subset ValueRange (MapAsCorr s') \/ ValueRange (MapAsCorr s') \subset ValueRange (MapAsCorr s)
+  ValueRange (MapAsCorr s) \subset ValueRange (MapAsCorr s')
   <-> s = s'.
 Proof.
 move=> Hsurj HI HI'.
 split.
-- admit.
+- move=> H1.
+  apply functional_extensionality => b.
+  rewrite /Subset in H1.
+  rewrite /In /ValueRange /MapAsCorr /In /Graph /In /fst /snd in H1.
+  move: (H1 (s b)).
+  admit.
+
+
 - move=> H.
-  subst.
-  by left.
-
-
-move=> Hsurj HI HI'.
-split.
-(* wlogとかなんかなかったっけ。それ使いたい *)
-- move=> [] Hsubset.
-  + apply identity_to_eq with f => //.
-    apply functional_extensionality => a.
-    rewrite /Identity /Composite.
-    move: (Hsubset a).
-    case.
-    * admit.
-    * move=> b.
-      rewrite /In /Graph /MapAsCorr /In /fst /snd => H.
-      rewrite H.
-      s (f (s' b) = s' b
-      s b = s' b
-      ???????????
-
-
-
-  + rewrite surjective_exists in Hsurj.
-    apply functional_extensionality => b.
-    case (Hsurj b) => a <-.
-    clear Hsurj b.
-    have: Injective s => [| Hsinj ].
-      admit.
-    move: (Hsubset a).
-    rewrite 2!valuerange_map_as_corr.
-    case.
-    * exists (f a).
-      Search Composite (_ (_ _)) eq.
-      admit.
-    * move=> b Ha.
-      rewrite -Ha.
-      Search Composite.
-      
-
-
-
-
-
-
-
-
+  by subst.
 
 Admitted.
 
