@@ -406,6 +406,63 @@ split.
 
 Admitted.
 
+(* S5 問題12(a) *)
+Theorem composite_right_invmap A B C (f1: A -> B) (f2: B -> C) (s1: B -> A) (s2: C -> B):
+  Surjective f1 ->
+  Surjective f2 ->
+  f1 \comp s1 = \I B ->
+  f2 \comp s2 = \I C ->
+  (f2 \comp f1) \comp (s1 \comp s2) = \I C.
+Proof.
+move=> Hsurj1 Hsurj2 Hrinv1 Hrinv2.
+rewrite composite_assoc -[f1 \comp _]composite_assoc.
+by rewrite Hrinv1 identity_composite.
+Qed.
+
+(* S5 問題12(b) *)
+Theorem composite_left_invmap A B C (f1: A -> B) (f2: B -> C) (r1: B -> A) (r2: C -> B):
+  Injective f1 ->
+  Injective f2 ->
+  r1 \comp f1 = \I A ->
+  r2 \comp f2 = \I B ->
+  (r1 \comp r2) \comp (f2 \comp f1) = \I A.
+Proof.
+move=> Hinj1 Hinj2 Hlinv1 Hlinv2.
+rewrite composite_assoc -[r2 \comp _]composite_assoc.
+by rewrite Hlinv2 identity_composite.
+Qed.
+
+(* S5 問題13 *)
+Theorem exists_f_iff A B C (g: B -> C) (h: A -> C):
+  (exists f: A -> B, h = g \comp f) <-> (ValueRange (MapAsCorr h) \subset ValueRange (MapAsCorr g)).
+Proof.
+split.
+- case => f Hf c H1.
+  rewrite Hf in H1.
+  Search ValueRange MapAsCorr.
+  rewrite valuerange_map_as_corr.
+  rewrite valuerange_map_as_corr in H1.
+  case H1 => a Ha.
+  by exists (f a).
+- move=> H1.
+  rewrite /Subset in H1.
+  have: A -> B.
+    move=> a.
+    move: (H1 (h a)).
+    rewrite /In /ValueRange /MapAsCorr /In /Graph /In /fst /snd.
+
+
+
+Qed.
+
+(* S5 問題14 *)
+Theorem exists_g_iff A B C (f: A -> B) (h: A -> C):
+  (exists g: B -> C, h = g \comp f) <-> (forall a a', f a = f a' -> h a = h a').
+Proof.
+Admitted.
+
+
+
 
 
 
