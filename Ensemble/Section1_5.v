@@ -325,15 +325,31 @@ apply eq_split.
     by [ apply HA | apply HB ].
 - move=> x H1.
   rewrite /In /BigCap in H1.
+  case (classic ((exists la lb, la \in lamA /\ lb \in lamB))) => H2.
+  + case H2 => la.
+    case => lb.
+    case => HLA HLB.
+    move: (H1 (pair la lb)).
+    move=> H3.
+    case H3 => // x' H4 H5.
+    clear H1 H3 x.
+    split.
+    * move=> la' HLA'.
+      
+
   have: x \in BigCap (fun l => A (fst l) * B (snd l)) (lamA * lamB) -> x \in (\bigcap A) lamA * (\bigcap B) lamB.
-    
+    clear H1 => H2.
+    rewrite /In /BigCap in H2.
     admit.
   apply.
   by rewrite /In /BigCap.
 
 (* 
 1. bの存在で場合分け => 失敗
+aどうするねん
 2. aの存在/\bの存在で場合分け => 失敗
+case (classic ((exists la, la \in lamA) /\ (exists lb, lb \in lamB))) => H2. も
+case (classic ((exists la lb, la \in lamA /\ lb \in lamB))) => H2. もうまく行かない
 3. EnsembleProdの定義を->から/\に => 失敗
  *)
 
