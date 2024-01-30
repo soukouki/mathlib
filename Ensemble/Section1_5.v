@@ -211,18 +211,12 @@ Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, 
 Proof.
 split.
 - move=> Hinj.
-  case (classic (exists a: A, True)).
-  - case => a _.
-    admit.
-  - rewrite exists_iff_not_forall_not.
-    move=> HA.
-    apply NNPP in HA.
-    rewrite /Injective in Hinj.
-    
-
   case (classic (A = Empty_set)).
   + move=> Heq.
     subst.
+    clear Hinj.
+    cut False => //.
+    rewrite to_or in f.
     admit.
   + move=> Hneq.
     Search Empty_set.
@@ -450,7 +444,9 @@ split.
     move=> a.
     move: (H1 (h a)).
     rewrite /In /ValueRange /MapAsCorr /In /Graph /In /fst /snd.
-
+    
+    move=> H2.
+    case H2.
 
 
 Qed.

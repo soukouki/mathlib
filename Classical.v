@@ -38,6 +38,17 @@ rewrite 2!not_imply.
 by rewrite or_comm {1}and_comm.
 Qed.
 
+Lemma to_or {P Q: Prop}: (P -> Q) <-> (~P \/ Q).
+Proof.
+split.
+- move=> H1.
+  case (classic P) => H2.
+  + right.
+    by apply H1.
+  + by left.
+- by case.
+Qed.
+
 Lemma forall_iff_not_exists_not A {F: A -> Prop}:
   (forall x: A, F x) <-> ~ (exists x: A, ~ F x).
 Proof.
