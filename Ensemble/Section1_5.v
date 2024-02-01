@@ -389,9 +389,18 @@ move=> Hsurj HI HI'.
 split.
 - move=> H1.
   apply functional_extensionality => b.
+  
+
   rewrite /Subset in H1.
   rewrite /In /ValueRange /MapAsCorr /In /Graph /In /fst /snd in H1.
   move: (H1 (s b)).
+  case.
+    by exists b.
+  move=> b' Hb'.
+  rewrite Hb'.
+  clear s HI H1 Hb'.
+  
+
   admit.
 
 
