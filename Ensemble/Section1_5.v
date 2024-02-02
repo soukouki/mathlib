@@ -354,6 +354,14 @@ Theorem product_subset_iff_forall_subset T L (A B: IndexedEnsemble T L):
 Proof.
 move=> /choice /not_emptyset_exists [_ [f Hf]].
 split.
+- move=> Hsub l x HA.
+  rewrite /Subset in Hsub.
+  move: (Hsub f) => H1.
+  case H1.
+    by split.
+  move=> f' H2.
+
+
 Admitted.
 
 (* S5 問題9 *)
