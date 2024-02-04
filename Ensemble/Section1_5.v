@@ -216,7 +216,6 @@ split.
     subst.
     clear Hinj.
     cut False => //.
-    rewrite to_or in f.
     admit.
   + move=> Hneq.
     Search Empty_set.
@@ -463,10 +462,9 @@ split.
     rewrite /In /ValueRange /MapAsCorr /In /Graph /In /fst /snd.
     
     move=> H2.
-    case H2.
 
 
-Qed.
+Admitted.
 
 (* S5 問題14 *)
 Theorem exists_g_iff A B C (f: A -> B) (h: A -> C):
