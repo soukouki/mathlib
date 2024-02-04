@@ -474,12 +474,7 @@ Theorem exists_g_iff A B C (f: A -> B) (h: A -> C):
 Proof.
 Admitted.
 
-
-
-
-
-
-
+(* S5 問題15は難しそうなので飛ばす *)
 
 End Section1_5.
 
