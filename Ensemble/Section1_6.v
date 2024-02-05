@@ -18,3 +18,27 @@ Module Ensemble.
 Import Section1_1.Ensemble Section1_2.Ensemble Section1_3.Ensemble Section1_4.Ensemble Section1_5.Ensemble.
 
 Section Section1_6.
+
+Definition Relation A := A -> A -> Prop.
+
+Class Equivalence A (R: Relation A) := {
+  reflexive: forall a: A, R a a;
+  symmetric: forall a b: A, R a b -> R b a;
+  transitive: forall a b c: A, R a b -> R b c -> R a c;
+}.
+
+Instance EqEquivalence A: Equivalence (A := A) eq :=
+{
+  reflexive := fun a => eq_refl a;
+  symmetric := fun _ _ H => eq_sym H;
+  transitive := eq_trans (A := A);
+}.
+
+Instance TrivialEquivalence A: Equivalence (A := A) (fun _ _ => True) :=
+{
+  reflexive := fun _ => I;
+  symmetric := fun _ _ _ => I;
+  transitive := fun _ _ _ _  _=> I;
+}.
+
+
