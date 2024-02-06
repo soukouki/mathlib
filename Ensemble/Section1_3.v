@@ -236,19 +236,6 @@ split.
     by rewrite Heq.
 Qed.
 
-Lemma singleton_unique_eq A a (P: Ensemble A):
-  a \in P -> uniqueness (fun a' => a' \in P) -> P = \{a}.
-Proof.
-move=> Hin Huniq.
-apply eq_split.
-- move=> a' HA'.
-  rewrite singleton_eq.
-  by apply Huniq.
-- move=> a' HA'.
-  rewrite singleton_eq in HA'.
-  by rewrite HA'.
-Qed.
-
 Lemma invcorr_cap_emptyset_unique A B (C: A ->c B):
   (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset) ->
   forall a, uniqueness (fun b => b \in C a).
@@ -298,7 +285,7 @@ split.
   case (Hdef a) => b Hb.
   exists b.
   split.
-  + by apply singleton_unique_eq.
+  + by apply singleton_uniqueness.
   + move=> b' Hb'.
     by rewrite Hb' in Hb.
 Qed.
