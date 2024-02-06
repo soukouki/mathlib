@@ -40,7 +40,6 @@ Instance TrivialEquivalence A: Equivalence (A := A) (fun _ _ => True) :=
 Section ModEquivalence.
 
 Variable mod: nat.
-Hypothesis mod_is_not_0: mod <> 0.
 
 Definition mod_equiv a b := Nat.modulo a mod = Nat.modulo b mod.
 
@@ -58,4 +57,4 @@ Instance ModEquivalence: Equivalence mod_equiv :=
   transitive := mod_equivalence_transitive;
 }.
 
-
+End ModEquivalence.
