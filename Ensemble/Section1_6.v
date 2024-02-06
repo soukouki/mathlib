@@ -34,27 +34,49 @@ Instance TrivialEquivalence A: Equivalence (A := A) (fun _ _ => True) :=
 {
   reflexive := fun _ => I;
   symmetric := fun _ _ _ => I;
-  transitive := fun _ _ _ _  _=> I;
+  transitive := fun _ _ _ _ _ => I;
 }.
 
-Section ModEquivalence.
+Definition mod_equiv mod a b := Nat.modulo a mod = Nat.modulo b mod.
 
-Variable mod: nat.
-
-Definition mod_equiv a b := Nat.modulo a mod = Nat.modulo b mod.
-
-Lemma mod_equivalence_transitive a b c: mod_equiv a b -> mod_equiv b c -> mod_equiv a c.
+Lemma mod_equivalence_transitive mod a b c:
+  mod_equiv mod a b -> mod_equiv mod b c -> mod_equiv mod a c.
 Proof.
 move=> H1 H2.
 rewrite /mod_equiv.
 by rewrite H1.
 Qed.
 
-Instance ModEquivalence: Equivalence mod_equiv :=
+Instance ModEquivalence mod: Equivalence (mod_equiv mod) :=
 {
   reflexive := fun a => eq_refl;
   symmetric := fun _ _ H => eq_sym H;
-  transitive := mod_equivalence_transitive;
+  transitive := mod_equivalence_transitive (mod := mod);
 }.
 
-End ModEquivalence.
+Definition func_equiv A B (f: A -> B) x y := f x = f y.
+
+Lemma func_equivalence_transitive A B (f: A -> B) a b c:
+  func_equiv f a b -> func_equiv f b c -> func_equiv f a c.
+Proof.
+move=> H1 H2.
+rewrite /func_equiv.
+by rewrite H1.
+Qed.
+
+Instance FuncEquivalence A B (f: A -> B): Equivalence (func_equiv f) :=
+{
+  reflexive := fun a => eq_refl;
+  symmetric := fun _ _ H => eq_sym H;
+  transitive := func_equivalence_transitive (f := f);
+}.
+
+
+
+
+
+
+
+
+
+
