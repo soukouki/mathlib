@@ -4,11 +4,7 @@ Set Implicit Arguments.
 
 From mathcomp Require Import ssreflect.
 
-Require Import Coq.Logic.ClassicalDescription.
-Require Import Coq.Logic.IndefiniteDescription.
-Require Import Coq.Logic.FunctionalExtensionality.
 Add LoadPath "." as Local.
-Require Import Local.Classical.
 Require Local.Ensemble.Section1_5.
 
 Open Scope ensemble_scope.
@@ -39,6 +35,27 @@ Instance TrivialEquivalence A: Equivalence (A := A) (fun _ _ => True) :=
   reflexive := fun _ => I;
   symmetric := fun _ _ _ => I;
   transitive := fun _ _ _ _  _=> I;
+}.
+
+Section ModEquivalence.
+
+Variable mod: nat.
+Hypothesis mod_is_not_0: mod <> 0.
+
+Definition mod_equiv a b := Nat.modulo a mod = Nat.modulo b mod.
+
+Lemma mod_equivalence_transitive a b c: mod_equiv a b -> mod_equiv b c -> mod_equiv a c.
+Proof.
+move=> H1 H2.
+rewrite /mod_equiv.
+by rewrite H1.
+Qed.
+
+Instance ModEquivalence: Equivalence mod_equiv :=
+{
+  reflexive := fun a => eq_refl;
+  symmetric := fun _ _ H => eq_sym H;
+  transitive := mod_equivalence_transitive;
 }.
 
 
