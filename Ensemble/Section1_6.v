@@ -37,22 +37,7 @@ Instance TrivialEquivalence A: Equivalence (A := A) (fun _ _ => True) :=
   transitive := fun _ _ _ _ _ => I;
 }.
 
-Definition mod_equiv mod a b := Nat.modulo a mod = Nat.modulo b mod.
-
-Lemma mod_equivalence_transitive mod a b c:
-  mod_equiv mod a b -> mod_equiv mod b c -> mod_equiv mod a c.
-Proof.
-move=> H1 H2.
-rewrite /mod_equiv.
-by rewrite H1.
-Qed.
-
-Instance ModEquivalence mod: Equivalence (mod_equiv mod) :=
-{
-  reflexive := fun a => eq_refl;
-  symmetric := fun _ _ H => eq_sym H;
-  transitive := mod_equivalence_transitive (mod := mod);
-}.
+(* 例2の合同については、次の写像に付随する同値関係の系として簡単に表せられる *)
 
 Definition func_equiv A B (f: A -> B) x y := f x = f y.
 
@@ -70,6 +55,11 @@ Instance FuncEquivalence A B (f: A -> B): Equivalence (func_equiv f) :=
   symmetric := fun _ _ H => eq_sym H;
   transitive := func_equivalence_transitive (f := f);
 }.
+
+Definition mod_equiv mod a b := Nat.modulo a mod = Nat.modulo b mod.
+
+Definition ModEquivalence' mod: Equivalence (mod_equiv mod) := FuncEquivalence _.
+
 
 
 
