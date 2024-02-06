@@ -177,28 +177,6 @@ apply eq_split.
 - by rewrite -singleton_subset.
 Qed.
 
-Lemma singleton_in A B (C: A->c B):
-  (forall a, exists! b, C a = \{b}) <-> (forall a, exists! b, b \in C a).
-Proof.
-split => H1 a.
-- case (H1 a) => b.
-  case => Hbeq Hbuniq.
-  exists b.
-  split.
-  + by rewrite Hbeq.
-  + move=> b' Hb'.
-    by rewrite Hbeq in Hb'.
-- case (H1 a) => b.
-  case => Hbeq Hbuniq.
-  exists b.
-  split.
-  + apply singleton_uniqueness => // b1 b2 Hb1 Hb2.
-    by rewrite -(Hbuniq b1 Hb1) -(Hbuniq b2 Hb2).
-  + move=> b' Hb'.
-    apply Hbuniq.
-    by rewrite Hb'.
-Qed.
-
 (* S3 定理2 *)
 Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
   (exists! f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
