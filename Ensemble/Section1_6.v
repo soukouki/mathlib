@@ -5,6 +5,7 @@ Set Implicit Arguments.
 From mathcomp Require Import ssreflect.
 
 Add LoadPath "." as Local.
+Require Import Local.Classical.
 Require Local.Ensemble.Section1_5.
 
 Open Scope ensemble_scope.
@@ -58,9 +59,53 @@ Instance FuncEquivalence A B (f: A -> B): Equivalence (func_equiv f) :=
 
 Definition mod_equiv mod a b := Nat.modulo a mod = Nat.modulo b mod.
 
-Definition ModEquivalence' mod: Equivalence (mod_equiv mod) := FuncEquivalence _.
+Definition ModEquivalence mod: Equivalence (mod_equiv mod) := FuncEquivalence _.
 
+Class Partition A (M: FamilyEnsemble A) :=
+{
+  (* 本ではBigCupを使っていたが、FamilyEnsembleでBigCupを使えないので同等の意味の命題を使った *)
+  cover: forall a, exists C, a \in C /\ C \in M;
+  disjoint: forall C C', C \in M -> C' \in M -> C <> C' -> C \cup C' = \emptyset;
+}.
 
+Definition partition_equiv A (M: FamilyEnsemble A) (P: Partition M) x y :=
+  exists C: Ensemble A, C \in M -> x \in C /\ y \in C.
+
+Lemma partition_equivalence_reflexive A (M: FamilyEnsemble A) (P: Partition M) a:
+  partition_equiv P a a.
+Proof.
+rewrite /partition_equiv.
+case P => H1 H2.
+case (H1 a) => C [H3 H4].
+by exists C.
+Qed.
+
+Lemma partition_equivalence_symmetric A (M: FamilyEnsemble A) (P: Partition M) a b:
+  partition_equiv P a b -> partition_equiv P b a.
+Proof.
+case => C H1.
+exists C => H2.
+rewrite and_comm.
+by apply H1.
+Qed.
+
+Lemma partition_equivalence_transitive A (M: FamilyEnsemble A) (P: Partition M) a b c:
+  partition_equiv P a b -> partition_equiv P b c -> partition_equiv P a c.
+Proof.
+case => C H1.
+case => C' H2.
+exists C => H3.
+split.
+  by case H1.
+case P => H4 H5.
+have: C = C' => [| H6].
+  apply NNPP => H7.
+  case (H5 C C') => //.
+  - admit.
+  - apply H7.
+
+subst.
+by case H2.
 
 
 
