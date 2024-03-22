@@ -109,13 +109,12 @@ split.
   apply NNPP => Hnot_in.
   apply Hneq.
   apply eq_split => // x Hin_inv.
-  rewrite in_emptyset.
+  exfalso.
   apply Hnot_in.
   exists x.
   by apply Hin_inv.
 - move=> Hb Hneq.
-  move: Hb.
-  case => a Hgraph.
+  case Hb => a Hgraph.
   suff: a \notin (InvCorr C b) => //.
   by rewrite Hneq.
 Qed.
@@ -161,8 +160,7 @@ split => [[f H1 a] | H1].
     apply functional_extensionality => a.
     move: (get_proof (H1sig a)) => H3.
     symmetry.
-    rewrite -singleton_eq.
-    by rewrite -H3.
+    by rewrite -singleton_eq -H3.
 Qed.
 
 Lemma singleton_uniqueness T (A: Ensemble T) a:
