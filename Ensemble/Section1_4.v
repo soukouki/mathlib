@@ -26,7 +26,7 @@ Definition Image A B (f: A -> B) (P: Ensemble A): Ensemble B :=
   fun b: B => exists a, a \in P /\ f a = b.
 
 (* p.30 *)
-Theorem image_defrange_eq_valuerange A B (f: A -> B):
+Theorem image_fullset_eq_valuerange A B (f: A -> B):
   Image f (FullSet: Ensemble A) = ValueRange (MapAsCorr f).
 Proof.
 apply eq_split => b.
@@ -105,12 +105,11 @@ Theorem image_sub A B (f: A -> B) P:
   Image f FullSet - Image f P \subset Image f (FullSet - P).
 Proof.
 move=> b.
-rewrite image_defrange_eq_valuerange.
+rewrite image_fullset_eq_valuerange.
 rewrite sub_iff.
 case.
 rewrite valuerange_map_as_corr.
-case => a.
-move=> Heq Hex.
+case => a Heq Hex.
 rewrite fullset_sub.
 exists a.
 split => //.
@@ -169,7 +168,7 @@ apply eq_split.
   by rewrite compset_in in Hin.
 - rewrite /InvImage => a.
   rewrite compset_in => Hout.
-  by rewrite {1}/In compset_in => Hin.
+  by rewrite {1}/In compset_in.
 Qed.
 
 (* 4.5 *)
@@ -201,7 +200,7 @@ Lemma surjective_valuerange A B (f: A -> B):
 Proof.
 rewrite /Surjective.
 rewrite -eq_fullset.
-by rewrite image_defrange_eq_valuerange.
+by rewrite image_fullset_eq_valuerange.
 Qed.
 
 (* p.33 *)
