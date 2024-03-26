@@ -206,23 +206,28 @@ split.
   by apply identity_surjective.
 Qed.
 
+Theorem empty_set_or_exists (A: Type): A = Empty_set \/ exists a: A, True.
+Proof.
+case (classic (A = Empty_set)).
+- by left.
+- move=> H1.
+  right.
+  rewrite exists_iff_not_forall_not => H2.
+  apply H2 => //.
+  rewrite /not in H1.
+Restart.
+case (classic (exists a: A, True)) => H1.
+- by right.
+- left.
+Admitted.
+
 (* S5 定理7(b) *)
 Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, r \comp f = \I A.
 Proof.
 split.
 - move=> Hinj.
-  case (classic (A = Empty_set)).
-  + move=> Heq.
-    subst.
-    clear Hinj.
-    cut False => //.
+  have: A => [| a0].
     admit.
-  + move=> Hneq.
-    Search Empty_set.
-    
-
-  have: A => [| a0]. admit.
-
 
   (* DateTypesの方のempty_setを使って、更にinversionタクティックを使えば良いらしい？ *)
   move: (iffLR (injective_exists_unique _) Hinj) => Hinj'.
