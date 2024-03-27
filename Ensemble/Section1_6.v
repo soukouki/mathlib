@@ -38,7 +38,7 @@ Instance TrivialEquivalence A: Equivalence (A := A) (fun _ _ => True) :=
   transitive := fun _ _ _ _ _ => I;
 }.
 
-(* 例2の合同については、次の写像に付随する同値関係の系として簡単に表せられる *)
+(* 例2の合同については、写像に付随する同値関係の系として簡単に表せられる *)
 
 Definition func_equiv A B (f: A -> B) x y := f x = f y.
 
@@ -61,6 +61,7 @@ Definition mod_equiv mod a b := Nat.modulo a mod = Nat.modulo b mod.
 
 Definition ModEquivalence mod: Equivalence (mod_equiv mod) := FuncEquivalence _.
 
+(* 直和分割 *)
 Class Partition A (M: FamilyEnsemble A) :=
 {
   (* 本ではBigCupを使っていたが、FamilyEnsembleでBigCupを使えないので同等の意味の命題を使った *)
@@ -92,20 +93,21 @@ Qed.
 Lemma partition_equivalence_transitive A (M: FamilyEnsemble A) (P: Partition M) a b c:
   partition_equiv P a b -> partition_equiv P b c -> partition_equiv P a c.
 Proof.
-case => C H1.
-case => C' H2.
-exists C => H3.
-split.
-  by case H1.
-case P => H4 H5.
-have: C = C' => [| H6].
-  apply NNPP => H7.
-  case (H5 C C') => //.
-  - admit.
-  - apply H7.
+case => C HC.
+case => C' HC'.
+case (classic (C = C')) => [Heq | Hneq].
+- subst.
+  exists C' => H1.
+  split.
+  + by case HC.
+  + by case HC'.
+- exists C => H1.
+  case P => _ H3.
+  
 
-subst.
-by case H2.
+Admitted.
+
+
 
 
 
