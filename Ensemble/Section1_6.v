@@ -69,44 +69,51 @@ Class Partition A (M: FamilyEnsemble A) :=
 }.
 
 Definition partition_equiv A (M: FamilyEnsemble A) (P: Partition M) x y :=
-  exists C: Ensemble A, C \in M -> x \in C /\ y \in C.
+  exists C: Ensemble A, C \in M /\ x \in C /\ y \in C.
 
 Lemma partition_equivalence_reflexive A (M: FamilyEnsemble A) (P: Partition M) a:
   partition_equiv P a a.
 Proof.
 rewrite /partition_equiv.
 case P => H1 H2.
-rewrite -eq_fullset bigcup_definition_eq {1}/In in H1.
+rewrite -eq_fullset /BigCup {1}/In in H1.
 case (H1 a) => C [H3 H4].
-exists C => _.
-by split.
+by exists C.
 Qed.
 
 Lemma partition_equivalence_symmetric A (M: FamilyEnsemble A) (P: Partition M) a b:
   partition_equiv P a b -> partition_equiv P b a.
 Proof.
-case => C H1.
-exists C => H2.
-rewrite and_comm.
-by apply H1.
+case => C [H1 H2].
+exists C.
+split => //.
+by rewrite and_comm.
+Qed.
+
+Lemma partition_in_eq A (M: FamilyEnsemble A) (P: Partition M) C1 C2 (x: A):
+  (* 直感的にはx \in C2もないとおかしいので、なんで証明できてるのか謎 *)
+  C1 \in M -> C2 \in M -> x \in C1 -> C1 = C2.
+Proof.
+move=> HC1M HC2M HxC1.
+apply NNPP => Hneq.
+case P => H1 H2.
+move: (H2 C1 C2 HC1M HC2M Hneq).
+rewrite emptyset_not_in => H3.
+move: (H3 x).
+apply.
+by left.
 Qed.
 
 Lemma partition_equivalence_transitive A (M: FamilyEnsemble A) (P: Partition M) a b c:
   partition_equiv P a b -> partition_equiv P b c -> partition_equiv P a c.
 Proof.
-case => C HC.
-case => C' HC'.
-case (classic (C = C')) => [Heq | Hneq].
-- subst.
-  exists C' => H1.
-  split.
-  + by case HC.
-  + by case HC'.
-- exists C => H1.
-  case P => _ H3.
-  
-
-Admitted.
+case => C [HCM [HaC HbC]].
+case => C' [HC'M [HaC' HbC']].
+have: C = C' => [| Heq].
+  by apply partition_in_eq with (M := M) (x := b).
+subst.
+by exists C'.
+Qed.
 
 
 
