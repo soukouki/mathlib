@@ -115,6 +115,13 @@ subst.
 by exists C'.
 Qed.
 
+Instance PartitionEquivalence A (M: FamilyEnsemble A) (P: Partition M): Equivalence (partition_equiv P) :=
+{
+  reflexive := partition_equivalence_reflexive P;
+  symmetric := fun _ _ H => partition_equivalence_symmetric H;
+  transitive := fun _ _ _ H1 H2 => partition_equivalence_transitive H1 H2;
+}.
+
 
 
 
