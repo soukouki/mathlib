@@ -4,6 +4,7 @@ Set Implicit Arguments.
 
 From mathcomp Require Import ssreflect.
 
+Require Import Coq.Logic.Description.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
 Require Local.Ensemble.Section1_5.
@@ -121,6 +122,55 @@ Instance PartitionEquivalence A (M: FamilyEnsemble A) (P: Partition M): Equivale
   symmetric := fun _ _ H => partition_equivalence_symmetric H;
   transitive := fun _ _ _ H1 H2 => partition_equivalence_transitive H1 H2;
 }.
+
+(* 本ではC(a)となっている *)
+Definition Compose A (R: Relation A) a: Ensemble A := fun x => R a x.
+
+Section Compose.
+
+Variables (A: Type) (R: Relation A).
+Hypothesis equiv: Equivalence R.
+
+(* 6.1 *)
+Lemma compose_in a: a \in Compose R a.
+Proof.
+rewrite /Compose /In.
+apply reflexive.
+Qed.
+
+(* 6.2 *)
+Lemma compose_eq a b: R a b <-> Compose R a = Compose R b.
+Proof.
+rewrite /Compose.
+rewrite -eq_iff /In.
+split => [H1 x | H1].
+- split => H2.
+  + apply transitive with (b := a) => //.
+    by apply symmetric.
+  + by apply transitive with (b := b).
+- rewrite H1.
+  by apply reflexive.
+Qed.
+
+(* 6.3 *)
+Lemma compose_neq a b: Compose R a <> Compose R b -> Compose R a \cap Compose R b = \emptyset.
+Proof.
+move=> H1.
+rewrite emptyset_not_in => _ [x H2 H3].
+apply H1.
+rewrite /Compose /In in H2 H3.
+apply compose_eq.
+apply transitive with (b := x) => //.
+by apply symmetric.
+Qed.
+
+
+
+
+
+
+
+
 
 
 
