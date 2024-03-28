@@ -893,8 +893,8 @@ Notation "A \triangle B" := (SymmetricDifference A B) (at level 50): ensemble_sc
 
 Arguments FullSet {_}.
 
-Notation "\bigcup AA" := (BigCup AA) (at level 50): ensemble_scope.
-Notation "\bigcap AA" := (BigCap AA) (at level 50): ensemble_scope.
+Notation "\bigcup AA" := (BigCup (fun A => A) AA) (at level 50): ensemble_scope.
+Notation "\bigcap AA" := (BigCap (fun A => A) AA) (at level 50): ensemble_scope.
 
 End Ensemble.
 

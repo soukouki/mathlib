@@ -64,8 +64,7 @@ Definition ModEquivalence mod: Equivalence (mod_equiv mod) := FuncEquivalence _.
 (* 直和分割 *)
 Class Partition A (M: FamilyEnsemble A) :=
 {
-  (* 本ではBigCupを使っていたが、FamilyEnsembleでBigCupを使えないので同等の意味の命題を使った *)
-  cover: forall a, exists C, a \in C /\ C \in M;
+  cover: \bigcup M = FullSet;
   disjoint: forall C C', C \in M -> C' \in M -> C <> C' -> C \cup C' = \emptyset;
 }.
 
@@ -77,8 +76,10 @@ Lemma partition_equivalence_reflexive A (M: FamilyEnsemble A) (P: Partition M) a
 Proof.
 rewrite /partition_equiv.
 case P => H1 H2.
+rewrite -eq_fullset bigcup_definition_eq {1}/In in H1.
 case (H1 a) => C [H3 H4].
-by exists C.
+exists C => _.
+by split.
 Qed.
 
 Lemma partition_equivalence_symmetric A (M: FamilyEnsemble A) (P: Partition M) a b:
