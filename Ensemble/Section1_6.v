@@ -159,7 +159,7 @@ move=> H1.
 rewrite emptyset_not_in => _ [x H2 H3].
 apply H1.
 rewrite /Compose /In in H2 H3.
-apply compose_eq.
+rewrite -compose_eq.
 apply transitive with (b := x) => //.
 by apply symmetric.
 Qed.
