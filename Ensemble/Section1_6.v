@@ -164,6 +164,17 @@ apply transitive with (b := x) => //.
 by apply symmetric.
 Qed.
 
+(* S6 定理8 前半 *)
+Theorem hoge (M: FamilyEnsemble A): forall a C, C = Compose R a -> Partition M.
+Proof.
+move=> a C HCeq.
+split.
+- rewrite -eq_fullset => a'.
+  exists C.
+  split.
+  + rewrite HCeq.
+    
+
 
 
 
