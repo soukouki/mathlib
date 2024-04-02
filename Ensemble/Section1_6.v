@@ -5,6 +5,8 @@ Set Implicit Arguments.
 From mathcomp Require Import ssreflect.
 
 Require Import Coq.Logic.Description.
+Require Import Coq.Logic.PropExtensionality.
+Require Import Coq.Logic.FunctionalExtensionality.
 Add LoadPath "." as Local.
 Require Import Local.Classical.
 Require Local.Ensemble.Section1_5.
@@ -69,8 +71,9 @@ Class Partition A (M: FamilyEnsemble A) :=
   disjoint: forall C C', C \in M -> C' \in M -> C <> C' -> C \cup C' = \emptyset;
 }.
 
-Definition partition_equiv A (M: FamilyEnsemble A) (P: Partition M) x y :=
-  exists C: Ensemble A, C \in M /\ x \in C /\ y \in C.
+Definition partition_equiv A (M: FamilyEnsemble A) (P: Partition M): Relation A :=
+  fun x y =>
+    exists C: Ensemble A, C \in M /\ x \in C /\ y \in C.
 
 Lemma partition_equivalence_reflexive A (M: FamilyEnsemble A) (P: Partition M) a:
   partition_equiv P a a.
@@ -165,36 +168,40 @@ by apply symmetric.
 Qed.
 
 (* S6 定理8 前半 *)
-Theorem hoge (M: FamilyEnsemble A): (M = fun C => exists a, C = Compose R a) -> Partition M.
+Theorem compose_partition (M: FamilyEnsemble A): (forall a, M = fun C => C = Compose R a) -> Partition M.
 Proof.
 move=> H1.
 split.
 - rewrite -eq_fullset => a.
   exists (Compose R a).
   split.
-  + rewrite H1 /In.
-    by exists a.
-  + rewrite /Compose /In.
-    by apply reflexive.
+  + by rewrite (H1 a).
+  + by apply compose_in.
 - move=> C C' HCM HC'M Hneq.
   rewrite emptyset_not_in => a H2.
-  subst.
-  rewrite /In in HC'M HCM.
-  case HCM => aC HC.
-  case HC'M => aC' HC'.
-  subst.
+  move: (H1 a) => H3.
+  rewrite H3 /In in HCM HC'M.
   apply Hneq.
-  apply compose_eq.
-  move: (compose_neq Hneq).
-  rewrite emptyset_not_in => H3.
-  move: (H3 aC) => H4.
-  rewrite /Compose in H4.
+  by rewrite HCM HC'M.
+Qed.
 
-Admitted.
-
-
-
-
+(* S6 定理8 後半 *)
+Theorem partition_eq_relation (M: FamilyEnsemble A) (H1: forall a, M = fun C => C = Compose R a):
+  R = partition_equiv (compose_partition H1).
+Proof.
+apply functional_extensionality => a.
+apply functional_extensionality => b.
+apply propositional_extensionality.
+split => H2.
+- rewrite /partition_equiv.
+  exists (Compose R a).
+  repeat split => //.
+  + by rewrite (H1 a).
+  + by apply compose_in.
+- case H2 => C [H3 [_ H5]].
+  rewrite (H1 a) /In in H3.
+  by rewrite H3 in H5.
+Qed.
 
 
 
