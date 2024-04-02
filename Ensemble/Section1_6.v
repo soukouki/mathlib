@@ -165,26 +165,32 @@ by apply symmetric.
 Qed.
 
 (* S6 定理8 前半 *)
-Theorem hoge (M: FamilyEnsemble A): (forall a, Compose R a \in M) -> Partition M.
+Theorem hoge (M: FamilyEnsemble A): (M = fun C => exists a, C = Compose R a) -> Partition M.
 Proof.
 move=> H1.
 split.
 - rewrite -eq_fullset => a.
-  move: (H1 a) => H2.
-  exists (fun x => R a x).
-  split => //.
-  rewrite /In.
-  by apply reflexive.
-- move=> C C' HCM HC'M HCneq.
+  exists (Compose R a).
+  split.
+  + rewrite H1 /In.
+    by exists a.
+  + rewrite /Compose /In.
+    by apply reflexive.
+- move=> C C' HCM HC'M Hneq.
   rewrite emptyset_not_in => a H2.
-  
+  subst.
+  rewrite /In in HC'M HCM.
+  case HCM => aC HC.
+  case HC'M => aC' HC'.
+  subst.
+  apply Hneq.
+  apply compose_eq.
+  move: (compose_neq Hneq).
+  rewrite emptyset_not_in => H3.
+  move: (H3 aC) => H4.
+  rewrite /Compose in H4.
 
-
-
-
-
-
-
+Admitted.
 
 
 
