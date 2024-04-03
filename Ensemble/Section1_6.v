@@ -167,20 +167,6 @@ apply transitive with (b := x) => //.
 by apply symmetric.
 Qed.
 
-Lemma compose_all: exists M: FamilyEnsemble A, forall a, M = fun C => C = Compose R a.
-Proof.
-exists (fun C => forall a, C = Compose R a).
-move=> a.
-apply functional_extensionality => C.
-apply propositional_extensionality.
-split => H1.
-- by apply H1.
-- move=> a'.
-  rewrite H1.
-  rewrite /Compose.
-  apply functional_extensionality => x.
-  (* disjoint相当があれば証明できそうだけれど、それにはPartitionが必要で、それにはcompose_allが必要なので循環参照になる。つまりこれは証明できなそう *)
-
 (* S6 定理8 前半 *)
 Theorem compose_partition (M: FamilyEnsemble A): (forall a, M = fun C => C = Compose R a) -> Partition M.
 Proof.
@@ -216,6 +202,13 @@ split => H2.
   rewrite (H1 a) /In in H3.
   by rewrite H3 in H5.
 Qed.
+
+
+
+
+
+
+
 
 
 
