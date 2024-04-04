@@ -58,7 +58,7 @@ Qed.
 Lemma eq_split A B: A \subset B -> B \subset A -> A = B.
 Proof.
 move=> HAB HBA.
-apply eq_subset => //.
+by apply eq_subset.
 Qed.
 
 (* (1.4)
@@ -85,8 +85,7 @@ split.
 - move=> HA a' Heq.
   rewrite singleton_eq in Heq.
   by rewrite Heq.
-- move=> HA.
-  by apply HA.
+- by apply.
 Qed.
 
 (* 問題2から問題5は飛ばす *)
