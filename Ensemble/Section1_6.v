@@ -167,6 +167,23 @@ apply transitive with (b := x) => //.
 by apply symmetric.
 Qed.
 
+Theorem compose_all: exists M: FamilyEnsemble A, forall a, M = fun C => C = Compose R a.
+Proof.
+exists (fun C => exists a, C = Compose R a) => a.
+apply eq_split => C H1; rewrite /In.
+- rewrite /In in H1.
+  case H1 => a' HC.
+  admit.
+- by exists a.
+Restart.
+exists (fun C => forall a, C = Compose R a) => a.
+apply eq_split => C H1; rewrite /In.
+- by [].
+- move=> a'.
+  rewrite /In in H1.
+  admit.
+Admitted.
+
 (* S6 定理8 前半 *)
 Theorem compose_partition (M: FamilyEnsemble A): (forall a, M = fun C => C = Compose R a) -> Partition M.
 Proof.
