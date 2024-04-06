@@ -167,22 +167,53 @@ apply transitive with (b := x) => //.
 by apply symmetric.
 Qed.
 
-Theorem compose_all: exists M: FamilyEnsemble A, forall a, M = fun C => C = Compose R a.
+Theorem compose_all: exists M: FamilyEnsemble A, forall a, M = fun C: Ensemble A => C = Compose R a.
 Proof.
-exists (fun C => exists a, C = Compose R a) => a.
-apply eq_split => C H1; rewrite /In.
-- rewrite /In in H1.
-  case H1 => a' HC.
-  admit.
-- by exists a.
-Restart.
-exists (fun C => forall a, C = Compose R a) => a.
-apply eq_split => C H1; rewrite /In.
-- by [].
-- move=> a'.
-  rewrite /In in H1.
-  admit.
+exists (fun C => exists a, C = fun a' => R a a').
+move=> a.
+apply eq_split => C H1; rewrite /In; rewrite /In in H1.
+- case H1.
+  move=> a' H2.
+  rewrite H2.
+  apply eq_split => a'' H3.
+  + rewrite /In in H3.
+    admit.
+  + rewrite /In.
+    admit.
+- exists a.
+  by rewrite H1 /Compose.
 Admitted.
+
+Theorem compose_all: exists M: FamilyEnsemble A, forall C, C \in M /\ exists a, C = Compose R a.
+Proof.
+exists (fun C => exists a, C = Compose R a).
+move=> C.
+split.
+- rewrite /In.
+  admit.
+- admit.
+Restart.
+exists (fun C => exists a, C = fun a' => R a a').
+move=> C.
+split.
+- rewrite /In.
+  
+
+Admitted.
+
+Theorem compose_all' (a0: A): exists M: FamilyEnsemble A, exists C, exists a, C \in M /\ C = Compose R a.
+Proof.
+exists (fun C => exists a, C = Compose R a).
+exists (Compose R a0).
+exists a0.
+rewrite /In.
+split.
+- exists a0.
+  admit.
+- admit.
+Admitted.
+
+Theorem compose_all''
 
 (* S6 定理8 前半 *)
 Theorem compose_partition (M: FamilyEnsemble A): (forall a, M = fun C => C = Compose R a) -> Partition M.
