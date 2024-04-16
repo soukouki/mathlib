@@ -167,6 +167,7 @@ apply transitive with (b := x) => //.
 by apply symmetric.
 Qed.
 
+
 (* S6 定理8 前半 *)
 Theorem compose_partition (M: FamilyEnsemble A): (forall a, M = fun C => C = Compose R a) -> Partition M.
 Proof.
@@ -184,6 +185,29 @@ split.
   apply Hneq.
   by rewrite HCM HC'M.
 Qed.
+
+(* S6 定理8 前半 *)
+Theorem compose_partition' (M: FamilyEnsemble A): (M = fun C => exists a, C = Compose R a) -> Partition M.
+Proof.
+move=> H1.
+split.
+- rewrite -eq_fullset => a.
+  exists (Compose R a).
+  split.
+  + rewrite H1 /In.
+    by exists a.
+  + by apply compose_in.
+- move=> C C' HCM HC'M Hneq.
+  rewrite emptyset_not_in => a H2.
+  subst.
+  rewrite /In in HCM HC'M.
+  apply Hneq.
+  case HCM => a1 H3.
+  case HC'M => a2 H4.
+  subst.
+  apply compose_eq.
+  apply NNPP => H5.
+Admitted.
 
 (* S6 定理8 後半 *)
 Theorem partition_eq_relation (M: FamilyEnsemble A) (H1: forall a, M = fun C => C = Compose R a):
