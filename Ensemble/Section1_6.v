@@ -186,12 +186,10 @@ split.
   by rewrite HCM HC'M.
 Qed.
 
-Theorem all_compose_exists: exists M: FamilyEnsemble A, forall a, exists C, C = Compose R a /\ C \in M.
+Theorem all_compose_exists: exists M: FamilyEnsemble A, forall a, Compose R a \in M.
 Proof.
 exists (fun C => exists a, C = Compose R a) => a.
 rewrite /In.
-exists (Compose R a).
-split => //.
 by exists a.
 Qed.
 
@@ -203,17 +201,13 @@ split.
 - rewrite -eq_fullset => a.
   exists (Compose R a).
   split.
-  + case (get_proof Hsig a) => C [H1 H2].
-    by rewrite -H1.
+  + by apply (get_proof Hsig).
   + by apply compose_in.
 - move=> C C' HCM HC'M Hneq.
   rewrite emptyset_not_in => a H1.
   move: (get_proof Hsig a) => H2.
   rewrite /Compose in H2.
   apply Hneq.
-  case H2 => C'' [H3 H4].
-  subst.
-
 Admitted.
 
 (* S6 定理8 前半 *)
