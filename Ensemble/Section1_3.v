@@ -64,7 +64,7 @@ Definition ValueRange A B (C: A ->c B): Ensemble B := fun b: B => exists a: A, (
 
 Definition InvCorr A B (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
 
-Theorem defrange_ne_empty_set A B (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
+Theorem defrange_neq_empty_set A B (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
 Proof.
 apply eq_split => a.
 - rewrite /In /DefRange.
