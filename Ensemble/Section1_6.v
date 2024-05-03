@@ -167,7 +167,6 @@ apply transitive with (b := x) => //.
 by apply symmetric.
 Qed.
 
-
 (* S6 定理8 前半 *)
 Theorem compose_partition (M: FamilyEnsemble A): (forall a, M = fun C => C = Compose R a) -> Partition M.
 Proof.
@@ -186,7 +185,7 @@ split.
   by rewrite HCM HC'M.
 Qed.
 
-Theorem all_compose_exists: exists M: FamilyEnsemble A, forall a, Compose R a \in M.
+Theorem all_compose_exists: { M: FamilyEnsemble A | forall a, Compose R a \in M }.
 Proof.
 exists (fun C => exists a, C = Compose R a) => a.
 rewrite /In.
@@ -194,24 +193,23 @@ by exists a.
 Qed.
 
 (* S6 定理8 前半 *)
-Theorem compose_partition': Partition (get_value (constructive_indefinite_description _ all_compose_exists)).
+Theorem compose_partition': Partition (get_value all_compose_exists).
 Proof.
-move: (constructive_indefinite_description _ all_compose_exists) => Hsig.
 split.
 - rewrite -eq_fullset => a.
   exists (Compose R a).
   split.
-  + by apply (get_proof Hsig).
+  + by apply (get_proof all_compose_exists).
   + by apply compose_in.
 - move=> C C' HCM HC'M Hneq.
   rewrite emptyset_not_in => a H1.
-  move: (get_proof Hsig a) => H2.
+  move: (get_proof all_compose_exists a) => H2.
   rewrite /Compose in H2.
   apply Hneq.
 Admitted.
 
 (* S6 定理8 前半 *)
-Theorem compose_partition' (M: FamilyEnsemble A): (M = fun C => exists a, C = Compose R a) -> Partition M.
+Theorem compose_partition'' (M: FamilyEnsemble A): (M = fun C => exists a, C = Compose R a) -> Partition M.
 Proof.
 move=> H1.
 split.
