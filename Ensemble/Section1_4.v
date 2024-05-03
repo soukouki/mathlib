@@ -23,7 +23,7 @@ Implicit Types A B: Type.
 
 (* メモ: Imageが来たら先でexists *)
 Definition Image A B (f: A -> B) (P: Ensemble A): Ensemble B :=
-  fun b: B => exists a, a \in P /\ f a = b.
+  fun b: B => exists a, a ∈ P /\ f a = b.
 
 (* p.30 *)
 Theorem image_fullset_eq_valuerange A B (f: A -> B):
@@ -39,7 +39,7 @@ Qed.
 
 (* p.30 *)
 Theorem image_emptyset_iff A B (f: A -> B) P:
-  Image f P = \emptyset <-> P = \emptyset.
+  Image f P = ∅ <-> P = ∅.
 Proof.
 split.
 - rewrite emptyset_not_in.
@@ -55,7 +55,7 @@ split.
 Qed.
 
 Definition InvImage A B (f: A -> B) (Q: Ensemble B): Ensemble A :=
-  fun a: A => f a \in Q.
+  fun a: A => f a ∈ Q.
 
 (* p.31 *)
 Theorem invimage_fullset A B f:
@@ -64,7 +64,7 @@ Proof. by apply eq_split. Qed.
 
 (* 4.1 *)
 Theorem image_subset A B (f: A -> B) P1 P2:
-  P1 \subset P2 -> Image f P1 \subset Image f P2.
+  P1 ⊂ P2 -> Image f P1 ⊂ Image f P2.
 Proof.
 move=> Hsub b.
 case => a.
@@ -76,7 +76,7 @@ Qed.
 
 (* 4.2 *)
 Theorem image_cup A B (f: A -> B) P1 P2:
-  Image f (P1 \cup P2) = Image f P1 \cup Image f P2.
+  Image f (P1 ∪ P2) = Image f P1 ∪ Image f P2.
 Proof.
 apply eq_split.
 - move=> b H.
@@ -93,7 +93,7 @@ Qed.
 
 (* 4.3 *)
 Theorem image_cap A B (f: A -> B) P1 P2:
-  Image f (P1 \cap P2) \subset Image f P1 \cap Image f P2.
+  Image f (P1 ∩ P2) ⊂ Image f P1 ∩ Image f P2.
 Proof.
 apply subsets_cap;
   apply image_subset;
@@ -102,7 +102,7 @@ Qed.
 
 (* 4.4 *)
 Theorem image_sub A B (f: A -> B) P:
-  Image f FullSet - Image f P \subset Image f (FullSet - P).
+  Image f FullSet - Image f P ⊂ Image f (FullSet - P).
 Proof.
 move=> b.
 rewrite image_fullset_eq_valuerange.
@@ -122,7 +122,7 @@ Qed.
 
 (* 4.1' *)
 Theorem invimage_subset A B (f: A -> B) Q1 Q2:
-  Q1 \subset Q2 -> InvImage f Q1 \subset InvImage f Q2.
+  Q1 ⊂ Q2 -> InvImage f Q1 ⊂ InvImage f Q2.
 Proof.
 move=> Hsubset a Hinv.
 by apply Hsubset.
@@ -130,11 +130,11 @@ Qed.
 
 (* 4.2' *)
 Theorem invimage_cup A B (f: A -> B) Q1 Q2:
-  InvImage f (Q1 \cup Q2) = InvImage f Q1 \cup InvImage f Q2.
+  InvImage f (Q1 ∪ Q2) = InvImage f Q1 ∪ InvImage f Q2.
 Proof.
 apply eq_split.
 - move=> a H.
-  rewrite /InvImage [a \in _]/In in H.
+  rewrite /InvImage [a ∈ _]/In in H.
   rewrite -cup_or in H.
   case H => Ha;
     by [left | right].
@@ -145,7 +145,7 @@ Qed.
 (* こっちのほうは=で繋がれてて綺麗 *)
 (* 4.3' *)
 Theorem invimage_cap A B (f: A -> B) Q1 Q2:
-  InvImage f (Q1 \cap Q2) = InvImage f Q1 \cap InvImage f Q2.
+  InvImage f (Q1 ∩ Q2) = InvImage f Q1 ∩ InvImage f Q2.
 Proof.
 apply eq_split.
 - apply subsets_cap => a;
@@ -173,7 +173,7 @@ Qed.
 
 (* 4.5 *)
 Theorem invimage_image A B (f: A -> B) P:
-  P \subset InvImage f (Image f P).
+  P ⊂ InvImage f (Image f P).
 Proof.
 move=> a H.
 by exists a.
@@ -181,7 +181,7 @@ Qed.
 
 (* 4.5' *)
 Theorem image_invimage A B (f: A -> B) Q:
-  Image f (InvImage f Q) \subset Q.
+  Image f (InvImage f Q) ⊂ Q.
 Proof.
 move=> b.
 case => a.
@@ -196,7 +196,7 @@ Definition Injective A B (f: A -> B) := forall a a', f a = f a' -> a = a'.
 Definition Bijective A B (f: A -> B) := Surjective f /\ Injective f.
 
 Lemma surjective_valuerange A B (f: A -> B):
-  Surjective f <-> forall b, b \in ValueRange (MapAsCorr f).
+  Surjective f <-> forall b, b ∈ ValueRange (MapAsCorr f).
 Proof.
 rewrite /Surjective.
 rewrite -eq_fullset.
@@ -215,7 +215,7 @@ split;
 Qed.
 
 Lemma injective_uniqueness A B (f: A -> B):
-  Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> uniqueness (fun a => f a = b).
+  Injective f <-> forall b, b ∈ ValueRange (MapAsCorr f) -> uniqueness (fun a => f a = b).
 Proof.
 split.
 - move=> Hinj b Hb a a' Heqa Heqa'.
@@ -230,7 +230,7 @@ Qed.
 
 (* p.33 *)
 Theorem injective_exists_unique A B (f: A -> B):
-  Injective f <-> forall b, b \in ValueRange (MapAsCorr f) -> exists! a, f a = b.
+  Injective f <-> forall b, b ∈ ValueRange (MapAsCorr f) -> exists! a, f a = b.
 Proof.
 split.
 - move=> Hinj b Hexi.
@@ -252,7 +252,7 @@ Lemma map_as_corr_injective A B:
 Proof.
 move=> f f' Hfeq.
 apply functional_extensionality => a.
-suff: f a \in MapAsCorr f' a.
+suff: f a ∈ MapAsCorr f' a.
   move=> H.
   by rewrite /MapAsCorr /In in H.
 by rewrite -Hfeq.
@@ -264,7 +264,7 @@ Lemma invcorr_map_as_corr A B (f: A -> B) (g: B -> A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> forall a, g (f a) = a.
 Proof.
 move=> Heq a.
-suff: a \in MapAsCorr g (f a) => //.
+suff: a ∈ MapAsCorr g (f a) => //.
 by rewrite -Heq.
 Qed.
 
@@ -272,7 +272,7 @@ Lemma invcorr_map_as_corr' A B (f: A -> B) (g: B -> A):
   InvCorr (MapAsCorr f) = MapAsCorr g -> forall b, f (g b) = b.
 Proof.
 move=> Heq b.
-suff: b \in MapAsCorr f (g b) => //.
+suff: b ∈ MapAsCorr f (g b) => //.
 rewrite -[MapAsCorr f]invcorr_twice.
 by rewrite Heq.
 Qed.
@@ -359,11 +359,11 @@ Qed.
 
 
 Definition Composite A B C (f: A -> B) (g: B -> C): (A -> C) := fun a => g (f a).
-Notation "f \comp g" := (Composite g f) (at level 50).
+Notation "f ∘ g" := (Composite g f) (at level 50).
 
 (* S4 定理5a *)
 Theorem composite_surjective A B C (f: A -> B) (g: B -> C):
-  Surjective f -> Surjective g -> Surjective (g \comp f).
+  Surjective f -> Surjective g -> Surjective (g ∘ f).
 Proof.
 rewrite !surjective_exists => Hf Hg c.
 case (Hg c) => b Heqc.
@@ -375,7 +375,7 @@ Qed.
 
 (* S4 定理5b *)
 Theorem composite_injective A B C (f: A -> B) (g: B -> C):
-  Injective f -> Injective g -> Injective (g \comp f).
+  Injective f -> Injective g -> Injective (g ∘ f).
 Proof.
 move=> Hf Hg.
 rewrite injective_exists_unique => c Hc.
@@ -390,7 +390,7 @@ Qed.
 
 (* S4 定理5c *)
 Theorem composite_bijective A B C (f: A -> B) (g: B -> C):
-  Bijective f -> Bijective g -> Bijective (g \comp f).
+  Bijective f -> Bijective g -> Bijective (g ∘ f).
 Proof.
 rewrite /Bijective.
 case => Hsurf Hinf.
@@ -402,22 +402,22 @@ Qed.
 
 (* S4 定理6(1) *)
 Theorem composite_assoc A B C D (f: A -> B) (g: B -> C) (h: C -> D):
-  (h \comp g) \comp f = h \comp (g \comp f).
+  (h ∘ g) ∘ f = h ∘ (g ∘ f).
 Proof. by []. Qed.
 
 (* S4 定理6(2)-1 *)
 Theorem composite_identity A B (f: A -> B):
-  f \comp \I A = f.
+  f ∘ \I A = f.
 Proof. by []. Qed.
 
 (* S4 定理6(2)-2 *)
 Theorem identity_composite A B (f: A -> B):
-  \I B \comp f = f.
+  \I B ∘ f = f.
 Proof. by []. Qed.
 
 (* S4 定理6(3)-1 *)
 Theorem invmap_composite_identity A B {P} (f: A -> B | Bijective f /\ P f):
-  get_value (f^-1) \comp get_value f = \I A.
+  get_value (f^-1) ∘ get_value f = \I A.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => a.
@@ -426,7 +426,7 @@ Qed.
 
 (* S4 定理6(3)-2 *)
 Theorem composite_invmap_identity A B P (f: A -> B | Bijective f /\ P f):
-  get_value f \comp get_value (f^-1) = \I B.
+  get_value f ∘ get_value (f^-1) = \I B.
 Proof.
 rewrite /Composite /Identity.
 apply functional_extensionality => b.
@@ -437,13 +437,13 @@ Qed.
 
 (* 特徴関数(CharacteristicFunction)あるいは定義関数(IndicatorFunction)、略してCharにする *)
 Definition Char X (A: Ensemble X) (x: X): nat :=
-  match excluded_middle_informative (x \in A) with
+  match excluded_middle_informative (x ∈ A) with
   | left a => 1
   | right b => 0
   end.
 
 Lemma in_char X (A: Ensemble X) (a: X):
-  a \in A <-> Char A a = 1.
+  a ∈ A <-> Char A a = 1.
 Proof.
 split;
   rewrite /Char;
@@ -451,7 +451,7 @@ split;
 Qed.
 
 Lemma not_in_char X (A: Ensemble X) (a: X):
-  a \notin A <-> Char A a = 0.
+  a ∉ A <-> Char A a = 0.
 Proof.
 split;
   rewrite /Char;
@@ -459,15 +459,15 @@ split;
 Qed.
 
 Fact char_fullset X (x: X):
-  x \in FullSet -> Char FullSet x = 1.
+  x ∈ FullSet -> Char FullSet x = 1.
 Proof. by rewrite -in_char. Qed.
 
 Fact char_emptyset X (x: X):
-  x \in FullSet -> Char EmptySet x = 0.
+  x ∈ FullSet -> Char EmptySet x = 0.
 Proof. by rewrite -not_in_char not_emptyset. Qed.
 
 Fact char_neq X (A A': Ensemble X):
-  A \in PowerSet FullSet -> A' \in PowerSet FullSet -> A <> A'
+  A ∈ PowerSet FullSet -> A' ∈ PowerSet FullSet -> A <> A'
  -> Char A <> Char A'.
 Proof.
 move=> HP HP' Hneq Hceq.
@@ -531,7 +531,7 @@ Qed.
 
 (* S4 問題4 *)
 Theorem image_cap_injective A B (f: A -> B) (P1 P2: Ensemble A):
-  Injective f -> Image f (P1 \cap P2) = Image f P1 \cap Image f P2.
+  Injective f -> Image f (P1 ∩ P2) = Image f P1 ∩ Image f P2.
 Proof.
 move=> Hinj.
 apply eq_split.
@@ -553,7 +553,7 @@ apply eq_split.
 Qed.
 
 Lemma func_eq_invmap A B {Q} (f: A -> B) (g: A -> B | Bijective g /\ Q g):
-  f = get_value g <-> f \comp get_value (g^-1) = \I B.
+  f = get_value g <-> f ∘ get_value (g^-1) = \I B.
 Proof.
 split => [ Heq | Hi ].
 - rewrite Heq.
@@ -574,10 +574,10 @@ by rewrite invmap_eq.
 Qed.
 
 Lemma composite_sig A B C {P Q} (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
-  {c: A -> C | Bijective c /\ get_value g \comp get_value f = c}.
+  {c: A -> C | Bijective c /\ get_value g ∘ get_value f = c}.
 Proof.
 apply constructive_indefinite_description.
-exists (get_value g \comp get_value f).
+exists (get_value g ∘ get_value f).
 split => //.
 - apply composite_bijective.
   + by case (get_proof f).
@@ -585,7 +585,7 @@ split => //.
 Qed.
 
 Lemma get_composite_sig_value A B C {P Q} (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
-  get_value (composite_sig f g) = get_value g \comp get_value f.
+  get_value (composite_sig f g) = get_value g ∘ get_value f.
 Proof.
 case (get_proof (composite_sig f g)) => _ Heq.
 fold get_value in Heq.
@@ -595,14 +595,14 @@ Qed.
 (* S4 問題8 *)
 (* (f . g)^-1 = f^-1 . g^-1 *)
 Theorem inv_composite_bijective A B C {P Q} (f: A -> B | Bijective f /\ P f) (g: B -> C | Bijective g /\ Q g):
-  get_value ((composite_sig f g)^-1) = get_value (f^-1) \comp get_value (g^-1).
+  get_value ((composite_sig f g)^-1) = get_value (f^-1) ∘ get_value (g^-1).
 Proof.
 symmetry.
 rewrite func_eq_invmap.
 rewrite invmap_twice.
 rewrite composite_assoc.
 rewrite get_composite_sig_value.
-rewrite -[get_value (InvMap g) \comp _]composite_assoc.
+rewrite -[get_value (InvMap g) ∘ _]composite_assoc.
 rewrite invmap_composite_identity.
 rewrite identity_composite.
 by rewrite invmap_composite_identity.
@@ -610,7 +610,7 @@ Qed.
 
 (* S4 問題9(a) *)
 Theorem composite_image A B C (f: A -> B) (g: B -> C) (P: Ensemble A):
-  Image (g \comp f) P = Image g (Image f P).
+  Image (g ∘ f) P = Image g (Image f P).
 Proof.
 apply eq_split => [ c H | c H ].
 - case H => a.
@@ -639,7 +639,7 @@ Qed.
 
 (* S4 問題10(a) *)
 Theorem surjective_composite_surjective A B C (f: A -> B) (g: B -> C):
-  Surjective (g \comp f) -> Surjective g.
+  Surjective (g ∘ f) -> Surjective g.
 Proof.
 move=> Hsur.
 rewrite surjective_exists in Hsur.
@@ -651,7 +651,7 @@ Qed.
 
 (* S4 問題10(b) *)
 Theorem injective_composite_injective A B C (f: A -> B) (g: B -> C):
-  Injective (g \comp f) -> Injective f.
+  Injective (g ∘ f) -> Injective f.
 Proof.
 move=> Hinj.
 move=> a1 a2 Heq.
@@ -661,7 +661,7 @@ by rewrite Heq.
 Qed.
 
 Lemma comp_eq_iff A B C (f: A -> B) (g: B -> C) (h: A -> C):
-  g \comp f = h
+  g ∘ f = h
   -> forall a c, g (f a) = c <-> h a = c.
 Proof.
 move=> Heq.
@@ -670,7 +670,7 @@ Qed.
 
 (* S4 問題11 *)
 Theorem surjective_composite_eq A B C (f: A -> B) (Hf: Surjective f) (g g': B -> C):
-  g \comp f = g' \comp f -> g = g'.
+  g ∘ f = g' ∘ f -> g = g'.
 Proof.
 move=> Heq.
 rewrite surjective_exists in Hf.
@@ -682,7 +682,7 @@ Qed.
 
 (* S4 問題12 *)
 Theorem injective_composite_eq A B C (f f': A -> B) (g: B -> C) (Hg: Injective g):
-  g \comp f = g \comp f' -> f = f'.
+  g ∘ f = g ∘ f' -> f = f'.
 Proof.
 move=> Heq.
 apply functional_extensionality => a.
@@ -692,7 +692,7 @@ Qed.
 
 (* S4 問題13(a) *)
 Theorem composite_surjective_to_surjective A B C (f: A -> B) (g: B -> C):
-  Surjective (g \comp f) -> Injective g -> Surjective f.
+  Surjective (g ∘ f) -> Injective g -> Surjective f.
 Proof.
 move=> Hsur Hinj.
 rewrite surjective_exists => b.
@@ -705,7 +705,7 @@ Qed.
 
 (* S4 問題13(b) *)
 Theorem composite_injective_to_injective A B C (f: A -> B) (g: B -> C):
-  Injective (g \comp f) -> Surjective f -> Injective g.
+  Injective (g ∘ f) -> Surjective f -> Injective g.
 Proof.
 move=> Hinj Hsur b1 b2 Heq.
 rewrite surjective_exists in Hsur.
@@ -728,8 +728,8 @@ Variable A B: Type.
 Variable f: A -> B.
 Variable g g': B -> A.
 
-Hypothesis H1: g \comp f = \I A.
-Hypothesis H2: f \comp g' = \I B.
+Hypothesis H1: g ∘ f = \I A.
+Hypothesis H2: f ∘ g' = \I B.
 
 (* S4 問題14-1 *)
 Theorem identity_to_bijective:
@@ -805,14 +805,14 @@ Qed.
 Section Problem15.
 
 Lemma sub_not X (A B: Ensemble X):
-  (A - B)^c = A^c \cup (A \cap B).
+  (A - B)^c = A^c ∪ (A ∩ B).
 Proof.
 rewrite -eq_iff => x.
 rewrite compset_in sub_iff.
 rewrite Classical.not_and_or.
 rewrite cup_comm cap_cup_distrib.
 rewrite compset_cup fullset_cap.
-rewrite -cup_or [x \in B \/ _]or_comm.
+rewrite -cup_or [x ∈ B \/ _]or_comm.
 rewrite -3!compset_in.
 by rewrite compset_twice.
 Qed.
@@ -827,7 +827,7 @@ Proof. case (char_return_or A x) => H; rewrite H; auto. Qed.
 
 (* S4 問題15-1 *)
 Theorem char_le_subset (A B: Ensemble X):
-  (forall x, Char A x <= Char B x) <-> A \subset B.
+  (forall x, Char A x <= Char B x) <-> A ⊂ B.
 Proof.
 split => [ Hle x | Hsubset x ].
 - rewrite 2!in_char => Hy.
@@ -849,7 +849,7 @@ Variable x: X.
 
 (* S4 問題15(a) *)
 Theorem char_cap (A B: Ensemble X):
-  Char (A \cap B) x = Char A x * Char B x.
+  Char (A ∩ B) x = Char A x * Char B x.
 Proof.
 case (char_return_or A x) => Ha.
 - rewrite Ha Nat.mul_1_l.
@@ -872,7 +872,7 @@ Open Scope nat_scope.
 
 (* S4 問題15(b) *)
 Theorem char_cup (A B: Ensemble X):
-  Char (A \cup B) x = Char A x + Char B x - Char (A \cap B) x.
+  Char (A ∪ B) x = Char A x + Char B x - Char (A ∩ B) x.
 Proof.
 rewrite char_cap.
 case (char_return_or A x) => Ha.
@@ -887,7 +887,7 @@ case (char_return_or A x) => Ha.
     rewrite -in_char.
     rewrite -in_char in Hb.
     by right.
-  + suff: Char (A \cup B) x = 0 => [ Hcup |].
+  + suff: Char (A ∪ B) x = 0 => [ Hcup |].
       by rewrite Hb Hcup.
     rewrite -not_in_char => Hcup.
     rewrite -2!not_in_char in Ha Hb.
@@ -900,12 +900,12 @@ Theorem char_comp (A: Ensemble X):
   Char (A^c) x = 1 - Char A x.
 Proof.
 case (char_return_or A x) => Ha.
-- suff: x \notin A^c => [ Hcomp |].
+- suff: x ∉ A^c => [ Hcomp |].
     rewrite not_in_char in Hcomp.
     by rewrite Ha Hcomp.
   rewrite -in_char in Ha.
   by rewrite compset_in.
-- suff: x \in A^c => [ Hcomp |].
+- suff: x ∈ A^c => [ Hcomp |].
     rewrite in_char in Hcomp.
     by rewrite Ha Hcomp.
   rewrite -not_in_char in Ha.
@@ -921,7 +921,7 @@ case (char_return_or A x) => Ha.
   rewrite char_cap.
   rewrite Ha 2!Nat.mul_1_l.
   by rewrite char_comp.
-- suff: x \notin (Sub A B) => [ Hsub |].
+- suff: x ∉ (Sub A B) => [ Hsub |].
     rewrite not_in_char in Hsub.
     by rewrite Ha Hsub.
   rewrite -not_in_char in Ha.
@@ -933,7 +933,7 @@ Open Scope Z_scope.
 
 (* S4 問題15(e) *)
 Theorem char_sym_diff (A B: Ensemble X):
-  Z.of_nat (Char (A \triangle B) x) = Z.abs (Z.of_nat (Char A x) - Z.of_nat (Char B x)).
+  Z.of_nat (Char (A △ B) x) = Z.abs (Z.of_nat (Char A x) - Z.of_nat (Char B x)).
 Proof.
 rewrite /SymmetricDifference.
 rewrite char_cup char_cap !char_sub.
@@ -949,7 +949,7 @@ End Problem15.
 End Section1_4.
 
 Notation "f ^-1" := (InvMap f) (at level 30): ensemble_scope.
-Notation "f \comp g" := (Composite g f) (at level 50): ensemble_scope.
+Notation "f ∘ g" := (Composite g f) (at level 50): ensemble_scope.
 
 End Ensemble.
 

@@ -31,8 +31,8 @@ Proof. by []. Qed.
 
 (* p.45 *)
 Theorem bigcup_min T L (A: IndexedEnsemble T L) B lam:
-  (forall l, l \in lam -> A l \subset B) ->
-  BigCup A lam \subset B.
+  (forall l, l ∈ lam -> A l ⊂ B) ->
+  BigCup A lam ⊂ B.
 Proof.
 move=> H1 x [l [H2 H3]].
 by apply (H1 l).
@@ -40,8 +40,8 @@ Qed.
 
 (* p.45 *)
 Theorem bigcap_max T L (A: IndexedEnsemble T L) B lam:
-  (forall l, l \in lam -> B \subset A l) ->
-  B \subset BigCap A lam.
+  (forall l, l ∈ lam -> B ⊂ A l) ->
+  B ⊂ BigCap A lam.
 Proof.
 move=> H1 x H2 l H3.
 by apply H1.
@@ -49,7 +49,7 @@ Qed.
 
 (* 5.1 *)
 Theorem bigcup_cap_distrib T L (A: IndexedEnsemble T L) B lam:
-  BigCup A lam \cap B = BigCup (fun l => A l \cap B) lam.
+  BigCup A lam ∩ B = BigCup (fun l => A l ∩ B) lam.
 Proof.
 apply eq_split.
 - move=> _ [x [l [H1 H2] H3]].
@@ -61,13 +61,13 @@ Qed.
 
 (* 5.1' *)
 Theorem bigcap_cup_distrib T L (A: IndexedEnsemble T L) B lam:
-  BigCap A lam \cup B = BigCap (fun l => A l \cup B) lam.
+  BigCap A lam ∪ B = BigCap (fun l => A l ∪ B) lam.
 Proof.
 apply eq_split.
 - move=> _ [x H1|x H1] l H2;
   by [ left; by apply H1 | right ].
 - move=> x H1.
-  case (classic (x \in B)) => H2.
+  case (classic (x ∈ B)) => H2.
   + by right.
   + left => l H3.
     move: H2.
@@ -122,7 +122,7 @@ Qed.
 
 (* 5.4 *)
 Theorem image_bigcap L A B (f: A -> B) (P: IndexedEnsemble A L) lam:
-  Image f (BigCap P lam) \subset BigCap (fun l => Image f (P l)) lam.
+  Image f (BigCap P lam) ⊂ BigCap (fun l => Image f (P l)) lam.
 Proof.
 move=> b [a [H1 <-]].
 exists a.
@@ -148,11 +148,11 @@ Proof. apply eq_split => a H1 l H2; by apply H1. Qed.
 Inductive Product (T L: Type) (A: IndexedEnsemble T L)
   : Ensemble (L -> T) :=
   | Product_intro: forall (a: forall l: L, T),
-      (forall (l: L), a l \in A l) -> (fun l => a l) \in Product A.
+      (forall (l: L), a l ∈ A l) -> (fun l => a l) ∈ Product A.
 
 (* p.47 *)
 Theorem exists_emptyset_to_product_emptyset T L (A: IndexedEnsemble T L):
-  (exists l, A l = \emptyset) -> Product A = \emptyset.
+  (exists l, A l = ∅) -> Product A = ∅.
 Proof.
 move=> [l H1].
 rewrite emptyset_not_in => _ [a H2].
@@ -161,12 +161,12 @@ by rewrite H1.
 Qed.
 
 Axiom choice: forall (T L: Type) (A: IndexedEnsemble T L),
-  (forall (l: L), A l <> \emptyset) -> Product A <> \emptyset.
+  (forall (l: L), A l <> ∅) -> Product A <> ∅.
 
 Definition Proj T L (l: L): (L -> T) -> T := fun f => f l.
 
 
-Lemma not_emptyset_exists T A: A <> \emptyset <-> exists a: T, a \in A.
+Lemma not_emptyset_exists T A: A <> ∅ <-> exists a: T, a ∈ A.
 Proof.
 rewrite emptyset_not_in.
 split => [ Hneq | Hexi ].
@@ -176,16 +176,16 @@ split => [ Hneq | Hexi ].
 Qed.
 
 (* S5 定理7(a) *)
-Theorem surjective_exists_right_invmap A B (f: A -> B): Surjective f <-> exists s, f \comp s = \I B.
+Theorem surjective_exists_right_invmap A B (f: A -> B): Surjective f <-> exists s, f ∘ s = \I B.
 Proof.
 split.
 - move=> Hsurj.
-  have: forall b: B, exists a, a \in InvImage f \{ b } => [b | H1].
+  have: forall b: B, exists a, a ∈ InvImage f \{ b } => [b | H1].
     rewrite surjective_exists in Hsurj.
     case (Hsurj b) => a <-.
     by exists a.
   have: exists Ab: IndexedEnsemble A B,
-    (forall (b: B), Ab b = InvImage f \{ b }) /\ (forall (b: B), Ab b <> \emptyset) => [| H2].
+    (forall (b: B), Ab b = InvImage f \{ b }) /\ (forall (b: B), Ab b <> ∅) => [| H2].
     exists (fun b => InvImage f \{ b }).
     split => // b.
     rewrite emptyset_not_in => H2.
@@ -222,7 +222,7 @@ case (classic (exists a: A, True)) => H1.
 Admitted.
 
 (* S5 定理7(b) *)
-Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, r \comp f = \I A.
+Theorem injective_exists_left_invmap A B (f: A -> B): Injective f <-> exists r, r ∘ f = \I A.
 Proof.
 split.
 - move=> Hinj.
@@ -235,7 +235,7 @@ split.
   rewrite /Composite /Identity.
   (* 矛盾させるために仮定を入れたいが、そもそもゴールがB -> Aで仮定を入れられない・・・ *)
   exists (fun b: B =>
-    match excluded_middle_informative (b \in ValueRange(MapAsCorr f)) with
+    match excluded_middle_informative (b ∈ ValueRange(MapAsCorr f)) with
     | left H => get_value (Hsig b H)
     | right H => a0
     end).
@@ -273,7 +273,7 @@ Qed.
 
 (* S5 問題5(a) *)
 Theorem bigcups_cap_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
-  BigCup A lamA \cap BigCup B lamB = BigCup (fun l => A (fst l) \cap B (snd l)) (lamA * lamB).
+  BigCup A lamA ∩ BigCup B lamB = BigCup (fun l => A (fst l) ∩ B (snd l)) (lamA * lamB).
 Proof.
 apply eq_split.
 - move=> _ [x [la [HA1 HA2]] [lb [HB1 HB2]]].
@@ -286,7 +286,7 @@ Qed.
 
 (* S5 問題5(b) *)
 Theorem bigcaps_cup_distrib T LA LB (A: IndexedEnsemble T LA) (B: IndexedEnsemble T LB) lamA lamB:
-  BigCap A lamA \cup BigCap B lamB = BigCap (fun l => A (fst l) \cup B (snd l)) (lamA * lamB).
+  BigCap A lamA ∪ BigCap B lamB = BigCap (fun l => A (fst l) ∪ B (snd l)) (lamA * lamB).
 Proof.
 apply eq_split.
 - move=> _ [] x H1 [_ _ [l HA HB]];
@@ -331,8 +331,8 @@ apply eq_split.
 1. bの存在で場合分け => 失敗
 aどうするねん
 2. aの存在/\bの存在で場合分け => 失敗
-case (classic ((exists la, la \in lamA) /\ (exists lb, lb \in lamB))) => H2. も
-case (classic ((exists la lb, la \in lamA /\ lb \in lamB))) => H2. もうまく行かない
+case (classic ((exists la, la ∈ lamA) /\ (exists lb, lb ∈ lamB))) => H2. も
+case (classic ((exists la lb, la ∈ lamA /\ lb ∈ lamB))) => H2. もうまく行かない
 3. EnsembleProdの定義を->から/\に => 失敗
  *)
 
@@ -343,7 +343,7 @@ Admitted.
 
 (* S5 問題7 *)
 Theorem proj_surjective T L (A: IndexedEnsemble T L):
-  (forall l: L, A l <> \emptyset)
+  (forall l: L, A l <> ∅)
   -> forall l: L, Surjective (B := T) (Proj l).
 Proof.
 move=> /choice /not_emptyset_exists [_ [f Hf]] l.
@@ -353,8 +353,8 @@ Qed.
 
 (* S5 問題8 *)
 Theorem product_subset_iff_forall_subset T L (A B: IndexedEnsemble T L):
-  (forall l, A l <> \emptyset)
-  -> Product A \subset Product B <-> (forall l, A l \subset B l).
+  (forall l, A l <> ∅)
+  -> Product A ⊂ Product B <-> (forall l, A l ⊂ B l).
 Proof.
 move=> /choice /not_emptyset_exists [_ [f Hf]].
 split.
@@ -370,7 +370,7 @@ Admitted.
 
 (* S5 問題9 *)
 Theorem product_cap_product T L (A B: IndexedEnsemble T L):
-  Product A \cap Product B = Product (fun l => A l \cap B l).
+  Product A ∩ Product B = Product (fun l => A l ∩ B l).
 Proof.
 apply eq_split.
 - move=> _ [x HA HB].
@@ -392,9 +392,9 @@ Ensemble TA -> Ensemble TBみたいな型が求められる？
 (* S5 問題11 *)
 Theorem right_invmap_valuerange_subset_valuerange A B (f: A -> B) (s s': B -> A):
   Surjective f ->
-  f \comp s = \I B ->
-  f \comp s' = \I B ->
-  ValueRange (MapAsCorr s) \subset ValueRange (MapAsCorr s')
+  f ∘ s = \I B ->
+  f ∘ s' = \I B ->
+  ValueRange (MapAsCorr s) ⊂ ValueRange (MapAsCorr s')
   <-> s = s'.
 Proof.
 move=> Hsurj HI HI'.
@@ -425,12 +425,12 @@ Admitted.
 Theorem composite_right_invmap A B C (f1: A -> B) (f2: B -> C) (s1: B -> A) (s2: C -> B):
   Surjective f1 ->
   Surjective f2 ->
-  f1 \comp s1 = \I B ->
-  f2 \comp s2 = \I C ->
-  (f2 \comp f1) \comp (s1 \comp s2) = \I C.
+  f1 ∘ s1 = \I B ->
+  f2 ∘ s2 = \I C ->
+  (f2 ∘ f1) ∘ (s1 ∘ s2) = \I C.
 Proof.
 move=> Hsurj1 Hsurj2 Hrinv1 Hrinv2.
-rewrite composite_assoc -[f1 \comp _]composite_assoc.
+rewrite composite_assoc -[f1 ∘ _]composite_assoc.
 by rewrite Hrinv1 identity_composite.
 Qed.
 
@@ -438,18 +438,18 @@ Qed.
 Theorem composite_left_invmap A B C (f1: A -> B) (f2: B -> C) (r1: B -> A) (r2: C -> B):
   Injective f1 ->
   Injective f2 ->
-  r1 \comp f1 = \I A ->
-  r2 \comp f2 = \I B ->
-  (r1 \comp r2) \comp (f2 \comp f1) = \I A.
+  r1 ∘ f1 = \I A ->
+  r2 ∘ f2 = \I B ->
+  (r1 ∘ r2) ∘ (f2 ∘ f1) = \I A.
 Proof.
 move=> Hinj1 Hinj2 Hlinv1 Hlinv2.
-rewrite composite_assoc -[r2 \comp _]composite_assoc.
+rewrite composite_assoc -[r2 ∘ _]composite_assoc.
 by rewrite Hlinv2 identity_composite.
 Qed.
 
 (* S5 問題13 *)
 Theorem exists_f_iff A B C (g: B -> C) (h: A -> C):
-  (exists f: A -> B, h = g \comp f) <-> (ValueRange (MapAsCorr h) \subset ValueRange (MapAsCorr g)).
+  (exists f: A -> B, h = g ∘ f) <-> (ValueRange (MapAsCorr h) ⊂ ValueRange (MapAsCorr g)).
 Proof.
 split.
 - case => f Hf c H1.
@@ -473,7 +473,7 @@ Admitted.
 
 (* S5 問題14 *)
 Theorem exists_g_iff A B C (f: A -> B) (h: A -> C):
-  (exists g: B -> C, h = g \comp f) <-> (forall a a', f a = f a' -> h a = h a').
+  (exists g: B -> C, h = g ∘ f) <-> (forall a a', f a = f a' -> h a = h a').
 Proof.
 Admitted.
 

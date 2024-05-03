@@ -68,12 +68,12 @@ Definition ModEquivalence mod: Equivalence (mod_equiv mod) := FuncEquivalence _.
 Class Partition A (M: FamilyEnsemble A) :=
 {
   cover: \bigcup M = FullSet;
-  disjoint: forall C C', C \in M -> C' \in M -> C <> C' -> C \cup C' = \emptyset;
+  disjoint: forall C C', C ∈ M -> C' ∈ M -> C <> C' -> C ∪ C' = ∅;
 }.
 
 Definition partition_equiv A (M: FamilyEnsemble A) (P: Partition M): Relation A :=
   fun x y =>
-    exists C: Ensemble A, C \in M /\ x \in C /\ y \in C.
+    exists C: Ensemble A, C ∈ M /\ x ∈ C /\ y ∈ C.
 
 Lemma partition_equivalence_reflexive A (M: FamilyEnsemble A) (P: Partition M) a:
   partition_equiv P a a.
@@ -95,8 +95,8 @@ by rewrite and_comm.
 Qed.
 
 Lemma partition_in_eq A (M: FamilyEnsemble A) (P: Partition M) C1 C2 (x: A):
-  (* 直感的にはx \in C2もないとおかしいので、なんで証明できてるのか謎 *)
-  C1 \in M -> C2 \in M -> x \in C1 -> C1 = C2.
+  (* 直感的にはx ∈ C2もないとおかしいので、なんで証明できてるのか謎 *)
+  C1 ∈ M -> C2 ∈ M -> x ∈ C1 -> C1 = C2.
 Proof.
 move=> HC1M HC2M HxC1.
 apply NNPP => Hneq.
@@ -135,7 +135,7 @@ Variables (A: Type) (R: Relation A).
 Hypothesis equiv: Equivalence R.
 
 (* 6.1 *)
-Lemma compose_in a: a \in Compose R a.
+Lemma compose_in a: a ∈ Compose R a.
 Proof.
 rewrite /Compose /In.
 apply reflexive.
@@ -156,7 +156,7 @@ split => [H1 x | H1].
 Qed.
 
 (* 6.3 *)
-Lemma compose_neq a b: Compose R a <> Compose R b -> Compose R a \cap Compose R b = \emptyset.
+Lemma compose_neq a b: Compose R a <> Compose R b -> Compose R a ∩ Compose R b = ∅.
 Proof.
 move=> H1.
 rewrite emptyset_not_in => _ [x H2 H3].
@@ -185,7 +185,7 @@ split.
   by rewrite HCM HC'M.
 Qed.
 
-Theorem all_compose_exists: { M: FamilyEnsemble A | forall a, Compose R a \in M }.
+Theorem all_compose_exists: { M: FamilyEnsemble A | forall a, Compose R a ∈ M }.
 Proof.
 exists (fun C => exists a, C = Compose R a) => a.
 rewrite /In.

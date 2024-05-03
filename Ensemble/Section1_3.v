@@ -23,7 +23,7 @@ Implicit Types A B: Type.
 
 Inductive EnsembleProd TA TB (A: Ensemble TA) (B: Ensemble TB)
   : Ensemble (TA * TB) :=
-  | EnsembleProd_pair x: fst x \in A -> snd x \in B -> x \in EnsembleProd A B.
+  | EnsembleProd_pair x: fst x ∈ A -> snd x ∈ B -> x ∈ EnsembleProd A B.
 Notation "A * B" := (EnsembleProd A B).
 
 (* Corr = Correspondence *)
@@ -31,7 +31,7 @@ Definition Corr A B := A -> Ensemble B.
 Notation "A ->c B" := (Corr A B) (at level 99).
 
 Lemma corr_extensionality A B (f g: A ->c B):
-  (forall a b, b \in f a <-> b \in g a) -> f = g.
+  (forall a b, b ∈ f a <-> b ∈ g a) -> f = g.
 Proof.
 move=> H.
 apply functional_extensionality => a.
@@ -40,7 +40,7 @@ apply propositional_extensionality.
 by apply H.
 Qed.
 
-Definition Graph A B (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => (snd x) \in C (fst x)).
+Definition Graph A B (C: A ->c B): Ensemble (A * B) := (fun x: (A * B) => (snd x) ∈ C (fst x)).
 
 (* (3.1) *)
 Theorem graph_pair A B C (a: A):
@@ -59,12 +59,12 @@ split.
   by rewrite HX.
 Qed.
 
-Definition DefRange   A B (C: A ->c B): Ensemble A := fun a: A => exists b: B, (a, b) \in Graph(C).
-Definition ValueRange A B (C: A ->c B): Ensemble B := fun b: B => exists a: A, (a, b) \in Graph(C).
+Definition DefRange   A B (C: A ->c B): Ensemble A := fun a: A => exists b: B, (a, b) ∈ Graph(C).
+Definition ValueRange A B (C: A ->c B): Ensemble B := fun b: B => exists a: A, (a, b) ∈ Graph(C).
 
-Definition InvCorr A B (C: A->c B): B ->c A := fun (b: B) (a: A) => b \in C a.
+Definition InvCorr A B (C: A->c B): B ->c A := fun (b: B) (a: A) => b ∈ C a.
 
-Theorem defrange_neq_empty_set A B (C: A ->c B): DefRange C = fun a: A => C a <> \emptyset.
+Theorem defrange_neq_empty_set A B (C: A ->c B): DefRange C = fun a: A => C a <> ∅.
 Proof.
 apply eq_split => a.
 - rewrite /In /DefRange.
@@ -78,11 +78,11 @@ apply eq_split => a.
   by exists b.
 Qed.
 
-Lemma defrange_exists A B (C: A ->c B): DefRange C = fun a: A => exists b, b \in C a.
+Lemma defrange_exists A B (C: A ->c B): DefRange C = fun a: A => exists b, b ∈ C a.
 Proof. by []. Qed.
 
 (* (3.2) *)
-Theorem in_invcorr A B (C: A ->c B) a b: b \in C a <-> a \in (InvCorr C) b.
+Theorem in_invcorr A B (C: A ->c B) a b: b ∈ C a <-> a ∈ (InvCorr C) b.
 Proof. by []. Qed.
 
 (* (3.3) *)
@@ -97,12 +97,12 @@ Proof. by []. Qed.
 Theorem invcorr_twice A B (C: A ->c B): InvCorr (InvCorr C) = C.
 Proof. by []. Qed.
 
-Lemma in_emptyset A (x: A): x \in \emptyset <-> False.
+Lemma in_emptyset A (x: A): x ∈ ∅ <-> False.
 Proof. by []. Qed.
 
 (* p.27 *)
 Theorem invcorr_is_not_empty_iff_in_valuerange A B b (C: A ->c B):
-  (InvCorr C b <> \emptyset) <-> b \in ValueRange C.
+  (InvCorr C b <> ∅) <-> b ∈ ValueRange C.
 Proof.
 split.
 - move=> Hneq.
@@ -115,7 +115,7 @@ split.
   by apply Hin_inv.
 - move=> Hb Hneq.
   case Hb => a Hgraph.
-  suff: a \notin (InvCorr C b) => //.
+  suff: a ∉ (InvCorr C b) => //.
   by rewrite Hneq.
 Qed.
 
@@ -164,7 +164,7 @@ split => [[f H1 a] | H1].
 Qed.
 
 Lemma singleton_uniqueness T (A: Ensemble T) a:
-  a \in A -> uniqueness (fun a => a \in A) -> A = \{ a }.
+  a ∈ A -> uniqueness (fun a => a ∈ A) -> A = \{ a }.
 Proof.
 move=> Hin Huniq.
 apply eq_split.
@@ -177,7 +177,7 @@ Qed.
 
 (* S3 定理2 *)
 Theorem exist_one_map_equivalent_to_graphs A B (G: Ensemble (A * B)):
-  (exists! f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) \in G).
+  (exists! f: A -> B, G = Graph (MapAsCorr f)) <-> (forall a, exists! b, (a, b) ∈ G).
 Proof.
 split.
 - case => f.
@@ -196,7 +196,7 @@ split.
       rewrite /Graph /MapAsCorr /In.
       (* bからグラフ上の(a, b)は一意に求められることを示す。
          uniqueness = forall x y: A, P x -> P y -> x = y という定義で、_ = _ を処理するのに使える *)
-      have: (uniqueness (fun b: B => (fst x, b) \in G)).
+      have: (uniqueness (fun b: B => (fst x, b) ∈ G)).
         by apply unique_existence.
       apply.
       -- by rewrite -surjective_pairing.
@@ -213,8 +213,8 @@ split.
 Qed.
 
 Lemma invcorr_cap_emptyset_unique A B (C: A ->c B):
-  (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset) ->
-  forall a, uniqueness (fun b => b \in C a).
+  (forall b b', b <> b' -> InvCorr C b ∩ InvCorr C b' = ∅) ->
+  forall a, uniqueness (fun b => b ∈ C a).
 Proof.
 move=> Hinv a b1 b2 Hb1 Hb2.
 apply NNPP => H1.
@@ -228,13 +228,13 @@ Qed.
 (* 問題1から問題2は飛ばす *)
 
 Lemma in_graph A B (C: A ->c B) a b:
-  (a, b) \in Graph C = b \in C a.
+  (a, b) ∈ Graph C = b ∈ C a.
 Proof. by []. Qed.
 
 (* S3 問題3 *)
 Theorem map_as_corr_invcorr A B (C: A ->c B):
   (exists! f: A -> B, C = MapAsCorr f) <->
-  (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b \cap InvCorr C b' = \emptyset)).
+  (DefRange C = FullSet /\ (forall b b', b <> b' -> InvCorr C b ∩ InvCorr C b' = ∅)).
 Proof.
 rewrite -eq_fullset.
 split.
@@ -267,7 +267,7 @@ split.
 Qed.
 
 Lemma defrange_map_as_corr A B (f: A -> B) a:
-  a \in DefRange (MapAsCorr f) <-> exists b, f a = b.
+  a ∈ DefRange (MapAsCorr f) <-> exists b, f a = b.
 Proof.
 split;
   case => b H;
@@ -275,7 +275,7 @@ split;
 Qed.
 
 Lemma valuerange_map_as_corr A B (f: A -> B) b:
-  b \in ValueRange (MapAsCorr f) <-> exists a, f a = b.
+  b ∈ ValueRange (MapAsCorr f) <-> exists a, f a = b.
 Proof.
 split;
   case => a H;
