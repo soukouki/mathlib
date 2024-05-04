@@ -147,7 +147,7 @@ Proof. apply eq_split => a H1 l H2; by apply H1. Qed.
 
 Inductive Product (T L: Type) (A: IndexedEnsemble T L)
   : Ensemble (L -> T) :=
-  | Product_intro: forall (a: forall l: L, T),
+  | Product_intro: forall (a: L -> T),
       (forall (l: L), a l ∈ A l) -> (fun l => a l) ∈ Product A.
 
 (* p.47 *)
