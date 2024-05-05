@@ -2,7 +2,7 @@
 
 Set Implicit Arguments.
 
-From mathcomp Require Import ssreflect.
+Require Import ssreflect.
 
 Require Import Coq.Logic.ClassicalDescription.
 Require Import Coq.Arith.PeanoNat.
@@ -215,8 +215,8 @@ apply eq_split => x1.
     split; by left.
   + split; by right.
 - case => x2.
-  + case => x3 H HBC.
-    move: HBC H.
+  case => x3 H HBC.
+  + move: HBC H.
     case => x4 H HA.
     * left.
       by split.

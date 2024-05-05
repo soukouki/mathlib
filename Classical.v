@@ -4,7 +4,7 @@
 
 Set Implicit Arguments.
 
-From mathcomp Require Import ssreflect.
+Require Import ssreflect.
 
 Require Export Coq.Logic.Classical_Prop.
 

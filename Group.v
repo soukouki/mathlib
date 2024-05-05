@@ -1,6 +1,6 @@
 Set Implicit Arguments.
 
-From mathcomp Require Import ssreflect.
+Require Import ssreflect.
 
 Require Import Coq.Setoids.Setoid.
 Require Import Coq.Bool.Bool.

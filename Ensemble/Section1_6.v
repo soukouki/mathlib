@@ -2,7 +2,7 @@
 
 Set Implicit Arguments.
 
-From mathcomp Require Import ssreflect.
+Require Import ssreflect.
 
 Require Import Coq.Logic.IndefiniteDescription.
 Require Import Coq.Logic.PropExtensionality.

@@ -2,7 +2,7 @@
 
 Set Implicit Arguments.
 
-From mathcomp Require Import ssreflect.
+Require Import ssreflect.
 
 Require Import Coq.Logic.ClassicalDescription.
 Require Import Coq.Logic.IndefiniteDescription.
@@ -147,8 +147,8 @@ Proof. apply eq_split => a H1 l H2; by apply H1. Qed.
 
 Inductive Product (T L: Type) (A: IndexedEnsemble T L)
   : Ensemble (L -> T) :=
-  | Product_intro: forall (a: L -> T),
-      (forall (l: L), a l ∈ A l) -> (fun l => a l) ∈ Product A.
+  | Product_intro: forall a: L -> T,
+      (forall l: L, a l ∈ A l) -> (fun l => a l) ∈ Product A.
 
 (* p.47 *)
 Theorem exists_emptyset_to_product_emptyset T L (A: IndexedEnsemble T L):
